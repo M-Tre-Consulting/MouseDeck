@@ -3,7 +3,6 @@ import { PermissionStatus } from "../../types";
 import {
   ShieldCheck,
   ShieldAlert,
-  Terminal,
   Copy,
   Check,
   Layers,
@@ -12,6 +11,8 @@ import {
   FileArchive,
   RefreshCw,
   AlertTriangle,
+  KeyRound,
+  ChevronDown,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -322,53 +323,55 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
         )}
 
-        {/* Manual Terminal Commands */}
-        <div className="p-3.5 rounded-xl bg-[#090a0e] border border-white/[0.05] space-y-2.5">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="font-medium flex items-center gap-1.5">
-              <Terminal className="w-3.5 h-3.5 text-slate-500" />
-              Comandi manuali da terminale (alternativa CLI)
-            </span>
+        {/* Native Polkit Security Info */}
+        <div className="p-3.5 rounded-xl bg-[#090a0e] border border-white/[0.05] flex items-start gap-3 text-xs text-slate-400">
+          <div className="w-7 h-7 rounded-lg bg-[#0078d4]/10 border border-[#0078d4]/20 flex items-center justify-center text-[#70b4ff] shrink-0 mt-0.5">
+            <KeyRound className="w-3.5 h-3.5" />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
-            {/* Install cmd */}
-            <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] flex items-center justify-between gap-2">
-              <div className="truncate text-slate-300">
-                sudo bash ./setup-permissions.sh install
-              </div>
-              <button
-                onClick={() => handleCopy("sudo bash ./setup-permissions.sh install")}
-                className="p-1 rounded hover:bg-white/[0.08] text-slate-400 hover:text-slate-200 transition-colors shrink-0"
-                title="Copia comando installazione"
-              >
-                {copiedCmd === "sudo bash ./setup-permissions.sh install" ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
+          <div className="space-y-1">
+            <div className="font-medium text-slate-200">
+              Autorizzazione Nativa Desktop (Linux Polkit)
             </div>
-
-            {/* Restore cmd */}
-            <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] flex items-center justify-between gap-2">
-              <div className="truncate text-slate-300">
-                sudo bash ./setup-permissions.sh restore
-              </div>
-              <button
-                onClick={() => handleCopy("sudo bash ./setup-permissions.sh restore")}
-                className="p-1 rounded hover:bg-white/[0.08] text-slate-400 hover:text-slate-200 transition-colors shrink-0"
-                title="Copia comando ripristino"
-              >
-                {copiedCmd === "sudo bash ./setup-permissions.sh restore" ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-            </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              MouseDeck gestisce l'elevazione dei privilegi direttamente all'interno dell'applicazione tramite il sottosistema di sicurezza nativo del tuo desktop (Polkit). Non è richiesto alcun terminale né l'esecuzione manuale di script: cliccando sui pulsanti viene richiamata la finestra di autenticazione del sistema operativo.
+            </p>
           </div>
         </div>
+
+        {/* Optional Collapsible CLI Reference for Headless / Advanced users */}
+        <details className="text-[11px] text-slate-500 group px-1">
+          <summary className="cursor-pointer hover:text-slate-400 transition-colors flex items-center gap-1 font-medium list-none">
+            <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
+            <span>Opzioni avanzate da terminale (CLI Headless)</span>
+          </summary>
+          <div className="mt-2.5 p-3 rounded-xl bg-black/40 border border-white/[0.04] space-y-2">
+            <div className="text-[10px] text-slate-500">
+              Il binario stesso integra i comandi nativi di installazione e ripristino:
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <div className="p-2 rounded bg-white/[0.02] border border-white/[0.03] flex items-center justify-between gap-2">
+                <span className="truncate text-slate-300">pkexec mousedeck --setup-permissions</span>
+                <button
+                  onClick={() => handleCopy("pkexec mousedeck --setup-permissions")}
+                  className="p-1 text-slate-500 hover:text-slate-300 transition-colors"
+                  title="Copia"
+                >
+                  {copiedCmd === "pkexec mousedeck --setup-permissions" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                </button>
+              </div>
+              <div className="p-2 rounded bg-white/[0.02] border border-white/[0.03] flex items-center justify-between gap-2">
+                <span className="truncate text-slate-300">pkexec mousedeck --restore-permissions</span>
+                <button
+                  onClick={() => handleCopy("pkexec mousedeck --restore-permissions")}
+                  className="p-1 text-slate-500 hover:text-slate-300 transition-colors"
+                  title="Copia"
+                >
+                  {copiedCmd === "pkexec mousedeck --restore-permissions" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
 
       {/* Driver Architecture Group */}
