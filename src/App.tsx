@@ -9,6 +9,7 @@ import {
   PermissionStatus,
   GestureEventPayload,
 } from "./types";
+import { ShieldAlert, ShieldCheck, RefreshCw } from "lucide-react";
 
 import { Sidebar } from "./components/Sidebar";
 import { DashboardView } from "./components/views/DashboardView";
@@ -28,6 +29,7 @@ export function App() {
   });
   const [permissions, setPermissions] = useState<PermissionStatus | null>(null);
   const [isRefreshingBt, setIsRefreshingBt] = useState(false);
+  const [isAutoConfiguring, setIsAutoConfiguring] = useState(false);
 
   const [lastEvent, setLastEvent] = useState<GestureEventPayload | null>(null);
   const [history, setHistory] = useState<GestureEventPayload[]>([]);
@@ -132,6 +134,18 @@ export function App() {
     setTimeout(() => setIsRefreshingBt(false), 600);
   };
 
+  const handleQuickAutoSetup = async () => {
+    setIsAutoConfiguring(true);
+    try {
+      await invoke("run_setup_permissions_cmd");
+      await fetchPermissions();
+    } catch (err) {
+      console.error("Auto setup error:", err);
+    } finally {
+      setIsAutoConfiguring(false);
+    }
+  };
+
   return (
     <div className="h-screen w-screen bg-[#0c0d11] text-slate-200 flex overflow-hidden">
       {/* Left Sidebar (Desktop Navigation) */}
@@ -152,6 +166,48 @@ export function App() {
 
         {/* Scrollable View Content */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
+          {/* System Permissions Notice Banner */}
+          {permissions &&
+            (!permissions.uinput_accessible || !permissions.input_nodes_accessible) &&
+            activeTab !== "settings" && (
+              <div className="mb-6 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-amber-200">
+                      Permessi Hardware non Configurati
+                    </div>
+                    <p className="text-[11px] text-amber-300/80 mt-0.5">
+                      MouseDeck può configurare le regole udev creando automaticamente un backup di ripristino istantaneo.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={handleQuickAutoSetup}
+                    disabled={isAutoConfiguring}
+                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm"
+                  >
+                    {isAutoConfiguring ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                    )}
+                    Configura con Backup
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("settings")}
+                    className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-slate-300 text-xs font-medium border border-white/[0.08] transition-colors"
+                  >
+                    Dettagli
+                  </button>
+                </div>
+              </div>
+            )}
+
           {activeTab === "dashboard" && (
             <DashboardView
               device={device}

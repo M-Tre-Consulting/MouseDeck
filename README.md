@@ -29,23 +29,33 @@ Grazie a un'**architettura modulare a driver (`DeviceDriver`)**, MouseDeck è pr
 
 ---
 
-## 🛠️ Configurazione Permessi (Regole udev)
+## 🛠️ Configurazione Permessi, Backup Automatico e Ripristino
 
-Su Linux, per consentire a un'applicazione nello spazio utente di catturare eventi di input e generare tasti virtuali senza richiedere `sudo` costante, è sufficiente installare una volta le regole `udev` con tag `uaccess`.
+Su Linux, per consentire a un'applicazione nello spazio utente di catturare eventi di input e generare tasti virtuali senza richiedere `sudo` costante, è necessario installare le regole `udev` con tag `uaccess`.
 
-MouseDeck include uno script di setup automatico:
+MouseDeck include un sistema intelligente di **setup, backup automatico e ripristino/disinstallazione pulita**:
 
+### 1. Dall'Interfaccia Grafica (Consigliato)
+- All'avvio, se i permessi mancano, compare un banner di avviso con il pulsante **"Configura con Backup"**.
+- Nella scheda **Sistema & Permessi**:
+  - **Configura Automaticamente:** crea uno snapshot/backup dello stato originario del sistema e installa le regole udev.
+  - **Ripristina & Disinstalla:** con 1 clic ripristina la configurazione precedente, rimuove le regole udev di MouseDeck, disattiva i moduli caricati e ripristina i gruppi utente allo stato originale.
+
+### 2. Da Terminale (CLI)
 ```bash
 chmod +x setup-permissions.sh
-sudo ./setup-permissions.sh
+
+# Installazione con backup automatico del sistema
+sudo ./setup-permissions.sh install
+
+# Ripristino pulito allo stato originario (disinstallazione)
+sudo ./setup-permissions.sh restore
+
+# Verifica dello stato
+./setup-permissions.sh status
 ```
 
-Lo script configura:
-1. `/etc/udev/rules.d/70-mousedeck.rules` con tag `uaccess` per il mouse (Vendor `045e`, Product `07a2`) e `/dev/uinput`.
-2. Caricamento del modulo kernel `uinput`.
-3. Ricarica immediata tramite `udevadm trigger`.
-
-*(Puoi anche applicare i permessi con 1 clic direttamente dall'interfaccia nella scheda **Sistema**).*
+Lo script traccia lo stato in `~/.config/mousedeck/backup/manifest.json` e in `/etc/mousedeck/backup/manifest.json`.
 
 ---
 

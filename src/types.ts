@@ -36,6 +36,10 @@ export interface PermissionStatus {
   input_nodes_accessible: boolean;
   setup_script_path: string;
   message: string;
+  rules_installed: boolean;
+  backup_exists: boolean;
+  backup_timestamp?: string;
+  backup_files: string[];
 }
 
 export interface GestureEventPayload {

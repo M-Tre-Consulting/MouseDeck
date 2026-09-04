@@ -11,7 +11,7 @@ use crate::config::{ActionConfig, AppConfig, ConfigManager, get_preset_mappings}
 use crate::bluetooth::info::BluetoothDeviceInfo;
 use crate::bluetooth::monitor::BluetoothManager;
 use crate::engine::service::RemapperService;
-use crate::permissions::{check_permissions, run_setup_permissions, PermissionStatus};
+use crate::permissions::{check_permissions, run_setup_permissions, run_restore_permissions, PermissionStatus};
 
 pub struct AppState {
     pub config_mgr: Arc<Mutex<ConfigManager>>,
@@ -68,6 +68,11 @@ async fn run_setup_permissions_cmd() -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn run_restore_permissions_cmd() -> Result<String, String> {
+    run_restore_permissions()
+}
+
+#[tauri::command]
 fn simulate_gesture(trigger_id: String, state: State<'_, AppState>) -> Result<(), String> {
     if let Some(service) = state.service.lock().unwrap().as_ref() {
         service.simulate_trigger(&trigger_id);
@@ -107,6 +112,7 @@ pub fn run() {
             apply_preset,
             check_system_permissions,
             run_setup_permissions_cmd,
+            run_restore_permissions_cmd,
             simulate_gesture,
             reconnect_bluetooth,
         ])
