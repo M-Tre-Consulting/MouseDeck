@@ -1,0 +1,16 @@
+# Node
+node_modules/
+dist/
+.npm/
+
+# Rust / Cargo
+src-tauri/target/
+**/*.rs.bk
+Cargo.lock
+
+# System & Editor
+.DS_Store
+*.swp
+*.bak
+.vscode/
+.idea/
