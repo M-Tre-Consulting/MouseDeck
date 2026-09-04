@@ -27,6 +27,7 @@ export interface BluetoothDeviceInfo {
   vendor_id?: string;
   product_id?: string;
   battery_percentage?: number;
+  battery_status_text?: string;
   is_sculpt_comfort: boolean;
 }
 

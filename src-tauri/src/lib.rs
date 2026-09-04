@@ -111,5 +111,5 @@ pub fn run() {
             reconnect_bluetooth,
         ])
         .run(tauri::generate_context!())
-        .expect("Errore durante l'esecuzione di SculptFlow");
+        .expect("Errore durante l'esecuzione di MouseDeck");
 }

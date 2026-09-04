@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# SculptFlow - Setup permessi di sistema Linux
-# Configura le regole udev necessarie per accedere al mouse Microsoft Sculpt Comfort
-# e consentire la scrittura sul modulo kernel /dev/uinput senza privilegi root.
+# MouseDeck - Setup permessi di sistema Linux
+# Configura le regole udev necessarie per accedere alle periferiche di puntamento supportate
+# (tra cui Microsoft Sculpt Comfort) e consentire la scrittura su /dev/uinput senza privilegi root.
 
 set -e
 
@@ -11,14 +11,14 @@ if [ "$EUID" -ne 0 ]; then
     exec sudo bash "$0" "$@"
 fi
 
-RULE_FILE="/etc/udev/rules.d/70-sculpt-comfort.rules"
+RULE_FILE="/etc/udev/rules.d/70-mousedeck.rules"
 
-echo "=== Configurazione Permessi Hardware SculptFlow ==="
+echo "=== Configurazione Permessi Hardware MouseDeck ==="
 echo "1. Creazione delle regole udev in $RULE_FILE..."
 
 cat << 'RULE' > "$RULE_FILE"
 # -------------------------------------------------------------------------
-# SculptFlow - Microsoft Sculpt Comfort Mouse & Virtual Input Rules
+# MouseDeck - Hardware Input & Virtual uinput Rules
 # -------------------------------------------------------------------------
 
 # Accesso in lettura/cattura al mouse Microsoft Sculpt Comfort (045e:07a2)
@@ -35,7 +35,7 @@ modprobe uinput 2>/dev/null || true
 
 # Configura il caricamento automatico di uinput al boot
 if [ -d /etc/modules-load.d ]; then
-    echo "uinput" > /etc/modules-load.d/sculptflow-uinput.conf
+    echo "uinput" > /etc/modules-load.d/mousedeck-uinput.conf
 fi
 
 # Se è specificato un utente non-root, aggiungilo anche al gruppo input

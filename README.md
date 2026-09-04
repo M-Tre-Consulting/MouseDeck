@@ -1,19 +1,22 @@
-# SculptFlow 🖱️⚡
-> **Modern Linux Dashboard & Gesture Remapper for Microsoft Sculpt Comfort Mouse (and beyond)**  
-> Costruito con **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, ed **evdev/uinput**. Supporto nativo per **Wayland** (Hyprland, Sway, GNOME) e **X11**.
+# MouseDeck 🖱️⚡
+> **Universal Linux Mouse Dashboard & Gesture Remapper (Specialized Module for Microsoft Sculpt Comfort Mouse)**  
+> Costruito con **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, ed **evdev/uinput**. Supporto nativo per **Wayland** (Hyprland, Sway, GNOME, KDE) e **X11**.
 
 ---
 
-## 🌟 Cos'è SculptFlow?
+## 🌟 Cos'è MouseDeck?
 
-Il mouse **Microsoft Sculpt Comfort** è una periferica eccezionale con connettività Bluetooth 3.0 universale e un sensore BlueTrack preciso su qualunque superficie. Tuttavia, su Linux la sua caratteristica più distintiva — la **touch strip laterale blu (pulsante Windows)** — invia sequenze di tasti hardware fisse che spesso aprono menu indesiderati o non fanno nulla.
+**MouseDeck** è una suite desktop moderna per Linux progettata per gestire, monitorare e rimappare le periferiche di puntamento avanzate. Nasce originariamente per sbloccare l'intero potenziale del leggendario mouse **Microsoft Sculpt Comfort** (Bluetooth 3.0), la cui **touch strip laterale capacitiva (pulsante Windows)** invia di default sequenze di tasti fisse non configurabili su Linux. 
 
-**SculptFlow** risolve questo problema alla radice con un'architettura ad altissime prestazioni:
-- **Backend Rust a Latenza Zero:** Intercetta il sotto-dispositivo di input hardware della touch strip tramite `evdev` (`EVIOCGRAB`) e virtualizza combinazioni di tasti, clic del mouse, controlli multimediali o comandi shell su `/dev/uinput`.
-- **Nessuna interferenza con la tastiera:** Il mouse espone tre nodi separati (`mouse`, `consumer`, `keyboard`). SculptFlow isola **soltanto** il nodo tastiera del mouse, lasciando la tastiera del tuo laptop o PC intatta al 100%.
-- **Dashboard Bluetooth in Tempo Reale:** Informazioni in tempo reale via BlueZ D-Bus (stato connessione, indirizzo MAC, chipset, dettagli batteria e protocollo BT 3.0 Classic).
-- **Test Interattivo dal Vivo:** Un diagramma vettoriale dinamico del mouse che si illumina e pulsa in tempo reale ogni volta che sfiori la striscia con il pollice o clicchi.
-- **Architettura a Driver Modulare:** Progettato per essere esteso in futuro a qualsiasi altro mouse con pulsanti gesture (es. Logitech MX Master, Razer, o mouse HID personalizzati).
+Grazie a un'**architettura modulare a driver (`DeviceDriver`)**, MouseDeck è progettato sia per gestire in modo dedicato lo Sculpt Comfort, sia per accogliere facilmente moduli per qualsiasi altro mouse dotato di pulsanti o gesture non convenzionali.
+
+### Caratteristiche Principali:
+- **Backend Rust a Latenza Zero:** Intercetta gli eventi hardware a basso livello tramite `evdev` (`EVIOCGRAB`) e virtualizza combinazioni di tasti, clic del mouse, controlli multimediali o comandi shell su `/dev/uinput`.
+- **Nessuna interferenza con la tastiera di sistema:** Il mouse espone tre nodi separati (`mouse`, `consumer`, `keyboard`). MouseDeck isola **soltanto** il nodo tastiera del mouse, lasciando la tastiera del tuo laptop o PC intatta al 100%.
+- **Dashboard & Telemetria Batteria:** Lettura in tempo reale di BlueZ D-Bus, UPower e sysfs per monitorare connessione Bluetooth, host adapter, stato della batteria (con barra di percentuale per periferiche che supportano la telemetria o stato alcaline AA per BT 3.0).
+- **Design Desktop Minimalista:** Stile raffinato ispirato ai tool nativi macOS e Raycast/Linear (modalità dark graphite, indicatori visivi di stato, diagramma vettoriale animato reattivo).
+- **Test Interattivo dal Vivo:** Un diagramma vettoriale dinamico che si illumina e pulsa in tempo reale ogni volta che sfiori la striscia con il pollice o clicchi.
+- **Architettura a Driver Modulare:** Il trait Rust `DeviceDriver` consente di aggiungere supporto a qualsiasi mouse implementando un modulo plug-in.
 
 ---
 
@@ -30,7 +33,7 @@ Il mouse **Microsoft Sculpt Comfort** è una periferica eccezionale con connetti
 
 Su Linux, per consentire a un'applicazione nello spazio utente di catturare eventi di input e generare tasti virtuali senza richiedere `sudo` costante, è sufficiente installare una volta le regole `udev` con tag `uaccess`.
 
-SculptFlow include uno script di setup automatico:
+MouseDeck include uno script di setup automatico:
 
 ```bash
 chmod +x setup-permissions.sh
@@ -38,7 +41,7 @@ sudo ./setup-permissions.sh
 ```
 
 Lo script configura:
-1. `/etc/udev/rules.d/70-sculpt-comfort.rules` con tag `uaccess` per il mouse (Vendor `045e`, Product `07a2`) e `/dev/uinput`.
+1. `/etc/udev/rules.d/70-mousedeck.rules` con tag `uaccess` per il mouse (Vendor `045e`, Product `07a2`) e `/dev/uinput`.
 2. Caricamento del modulo kernel `uinput`.
 3. Ricarica immediata tramite `udevadm trigger`.
 
@@ -97,7 +100,7 @@ La macchina a stati in **Rust** (`src-tauri/src/drivers/sculpt_comfort.rs`) catt
   - **Swipe Down:** `Ctrl+Shift+Tab` (Scheda a sinistra)
   - **Click Windows:** `Ctrl+t` (Nuova scheda)
 
-Le configurazioni sono persistite in formato JSON in `~/.config/sculptflow/config.json`.
+Le configurazioni sono persistite in formato JSON in `~/.config/mousedeck/config.json`.
 
 ---
 

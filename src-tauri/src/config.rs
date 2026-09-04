@@ -144,11 +144,21 @@ pub struct ConfigManager {
 
 impl ConfigManager {
     pub fn new() -> Self {
-        let mut path = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
-        path.push("sculptflow");
-        fs::create_dir_all(&path).ok();
-        path.push("config.json");
-        Self { config_path: path }
+        let base_dir = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
+        
+        let new_dir = base_dir.join("mousedeck");
+        let new_file = new_dir.join("config.json");
+        
+        // Backward compatibility: migrate if sculptflow exists and mousedeck doesn't
+        let old_file = base_dir.join("sculptflow").join("config.json");
+        if old_file.exists() && !new_file.exists() {
+            fs::create_dir_all(&new_dir).ok();
+            fs::copy(&old_file, &new_file).ok();
+        } else {
+            fs::create_dir_all(&new_dir).ok();
+        }
+
+        Self { config_path: new_file }
     }
 
     pub fn load(&self) -> AppConfig {

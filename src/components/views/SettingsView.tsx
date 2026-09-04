@@ -207,7 +207,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className="desktop-card p-4 flex items-center justify-between text-xs text-slate-400">
         <div className="flex items-center gap-2">
           <Info className="w-3.5 h-3.5 text-slate-500" />
-          <span>SculptFlow 1.0.0 • Rust + Tauri Desktop Suite</span>
+          <span>MouseDeck 1.0.0 • Universal Linux Mouse Desktop Suite</span>
         </div>
         <span className="text-[11px] text-slate-500 font-mono">Wayland & X11 Native</span>
       </div>

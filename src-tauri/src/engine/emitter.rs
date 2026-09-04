@@ -43,7 +43,7 @@ impl UInputEmitter {
         keys.insert(KeyCode::KEY_PREVIOUSSONG);
 
         match VirtualDevice::builder() {
-            Ok(builder) => match builder.name("SculptFlow Virtual Input Device").with_keys(&keys) {
+            Ok(builder) => match builder.name("MouseDeck Virtual Input Device").with_keys(&keys) {
                 Ok(b) => match b.build() {
                     Ok(vd) => {
                         println!("[UInputEmitter] Virtual device initialized successfully.");

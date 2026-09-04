@@ -48,11 +48,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight">
-            Microsoft Sculpt Comfort Mouse
-          </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Periferica Bluetooth 3.0 Classic • Vendor 045E • Product 07A2
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl font-semibold text-white tracking-tight">
+              {device?.alias || device?.name || "Microsoft Sculpt Comfort Mouse"}
+            </h1>
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#0078d4]/15 text-[#70b4ff] border border-[#0078d4]/25">
+              Profilo Attivo
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            MouseDeck Hardware Engine • Vendor {device?.vendor_id || "045E"} • Product {device?.product_id || "07A2"}
           </p>
         </div>
 
@@ -88,10 +93,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <MouseDiagram width={190} height={250} />
           <div className="mt-3">
             <span className="text-xs font-semibold text-slate-300 block">
-              Touch Strip Laterale
+              Modulo Dispositivo
             </span>
             <span className="text-[11px] text-slate-500 block mt-0.5">
-              Sensore capacitivo a sfioramento
+              Microsoft Sculpt Comfort (evdev grab)
             </span>
           </div>
         </div>
@@ -133,17 +138,45 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
 
               <div className="px-4 py-3 flex items-center justify-between">
-                <span className="text-slate-400">Sensore Ottico</span>
-                <span className="text-slate-200">
-                  Microsoft BlueTrack (1000 DPI)
-                </span>
+                <span className="text-slate-400">Livello Batteria</span>
+                <div className="flex items-center gap-2.5">
+                  <Battery
+                    className={`w-4 h-4 ${
+                      device?.battery_percentage != null
+                        ? device.battery_percentage > 20
+                          ? "text-emerald-400"
+                          : "text-amber-400"
+                        : "text-slate-400"
+                    }`}
+                  />
+                  {device?.battery_percentage != null ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-2 bg-white/[0.08] rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            device.battery_percentage > 20 ? "bg-emerald-400" : "bg-amber-400"
+                          }`}
+                          style={{
+                            width: `${Math.min(100, Math.max(0, device.battery_percentage))}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="font-mono text-xs font-semibold text-slate-200">
+                        {device.battery_percentage}%
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-slate-300 text-xs">
+                      {device?.battery_status_text || "2x Batterie AA (BT 3.0 Classic)"}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="px-4 py-3 flex items-center justify-between">
-                <span className="text-slate-400">Alimentazione</span>
-                <span className="text-slate-200 flex items-center gap-1.5">
-                  <Battery className="w-3.5 h-3.5 text-slate-400" />
-                  2x Batterie AA Stilo (BT 3.0 Classic)
+                <span className="text-slate-400">Sensore Ottico</span>
+                <span className="text-slate-200">
+                  Microsoft BlueTrack (1000 DPI)
                 </span>
               </div>
 

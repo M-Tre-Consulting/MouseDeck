@@ -15,6 +15,7 @@ pub struct BluetoothDeviceInfo {
     pub vendor_id: Option<String>,
     pub product_id: Option<String>,
     pub battery_percentage: Option<u8>,
+    pub battery_status_text: String,
     pub is_sculpt_comfort: bool,
 }
 
@@ -36,6 +37,7 @@ impl BluetoothDeviceInfo {
             vendor_id: if is_sculpt_comfort { Some("045e".into()) } else { None },
             product_id: if is_sculpt_comfort { Some("07a2".into()) } else { None },
             battery_percentage: None,
+            battery_status_text: "2x Batterie AA (Standard)".to_string(),
             is_sculpt_comfort,
         }
     }

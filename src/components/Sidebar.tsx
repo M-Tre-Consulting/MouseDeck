@@ -7,6 +7,7 @@ import {
   Settings,
   RefreshCw,
   Mouse,
+  Battery,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -47,14 +48,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Mouse className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold tracking-wider uppercase text-slate-200">
-            SculptFlow
+            MouseDeck
           </span>
           <span className="text-[10px] text-slate-500 font-mono ml-auto">v1.0</span>
         </div>
 
         {/* Device card */}
         <div className="px-3 pt-2 pb-3">
-          <div className="p-3 rounded-xl bg-[#141720] border border-white/[0.05] space-y-2">
+          <div className="p-3 rounded-xl bg-[#141720] border border-white/[0.05] space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold text-slate-300 truncate">
                 {device?.alias || device?.name || "Microsoft Sculpt Comfort"}
@@ -83,6 +84,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="font-mono text-[10px] text-slate-500">
                 {device?.address ? device.address.slice(-8) : "BT 3.0"}
               </span>
+            </div>
+
+            {/* Battery status row */}
+            <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between text-[11px]">
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <Battery
+                  className={`w-3.5 h-3.5 ${
+                    device?.battery_percentage != null
+                      ? device.battery_percentage > 20
+                        ? "text-emerald-400"
+                        : "text-amber-400"
+                      : "text-slate-500"
+                  }`}
+                />
+                <span>Batteria</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {device?.battery_percentage != null ? (
+                  <>
+                    <div className="w-10 h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${
+                          device.battery_percentage > 20 ? "bg-emerald-400" : "bg-amber-400"
+                        }`}
+                        style={{ width: `${Math.min(100, Math.max(0, device.battery_percentage))}%` }}
+                      />
+                    </div>
+                    <span className="font-mono text-[10px] font-semibold text-slate-300">
+                      {device.battery_percentage}%
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    {device?.battery_status_text?.includes("AA")
+                      ? "2x AA"
+                      : (device?.battery_status_text || "2x AA (BT 3.0)")}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
