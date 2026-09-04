@@ -10,7 +10,7 @@ import {
   GestureEventPayload,
 } from "./types";
 
-import { Header } from "./components/Header";
+import { Sidebar } from "./components/Sidebar";
 import { DashboardView } from "./components/views/DashboardView";
 import { RemapView } from "./components/views/RemapView";
 import { LiveTestView } from "./components/views/LiveTestView";
@@ -32,19 +32,18 @@ export function App() {
   const [lastEvent, setLastEvent] = useState<GestureEventPayload | null>(null);
   const [history, setHistory] = useState<GestureEventPayload[]>([]);
 
-  // Load initial data
+  // Initial fetch
   useEffect(() => {
     refreshAllData();
 
-    // Polling interval for Bluetooth state (every 3 seconds)
     const interval = setInterval(() => {
       fetchDeviceStatus();
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Listen for hardware gesture triggers from the Rust backend
+  // Hardware event listener from Rust
   useEffect(() => {
     let unlisten: (() => void) | undefined;
 
@@ -53,10 +52,10 @@ export function App() {
         unlisten = await listen<GestureEventPayload>("gesture-triggered", (event) => {
           const payload = event.payload;
           setLastEvent(payload);
-          setHistory((prev) => [payload, ...prev.slice(0, 24)]);
+          setHistory((prev) => [payload, ...prev.slice(0, 30)]);
         });
       } catch (err) {
-        console.error("Errore registrazione listener gesture-triggered:", err);
+        console.error("Errore listener gesture-triggered:", err);
       }
     };
 
@@ -78,7 +77,7 @@ export function App() {
       const dev: BluetoothDeviceInfo | null = await invoke("get_device_status");
       setDevice(dev);
     } catch (e) {
-      console.error("Errore fetch device status:", e);
+      console.error(e);
     }
   };
 
@@ -87,7 +86,7 @@ export function App() {
       const cfg: AppConfig = await invoke("get_config");
       setConfig(cfg);
     } catch (e) {
-      console.error("Errore fetch config:", e);
+      console.error(e);
     }
   };
 
@@ -96,7 +95,7 @@ export function App() {
       const perms: PermissionStatus = await invoke("check_system_permissions");
       setPermissions(perms);
     } catch (e) {
-      console.error("Errore fetch permissions:", e);
+      console.error(e);
     }
   };
 
@@ -105,7 +104,7 @@ export function App() {
       await invoke("set_remapping_enabled", { enabled: val });
       setConfig((prev) => ({ ...prev, enabled: val }));
     } catch (e) {
-      console.error("Errore toggle enabled:", e);
+      console.error(e);
     }
   };
 
@@ -114,7 +113,7 @@ export function App() {
       await invoke("save_mapping", { triggerId, action });
       await fetchConfig();
     } catch (e) {
-      console.error("Errore save mapping:", e);
+      console.error(e);
     }
   };
 
@@ -123,20 +122,20 @@ export function App() {
       const updated: AppConfig = await invoke("apply_preset", { presetKey });
       setConfig(updated);
     } catch (e) {
-      console.error("Errore apply preset:", e);
+      console.error(e);
     }
   };
 
   const handleRefreshBt = async () => {
     setIsRefreshingBt(true);
     await fetchDeviceStatus();
-    setTimeout(() => setIsRefreshingBt(false), 800);
+    setTimeout(() => setIsRefreshingBt(false), 600);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Top Header */}
-      <Header
+    <div className="h-screen w-screen bg-[#0c0d11] text-slate-200 flex overflow-hidden">
+      {/* Left Sidebar (Desktop Navigation) */}
+      <Sidebar
         device={device}
         enabled={config.enabled}
         onToggleEnabled={handleToggleEnabled}
@@ -146,41 +145,46 @@ export function App() {
         onTabChange={setActiveTab}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-        {activeTab === "dashboard" && (
-          <DashboardView
-            device={device}
-            enabled={config.enabled}
-            activeProfile={config.active_profile}
-            onNavigateToRemap={() => setActiveTab("remap")}
-            onRefreshBluetooth={handleRefreshBt}
-          />
-        )}
+      {/* Right Content View */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#0e1015]">
+        {/* Subtle Titlebar Drag Strip */}
+        <div className="h-8 border-b border-white/[0.04] shrink-0 titlebar-drag-region bg-transparent" />
 
-        {activeTab === "remap" && (
-          <RemapView
-            config={config}
-            onSaveAction={handleSaveAction}
-            onApplyPreset={handleApplyPreset}
-          />
-        )}
+        {/* Scrollable View Content */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8">
+          {activeTab === "dashboard" && (
+            <DashboardView
+              device={device}
+              activeProfile={config.active_profile}
+              onNavigateToRemap={() => setActiveTab("remap")}
+              onRefreshBluetooth={handleRefreshBt}
+            />
+          )}
 
-        {activeTab === "test" && (
-          <LiveTestView
-            lastEvent={lastEvent}
-            history={history}
-            onClearHistory={() => setHistory([])}
-          />
-        )}
+          {activeTab === "remap" && (
+            <RemapView
+              config={config}
+              onSaveAction={handleSaveAction}
+              onApplyPreset={handleApplyPreset}
+            />
+          )}
 
-        {activeTab === "settings" && (
-          <SettingsView
-            permissions={permissions}
-            onRefreshPermissions={fetchPermissions}
-          />
-        )}
-      </main>
+          {activeTab === "test" && (
+            <LiveTestView
+              lastEvent={lastEvent}
+              history={history}
+              onClearHistory={() => setHistory([])}
+            />
+          )}
+
+          {activeTab === "settings" && (
+            <SettingsView
+              permissions={permissions}
+              onRefreshPermissions={fetchPermissions}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }

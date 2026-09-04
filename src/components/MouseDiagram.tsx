@@ -10,8 +10,8 @@ interface MouseDiagramProps {
 export const MouseDiagram: React.FC<MouseDiagramProps> = ({
   activeTrigger,
   className = "",
-  width = 280,
-  height = 360,
+  width = 240,
+  height = 310,
 }) => {
   const isSwipeUp = activeTrigger === "swipe_up";
   const isSwipeDown = activeTrigger === "swipe_down";
@@ -23,201 +23,181 @@ export const MouseDiagram: React.FC<MouseDiagramProps> = ({
   const isMiddleClick = activeTrigger === "middle_click";
 
   return (
-    <div className={`relative flex items-center justify-center ${className}`}>
+    <div className={`relative flex items-center justify-center select-none ${className}`}>
       <svg
-        viewBox="0 0 280 360"
+        viewBox="0 0 240 310"
         width={width}
         height={height}
-        className="transition-all duration-300 drop-shadow-2xl"
+        className="transition-all duration-300 drop-shadow-xl"
       >
         <defs>
-          {/* Subtle body gradient */}
-          <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1e293b" />
-            <stop offset="60%" stopColor="#0f172a" />
-            <stop offset="100%" stopColor="#090d16" />
+          {/* Subtle chassis gradient */}
+          <linearGradient id="chassisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a1c24" />
+            <stop offset="70%" stopColor="#121319" />
+            <stop offset="100%" stopColor="#0b0c10" />
           </linearGradient>
 
-          {/* Blue Windows Strip gradient */}
-          <linearGradient id="blueStripGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00a8ff" />
-            <stop offset="100%" stopColor="#0066cc" />
+          {/* Microsoft Windows Blue Touch Strip */}
+          <linearGradient id="blueStrip" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0078d4" />
+            <stop offset="100%" stopColor="#005a9e" />
           </linearGradient>
 
-          {/* Glowing strip gradient when active */}
-          <linearGradient id="stripGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          {/* Active Strip Glow Gradient */}
+          <linearGradient id="blueStripActive" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#38bdf8" />
             <stop offset="100%" stopColor="#0284c7" />
           </linearGradient>
 
-          {/* Filter for neon glow */}
-          <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          <filter id="wheelGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {/* Soft shadow under mouse */}
-        <ellipse cx="140" cy="190" rx="95" ry="140" fill="rgba(0,0,0,0.5)" filter="blur(10px)" />
+        {/* Soft shadow */}
+        <ellipse cx="120" cy="165" rx="80" ry="115" fill="rgba(0,0,0,0.45)" filter="blur(8px)" />
 
-        {/* Outer Ergonomic Mouse Body (Asymmetric Sculpt Comfort curvature) */}
+        {/* Outer Ergonomic Silhouette (Sculpt Comfort Asymmetric Curve) */}
         <path
-          d="M 140 40
-             C 210 42, 235 120, 232 200
-             C 230 265, 195 320, 140 320
-             C 75 320, 42 270, 42 195
-             C 42 135, 60 70, 100 45
+          d="M 120 30
+             C 180 32, 202 100, 200 170
+             C 198 225, 170 275, 120 275
+             C 65 275, 36 230, 36 165
+             C 36 115, 52 55, 88 35
              Z"
-          fill="url(#bodyGradient)"
-          stroke="#334155"
-          strokeWidth="2.5"
-          className="transition-colors duration-200"
+          fill="url(#chassisGrad)"
+          stroke="#272b38"
+          strokeWidth="1.5"
         />
 
-        {/* Center line separating Left and Right click buttons */}
-        <path d="M 140 40 L 140 135" stroke="#334155" strokeWidth="2" strokeLinecap="round" />
+        {/* Left & Right Button Divider Line */}
+        <line x1="120" y1="30" x2="120" y2="115" stroke="#252834" strokeWidth="1.5" />
 
-        {/* Scroll wheel housing pocket */}
-        <rect x="127" y="70" width="26" height="64" rx="8" fill="#020617" stroke="#1e293b" strokeWidth="1" />
+        {/* Scroll Wheel Housing */}
+        <rect x="108" y="58" width="24" height="56" rx="6" fill="#090a0e" stroke="#1c1f28" strokeWidth="1" />
 
         {/* Scroll Wheel */}
         <rect
-          x="130"
-          y="74"
-          width="20"
-          height="56"
-          rx="6"
-          fill={isMiddleClick ? "#38bdf8" : "#475569"}
-          stroke={isMiddleClick ? "#0284c7" : "#64748b"}
-          strokeWidth="1.5"
-          filter={isMiddleClick ? "url(#wheelGlow)" : undefined}
-          className="transition-all duration-150"
+          x="111"
+          y="62"
+          width="18"
+          height="48"
+          rx="5"
+          fill={isMiddleClick ? "#0078d4" : "#2f3544"}
+          stroke={isMiddleClick ? "#38bdf8" : "#454d60"}
+          strokeWidth="1"
+          className="transition-colors duration-150"
         />
 
-        {/* Scroll wheel grip ridges */}
-        {[-16, -8, 0, 8, 16].map((offset) => (
+        {/* Wheel Texture Ridges */}
+        {[-14, -7, 0, 7, 14].map((offset) => (
           <line
             key={offset}
-            x1="133"
-            y1={102 + offset}
-            x2="147"
-            y2={102 + offset}
-            stroke={isMiddleClick ? "#ffffff" : "#1e293b"}
-            strokeWidth="1.5"
+            x1="113"
+            y1={86 + offset}
+            x2="127"
+            y2={86 + offset}
+            stroke={isMiddleClick ? "#ffffff" : "#171a22"}
+            strokeWidth="1.2"
           />
         ))}
 
-        {/* Tilt Left Arrow */}
-        <g
-          className={`transition-all duration-150 ${
-            isTiltLeft ? "opacity-100 filter drop-shadow-[0_0_8px_#38bdf8]" : "opacity-30 hover:opacity-75"
-          }`}
-        >
+        {/* Tilt Left Indicator */}
+        <g className={`transition-opacity duration-150 ${isTiltLeft ? "opacity-100" : "opacity-25"}`}>
           <path
-            d="M 120 102 L 108 102 M 113 97 L 108 102 L 113 107"
-            stroke={isTiltLeft ? "#38bdf8" : "#94a3b8"}
-            strokeWidth={isTiltLeft ? "3" : "2"}
+            d="M 102 86 L 93 86 M 97 82 L 93 86 L 97 90"
+            stroke={isTiltLeft ? "#38bdf8" : "#818cf8"}
+            strokeWidth={isTiltLeft ? "2.5" : "1.5"}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </g>
 
-        {/* Tilt Right Arrow */}
-        <g
-          className={`transition-all duration-150 ${
-            isTiltRight ? "opacity-100 filter drop-shadow-[0_0_8px_#38bdf8]" : "opacity-30 hover:opacity-75"
-          }`}
-        >
+        {/* Tilt Right Indicator */}
+        <g className={`transition-opacity duration-150 ${isTiltRight ? "opacity-100" : "opacity-25"}`}>
           <path
-            d="M 160 102 L 172 102 M 167 97 L 172 102 L 167 107"
-            stroke={isTiltRight ? "#38bdf8" : "#94a3b8"}
-            strokeWidth={isTiltRight ? "3" : "2"}
+            d="M 138 86 L 147 86 M 143 82 L 147 86 L 143 90"
+            stroke={isTiltRight ? "#38bdf8" : "#818cf8"}
+            strokeWidth={isTiltRight ? "2.5" : "1.5"}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </g>
 
         {/* ============================================================ */}
-        {/* THE ICONIC MICROSOFT SCULPT COMFORT BLUE WINDOWS TOUCH STRIP */}
+        {/* THE ICONIC BLUE WINDOWS TOUCH STRIP ON LEFT THUMB REST       */}
         {/* ============================================================ */}
-        {/* Outer glowing aura when active */}
+
+        {/* Glow halo when active */}
         {isStripActive && (
           <rect
-            x="40"
-            y="140"
-            width="28"
-            height="86"
-            rx="14"
+            x="35"
+            y="120"
+            width="24"
+            height="74"
+            rx="12"
             fill="none"
-            stroke="#38bdf8"
-            strokeWidth="8"
-            opacity="0.6"
-            filter="url(#neonGlow)"
+            stroke="#0078d4"
+            strokeWidth="4"
+            opacity="0.5"
+            filter="url(#softGlow)"
           />
         )}
 
-        {/* Main Touch Strip Pill */}
+        {/* Main Blue Touch Strip */}
         <rect
-          x="44"
-          y="144"
+          x="37"
+          y="122"
           width="20"
-          height="78"
+          height="70"
           rx="10"
-          fill={isStripActive ? "url(#stripGlowGrad)" : "url(#blueStripGrad)"}
-          stroke={isStripActive ? "#bae6fd" : "#0284c7"}
-          strokeWidth={isStripActive ? "2" : "1.2"}
-          className={`transition-all duration-200 cursor-pointer ${
-            isStripActive ? "scale-105" : ""
-          }`}
+          fill={isStripActive ? "url(#blueStripActive)" : "url(#blueStrip)"}
+          stroke={isStripActive ? "#7dd3fc" : "#004578"}
+          strokeWidth="1.2"
+          className="transition-all duration-200"
         />
 
-        {/* Strip Inner Graphics based on active gesture */}
+        {/* Gesture icon inside the strip */}
         {isSwipeUp ? (
-          /* Animated Up Arrow on Swipe Up */
-          <g className="animate-bounce">
+          <g>
             <path
-              d="M 54 195 L 54 165 M 48 172 L 54 165 L 60 172"
+              d="M 47 165 L 47 142 M 42 147 L 47 142 L 52 147"
               stroke="#ffffff"
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </g>
         ) : isSwipeDown ? (
-          /* Animated Down Arrow on Swipe Down */
-          <g className="animate-bounce">
+          <g>
             <path
-              d="M 54 165 L 54 195 M 48 188 L 54 195 L 60 188"
+              d="M 47 142 L 47 165 M 42 160 L 47 165 L 52 160"
               stroke="#ffffff"
-              strokeWidth="2.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </g>
         ) : isWinClick ? (
-          /* Pulsing Dot / Windows Square on Click */
-          <circle cx="54" cy="183" r="5" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
+          <circle cx="47" cy="157" r="4.5" fill="#ffffff" />
         ) : (
-          /* Default Windows 4-tile logo */
-          <g transform="translate(48, 177)" fill="#ffffff" opacity="0.85">
-            <rect x="0" y="0" width="5" height="5" rx="0.5" />
-            <rect x="6.5" y="0" width="5" height="5" rx="0.5" />
-            <rect x="0" y="6.5" width="5" height="5" rx="0.5" />
-            <rect x="6.5" y="6.5" width="5" height="5" rx="0.5" />
+          /* Subtle Windows Flag */
+          <g transform="translate(42.5, 152.5)" fill="#ffffff" opacity="0.9">
+            <rect x="0" y="0" width="4" height="4" rx="0.5" />
+            <rect x="5" y="0" width="4" height="4" rx="0.5" />
+            <rect x="0" y="5" width="4" height="4" rx="0.5" />
+            <rect x="5" y="5" width="4" height="4" rx="0.5" />
           </g>
         )}
 
-        {/* Microsoft logo emblem subtly at palm base */}
-        <g transform="translate(133, 260)" fill="#475569" opacity="0.4">
-          <rect x="0" y="0" width="6" height="6" />
-          <rect x="8" y="0" width="6" height="6" />
-          <rect x="0" y="8" width="6" height="6" />
-          <rect x="8" y="8" width="6" height="6" />
+        {/* Subtle Microsoft mark at base */}
+        <g transform="translate(114, 225)" fill="#232733" opacity="0.6">
+          <rect x="0" y="0" width="5" height="5" />
+          <rect x="7" y="0" width="5" height="5" />
+          <rect x="0" y="7" width="5" height="5" />
+          <rect x="7" y="7" width="5" height="5" />
         </g>
       </svg>
     </div>

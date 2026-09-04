@@ -1,37 +1,74 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-slate-950 text-slate-100 antialiased select-none overflow-x-hidden;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  }
+:root {
+  color-scheme: dark;
 }
 
-/* Custom scrollbar */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0c0d11;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(71, 85, 105, 1);
+  background: rgba(255, 255, 255, 0.22);
 }
 
-@keyframes pulse-cyan {
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.8));
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(6, 182, 212, 1));
-  }
+/* Native-like keyboard keycaps */
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: #181a20;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
 }
 
-.glow-cyan {
-  animation: pulse-cyan 1.5s infinite ease-in-out;
+/* Subtle desktop card styles */
+.desktop-card {
+  background: #12141a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.desktop-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.desktop-row:last-child {
+  border-bottom: none;
+}
+
+/* Window drag support */
+.titlebar-drag-region {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
 }
