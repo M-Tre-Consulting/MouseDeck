@@ -1,154 +1,152 @@
 # MouseDeck 🖱️⚡
-> **Universal Linux Mouse Dashboard & Gesture Remapper (Specialized Module for Microsoft Sculpt Comfort Mouse)**  
-> Costruito con **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, ed **evdev/uinput**. Supporto nativo per **Wayland** (Hyprland, Sway, GNOME, KDE) e **X11**.
+> **Universal Linux Mouse Dashboard & Gesture Remapper (with Specialized Driver for Microsoft Sculpt Comfort Mouse)**  
+> Built with **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, and **Linux evdev/uinput**. Native support for **Wayland** (Hyprland, Sway, GNOME, KDE) and **X11**.
 
 ---
 
-## 🌟 Cos'è MouseDeck?
+## 🌟 Overview
 
-**MouseDeck** è una suite desktop moderna per Linux progettata per gestire, monitorare e rimappare le periferiche di puntamento avanzate. Nasce originariamente per sbloccare l'intero potenziale del leggendario mouse **Microsoft Sculpt Comfort** (Bluetooth 3.0), la cui **touch strip laterale capacitiva (pulsante Windows)** invia di default sequenze di tasti fisse non configurabili su Linux. 
+**MouseDeck** is a modern Linux desktop utility designed to monitor, configure, and remap advanced pointing devices. It was born to unlock the full potential of the legendary **Microsoft Sculpt Comfort Mouse** (Bluetooth 3.0 Classic), whose signature **capacitive blue touch strip (Windows button)** emits hardcoded key chords that Linux desktop environments either mishandle or ignore.
 
-Grazie a un'**architettura modulare a driver (`DeviceDriver`)**, MouseDeck è progettato sia per gestire in modo dedicato lo Sculpt Comfort, sia per accogliere facilmente moduli per qualsiasi altro mouse dotato di pulsanti o gesture non convenzionali.
+Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides a dedicated, low-latency driver for the Sculpt Comfort while laying the groundwork to support any mouse with custom gesture strips, tilt wheels, or extra thumb keys.
 
-### Caratteristiche Principali:
-- **Backend Rust a Latenza Zero:** Intercetta gli eventi hardware a basso livello tramite `evdev` (`EVIOCGRAB`) e virtualizza combinazioni di tasti, clic del mouse, controlli multimediali o comandi shell su `/dev/uinput`.
-- **Nessuna interferenza con la tastiera di sistema:** Il mouse espone tre nodi separati (`mouse`, `consumer`, `keyboard`). MouseDeck isola **soltanto** il nodo tastiera del mouse, lasciando la tastiera del tuo laptop o PC intatta al 100%.
-- **Dashboard & Telemetria Batteria:** Lettura in tempo reale di BlueZ D-Bus, UPower e sysfs per monitorare connessione Bluetooth, host adapter, stato della batteria (con barra di percentuale per periferiche che supportano la telemetria o stato alcaline AA per BT 3.0).
-- **Design Desktop Minimalista:** Stile raffinato ispirato ai tool nativi macOS e Raycast/Linear (modalità dark graphite, indicatori visivi di stato, diagramma vettoriale animato reattivo).
-- **Test Interattivo dal Vivo:** Un diagramma vettoriale dinamico che si illumina e pulsa in tempo reale ogni volta che sfiori la striscia con il pollice o clicchi.
-- **Architettura a Driver Modulare:** Il trait Rust `DeviceDriver` consente di aggiungere supporto a qualsiasi mouse implementando un modulo plug-in.
-
----
-
-## 🚀 Requisiti di Sistema
-
-- **OS:** Linux (qualsiasi distribuzione: Arch, Omarchy, Fedora, Ubuntu, Debian, ecc.)
-- **Display Server:** Wayland (Hyprland, Sway, GNOME, KDE) oppure X11
-- **Kernel Linux:** Modulo `uinput` attivo (di serie su tutti i kernel Linux moderni)
-- **Strumenti di build:** Node.js (v18+) e Cargo / Rust (1.80+)
+### Key Features:
+- **Zero-Latency Rust Engine:** Grabs hardware input events directly via `evdev` (`EVIOCGRAB`), cancels original OS chords, and emulates custom shortcuts, mouse clicks, media controls, or shell commands through `/dev/uinput`.
+- **Zero Interference with Laptop/Desktop Keyboards:** The mouse exposes three distinct input nodes (`pointer`, `consumer control`, and `virtual keyboard`). MouseDeck captures **only** the mouse keyboard node, leaving your physical typing keyboard 100% untouched.
+- **Background Execution & System Tray:** Closing the main window cleanly minimizes MouseDeck to the system tray (`libappindicator`). Your gesture remappings continue running uninterrupted in the background.
+- **Autostart at Boot:** One-click toggle in Settings to register MouseDeck with the XDG Autostart specification (`~/.config/autostart/mousedeck.desktop`). Launches silently minimized to the tray at user login.
+- **Native Polkit Privilege Escalation:** Hardware permission setup is completely integrated into the app. When requesting udev permissions, the native desktop Polkit authentication dialog prompts for the administrator password—no terminal, no bash scripting required.
+- **Automatic Snapshot Backup & 1-Click Rollback:** Prior to writing udev rules, MouseDeck saves an atomic snapshot of any pre-existing system state. If you ever uninstall or want to revert, a single click restores your pristine system configuration.
+- **Multi-Source Battery Telemetry:** Queries BlueZ D-Bus, UPower, and sysfs to display battery status, connection signal, MAC address, and host adapter info. Handles modern BLE rechargeable mice (0–100% gauge) as well as classic BT 3.0 AA alkaline mice.
+- **Minimalist Desktop Aesthetic:** Dark graphite interface inspired by native macOS Settings, Raycast, and Linear, complete with dynamic keycap visualizers and grouped settings tables.
+- **Live Event Workbench:** An interactive SVG vector diagram of the mouse that lights up in real-time as you swipe or press the touch strip.
 
 ---
 
-## 🛠️ Configurazione Permessi, Backup Automatico e Ripristino
+## 🚀 System Requirements
 
-Su Linux, per consentire a un'applicazione nello spazio utente di catturare eventi di input e generare tasti virtuali senza richiedere `sudo` costante, è necessario installare le regole `udev` con tag `uaccess`.
-
-MouseDeck include un sistema intelligente di **setup, backup automatico e ripristino/disinstallazione pulita**:
-
-### 1. Dall'Interfaccia Grafica (Consigliato)
-- All'avvio, se i permessi mancano, compare un banner di avviso con il pulsante **"Configura con Backup"**.
-- Nella scheda **Sistema & Permessi**:
-  - **Configura Automaticamente:** crea uno snapshot/backup dello stato originario del sistema e installa le regole udev.
-  - **Ripristina & Disinstalla:** con 1 clic ripristina la configurazione precedente, rimuove le regole udev di MouseDeck, disattiva i moduli caricati e ripristina i gruppi utente allo stato originale.
-
-### 2. Da Terminale (CLI)
-```bash
-chmod +x setup-permissions.sh
-
-# Installazione con backup automatico del sistema
-sudo ./setup-permissions.sh install
-
-# Ripristino pulito allo stato originario (disinstallazione)
-sudo ./setup-permissions.sh restore
-
-# Verifica dello stato
-./setup-permissions.sh status
-```
-
-Lo script traccia lo stato in `~/.config/mousedeck/backup/manifest.json` e in `/etc/mousedeck/backup/manifest.json`.
+- **Operating System:** Linux (Arch Linux, Omarchy, Fedora, Ubuntu, Debian, openSUSE, etc.)
+- **Display Server:** Wayland (Hyprland, Sway, GNOME, KDE Plasma) or X11
+- **Kernel:** Linux with `uinput` module enabled (standard on all modern Linux distros)
+- **Build Tools:** Node.js (v18+) and Rust toolchain (Cargo 1.80+)
 
 ---
 
-## 🏃 Avvio dell'Applicazione
+## 🛠️ System Permissions & Security (udev + Polkit)
 
-Puoi avviare l'applicazione direttamente tramite lo script `run.sh`:
+On Linux, user-space applications require `uaccess` udev tags on device nodes to intercept input events and generate virtual keys without running the GUI as `root`.
 
-```bash
-./run.sh
-```
+MouseDeck automates this entire flow:
+1. **Within the App (Recommended):**
+   - If permissions are missing, a prominent banner appears on launch.
+   - Click **"Configure with Backup"** (or open the **System** tab).
+   - Your desktop environment prompts for your admin password via native Polkit (`pkexec`).
+   - MouseDeck creates a backup snapshot in `~/.config/mousedeck/backup/manifest.json`, writes `/etc/udev/rules.d/70-mousedeck.rules`, loads `uinput`, and reloads `udevadm`.
+   - To clean up and uninstall, click **"Restore & Uninstall"** in the Settings tab to revert all system modifications.
+2. **Headless / CLI Mode:**
+   ```bash
+   # Install udev rules and create a backup snapshot
+   pkexec mousedeck --setup-permissions <username>
 
-Oppure in modalità sviluppo live:
+   # Revert changes and restore original system state
+   pkexec mousedeck --restore-permissions <username>
+   ```
 
+---
+
+## 🏃 Running and Building
+
+### Development Mode:
 ```bash
 npm run tauri dev
 ```
 
----
-
-## 💡 Come funziona l'Hardware del Mouse
-
-Il Microsoft Sculpt Comfort Mouse espone a livello kernel tre endpoint di input:
-1. `/dev/input/eventX` (Puntatore e pulsanti 1-5 + rotellina tilt orizzontale)
-2. `/dev/input/eventY` (Consumer Control / Media)
-3. `/dev/input/eventZ` (Tastiera virtuale hardware)
-
-Quando interagisci con la touch strip blu:
-- **Swipe Up (Scorrimento in alto):** Il firmware emette una corda rapidissima: `Ctrl` + `Super` + `Backspace`.
-- **Swipe Down (Scorrimento in basso):** Il firmware emette: `Ctrl` + `Super` + `Tab`.
-- **Click Windows (Pressione):** Il firmware emette `Super` (`KEY_LEFTMETA`).
-
-La macchina a stati in **Rust** (`src-tauri/src/drivers/sculpt_comfort.rs`) cattura questi eventi in una finestra sub-millisecondo, sopprime i tasti raw originali e lancia la tua azione preferita (es. cambio workspace, controllo volume, copia/incolla o scorciatoia browser).
+### Production Build:
+```bash
+npm run build
+cd src-tauri && cargo build --release
+```
+The optimized binary will be placed in `src-tauri/target/release/mousedeck`.
 
 ---
 
-## 🧩 Profili e Preset Inclusi
+## 💡 How the Sculpt Comfort Hardware Works
 
-- 🪟 **Navigazione Desktop (Workspaces):**
-  - **Swipe Up:** `Super+Page_Up` (Workspace precedente)
-  - **Swipe Down:** `Super+Page_Down` (Workspace successivo)
-  - **Click Windows:** `Super` (Panoramica / App Launcher)
-- ⚡ **Produttività:**
-  - **Swipe Up:** `Ctrl+c` (Copia)
-  - **Swipe Down:** `Ctrl+v` (Incolla)
-  - **Click Windows:** `Super+Space` (Ricerca rapida)
-- 🎵 **Multimediale:**
+The Microsoft Sculpt Comfort Mouse exposes three kernel input nodes:
+1. `/dev/input/eventX` (Pointer, buttons 1–5, horizontal tilt wheel)
+2. `/dev/input/eventY` (Consumer Control / Multimedia)
+3. `/dev/input/eventZ` (Hardware Virtual Keyboard)
+
+When interacting with the blue side strip, the mouse hardware transmits:
+- **Swipe Up:** `LeftCtrl` + `LeftMeta` + `Backspace`
+- **Swipe Down:** `LeftCtrl` + `LeftMeta` + `Tab`
+- **Windows Click:** `LeftMeta` (`KEY_LEFTMETA`) alone
+
+MouseDeck's sub-millisecond Rust state machine (`src-tauri/src/drivers/sculpt_comfort.rs`) intercepts these chord sequences, suppresses the raw OS keypresses, and instantly fires your configured action.
+
+---
+
+## 🧩 Preconfigured Profiles & Presets
+
+MouseDeck includes out-of-the-box profiles that can be loaded with one click:
+
+- 🪟 **Desktop Navigation (Workspaces):**
+  - **Swipe Up:** `Super+Page_Up` (Previous Workspace)
+  - **Swipe Down:** `Super+Page_Down` (Next Workspace)
+  - **Windows Click:** `Super` (Application Overview / Launcher)
+- ⚡ **Productivity:**
+  - **Swipe Up:** `Ctrl+c` (Copy)
+  - **Swipe Down:** `Ctrl+v` (Paste)
+  - **Windows Click:** `Super+Space` (Quick Search / Spotlight)
+- 🎵 **Multimedia:**
   - **Swipe Up:** `VolumeUp`
   - **Swipe Down:** `VolumeDown`
-  - **Click Windows:** `PlayPause`
-- 🌐 **Browser Web:**
-  - **Swipe Up:** `Ctrl+Tab` (Scheda a destra)
-  - **Swipe Down:** `Ctrl+Shift+Tab` (Scheda a sinistra)
-  - **Click Windows:** `Ctrl+t` (Nuova scheda)
+  - **Windows Click:** `PlayPause`
+- 🌐 **Web Browsing:**
+  - **Swipe Up:** `Ctrl+Tab` (Next Tab)
+  - **Swipe Down:** `Ctrl+Shift+Tab` (Previous Tab)
+  - **Windows Click:** `Ctrl+t` (New Tab)
 
-Le configurazioni sono persistite in formato JSON in `~/.config/mousedeck/config.json`.
+All mappings are stored in JSON format in `~/.config/mousedeck/config.json`.
 
 ---
 
-## 📐 Struttura del Progetto
+## 📐 Project Architecture
 
 ```
-sculpt-comfort-remapper/
-├── setup-permissions.sh        # Script udev e permessi kernel
-├── run.sh                      # Launcher dell'applicazione
-├── package.json                # Dipendenze Node/React/Vite
-├── vite.config.ts              # Configurazione Vite con plugin Tailwind v4
-├── src/                        # Frontend (React + TypeScript + Tailwind)
-│   ├── App.tsx                 # Container principale con listener eventi Tauri
-│   ├── types.ts                # Modelli TypeScript
+mousedeck/
+├── package.json                # Frontend dependencies (React 19, Tailwind v4, Vite)
+├── vite.config.ts              # Vite bundle configuration
+├── src/                        # Frontend Application
+│   ├── App.tsx                 # Main layout & Tauri event listeners
+│   ├── types.ts                # TypeScript interface definitions
 │   └── components/
-│       ├── Header.tsx          # Barra superiore con badge BT e master toggle
-│       ├── MouseDiagram.tsx    # Diagramma vettoriale animato del mouse
-│       ├── ActionModal.tsx     # Editor per combinazioni di tasti e comandi
+│       ├── Sidebar.tsx         # Desktop sidebar navigation & battery badge
+│       ├── MouseDiagram.tsx    # Reactive vector mouse visualizer
+│       ├── ActionModal.tsx     # Custom shortcut / command configuration modal
 │       └── views/
-│           ├── DashboardView.tsx # Panoramica hardware e telemetria BT
-│           ├── RemapView.tsx     # Configurazione gesti touch strip
-│           ├── LiveTestView.tsx  # Workbench per testare i gesti in tempo reale
-│           └── SettingsView.tsx  # Permessi di sistema e architettura driver
-└── src-tauri/                  # Backend Nativo Rust
-    ├── Cargo.toml              # Dipendenze Rust (tauri, evdev, zbus, chrono)
+│           ├── DashboardView.tsx # Hardware overview, battery telemetry & specs
+│           ├── RemapView.tsx     # Gesture remapping & preset loader
+│           ├── LiveTestView.tsx  # Real-time event monitor workbench
+│           └── SettingsView.tsx  # Polkit permissions, Autostart & driver info
+└── src-tauri/                  # Native Rust Backend
+    ├── Cargo.toml              # Rust dependencies (tauri 2.0, evdev, zbus, chrono)
     └── src/
-        ├── lib.rs              # Comandi Tauri e lifecycle app
-        ├── config.rs           # Gestione profili e persistenza JSON
-        ├── permissions.rs      # Verifica permessi uinput / evdev
-        ├── bluetooth/          # Monitoraggio BlueZ D-Bus e stato MAC
-        ├── drivers/            # Architettura modulare dei driver
-        │   ├── trait_def.rs    # Trait DeviceDriver per estensibilità
-        │   └── sculpt_comfort.rs # Driver per Sculpt Comfort (045e:07a2)
-        └── engine/             # Loop evdev a bassa latenza e virtual emitter
+        ├── main.rs             # Application entrypoint & CLI helper dispatcher
+        ├── lib.rs              # Tauri command handlers & System Tray lifecycle
+        ├── config.rs           # Profile manager & JSON persistence
+        ├── autostart.rs        # XDG Autostart desktop entry manager
+        ├── permissions.rs      # Native Polkit escalation & udev snapshot engine
+        ├── bluetooth/          # BlueZ D-Bus, UPower & battery monitor
+        ├── drivers/            # Modular driver registry (DeviceDriver trait)
+        │   ├── trait_def.rs    # Pluggable driver interface
+        │   └── sculpt_comfort.rs # Specialized driver for 045e:07a2
+        └── engine/             # High-speed evdev loop & uinput virtual emitter
 ```
 
 ---
 
-## 📄 Licenza
+## 📄 License
 
-Rilasciato sotto licenza MIT. Libero per l'uso e la modifica su qualsiasi sistema Linux.
+Released under the **MIT License**. Free to use, modify, and distribute on any Linux system.
+

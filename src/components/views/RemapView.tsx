@@ -11,6 +11,7 @@ import {
   MousePointer,
   ChevronRight,
   Check,
+  Layers,
 } from "lucide-react";
 
 interface RemapViewProps {
@@ -84,41 +85,22 @@ export const RemapView: React.FC<RemapViewProps> = ({
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Top Header & Presets Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-white tracking-tight">
             Rimappatura Gesti & Pulsanti
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Configura le azioni inviate al sistema per ogni gesto del mouse.
+            Clicca su un gesto per modificarlo. Le modifiche vengono salvate ed applicate all'hardware istantaneamente.
           </p>
         </div>
 
-        {/* Preset Selector */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <select
-            value={selectedPreset}
-            onChange={(e) => setSelectedPreset(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg bg-[#151821] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-[#0078d4]"
-          >
-            <option value="desktop_navigation">Navigazione Desktop (Workspaces)</option>
-            <option value="productivity">Produttività (Copia, Incolla, Ricerca)</option>
-            <option value="multimedia">Controllo Multimediale (Volume, Tracce)</option>
-            <option value="browser">Navigazione Web (Schede & Cronologia)</option>
-          </select>
-
-          <button
-            onClick={handleApplyPresetClick}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 ${
-              presetSuccess
-                ? "bg-emerald-600 text-white"
-                : "bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 border border-white/[0.08]"
-            }`}
-          >
-            {presetSuccess ? <Check className="w-3.5 h-3.5" /> : null}
-            {presetSuccess ? "Applicato" : "Applica"}
-          </button>
+          <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            Hardware Sincronizzato
+          </div>
         </div>
       </div>
 
@@ -213,6 +195,64 @@ export const RemapView: React.FC<RemapViewProps> = ({
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Group 3: Optional Predefined Presets */}
+      <div className="space-y-2 pt-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">
+          Profili Predefiniti & Preset Rapidi
+        </h2>
+
+        <div className="desktop-card p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0078d4]/10 border border-[#0078d4]/20 flex items-center justify-center text-[#70b4ff] shrink-0 mt-0.5">
+                <Layers className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-200">
+                    Carica una Configurazione Rapida
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-slate-300 border border-white/[0.06]">
+                    Profilo Attuale: {config.active_profile}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                  Scegli un profilo tematico pronto all'uso per rimappare automaticamente tutti i gesti in un colpo solo.
+                  <span className="text-amber-400/80 block mt-0.5">
+                    Nota: il caricamento di un preset sovrascrive le assegnazioni attuali.
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+              <select
+                value={selectedPreset}
+                onChange={(e) => setSelectedPreset(e.target.value)}
+                className="px-2.5 py-1.5 rounded-lg bg-[#151821] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-[#0078d4]"
+              >
+                <option value="desktop_navigation">Navigazione Desktop (Workspaces)</option>
+                <option value="productivity">Produttività (Copia, Incolla, Ricerca)</option>
+                <option value="multimedia">Controllo Multimediale (Volume, Tracce)</option>
+                <option value="browser">Navigazione Web (Schede & Cronologia)</option>
+              </select>
+
+              <button
+                onClick={handleApplyPresetClick}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs ${
+                  presetSuccess
+                    ? "bg-emerald-600 text-white"
+                    : "bg-[#0078d4] hover:bg-[#1084d8] text-white"
+                }`}
+              >
+                {presetSuccess ? <Check className="w-3.5 h-3.5" /> : null}
+                {presetSuccess ? "Preset Caricato!" : "Carica Preset"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

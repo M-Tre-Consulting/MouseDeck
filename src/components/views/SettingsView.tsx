@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PermissionStatus } from "../../types";
 import {
   ShieldCheck,
@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   KeyRound,
   ChevronDown,
+  Power,
+  Eye,
 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -30,12 +32,33 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [actionType, setActionType] = useState<"install" | "restore" | null>(null);
   const [actionResult, setActionResult] = useState<{ success: boolean; msg: string } | null>(null);
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
+  const [autostart, setAutostart] = useState(false);
+  const [isUpdatingAutostart, setIsUpdatingAutostart] = useState(false);
 
   const uinputOk = permissions?.uinput_accessible ?? false;
   const nodesOk = permissions?.input_nodes_accessible ?? false;
   const allOk = uinputOk && nodesOk;
   const rulesInstalled = permissions?.rules_installed ?? false;
   const backupExists = permissions?.backup_exists ?? false;
+
+  useEffect(() => {
+    invoke<boolean>("get_autostart_status")
+      .then((status) => setAutostart(status))
+      .catch((err) => console.error("Errore fetch autostart:", err));
+  }, []);
+
+  const handleToggleAutostart = async () => {
+    setIsUpdatingAutostart(true);
+    const newVal = !autostart;
+    try {
+      await invoke("set_autostart_cmd", { enabled: newVal });
+      setAutostart(newVal);
+    } catch (err) {
+      console.error("Errore set autostart:", err);
+    } finally {
+      setIsUpdatingAutostart(false);
+    }
+  };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -372,6 +395,68 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
           </div>
         </details>
+      </div>
+
+      {/* Autostart & Background System Tray Group */}
+      <div className="space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">
+          Avvio Automatico & System Tray
+        </h2>
+
+        <div className="desktop-card divide-y divide-white/[0.04] overflow-hidden">
+          {/* Autostart row */}
+          <div className="px-4 py-3.5 flex items-center justify-between">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#0078d4]/10 border border-[#0078d4]/20 flex items-center justify-center text-[#70b4ff] shrink-0 mt-0.5">
+                <Power className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-medium text-slate-200">
+                  Avvio Automatico al Boot (XDG Autostart)
+                </div>
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                  Avvia MouseDeck silenziosamente in background all'accesso della sessione utente.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleToggleAutostart}
+              disabled={isUpdatingAutostart}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shrink-0 ${
+                autostart ? "bg-[#0078d4]" : "bg-slate-700"
+              }`}
+              title={autostart ? "Disattiva avvio automatico" : "Attiva avvio automatico"}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                  autostart ? "translate-x-4.5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Background Tray status row */}
+          <div className="px-4 py-3.5 flex items-center justify-between bg-white/[0.01]">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                <Eye className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-medium text-slate-200">
+                  Comportamento Chiusura Finestra
+                </div>
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                  La chiusura della finestra nasconde l'applicazione nella System Tray mantenendo i gesti del mouse sempre attivi. Per chiudere definitivamente l'applicazione, fai clic destro sull'icona della tray e seleziona "Esci".
+                </p>
+              </div>
+            </div>
+
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+              Tray Attiva
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Driver Architecture Group */}

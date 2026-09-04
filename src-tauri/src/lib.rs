@@ -3,15 +3,21 @@ pub mod bluetooth;
 pub mod drivers;
 pub mod engine;
 pub mod permissions;
+pub mod autostart;
 
 use std::sync::{Arc, Mutex};
-use tauri::State;
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    Manager, State,
+};
 
 use crate::config::{ActionConfig, AppConfig, ConfigManager, get_preset_mappings};
 use crate::bluetooth::info::BluetoothDeviceInfo;
 use crate::bluetooth::monitor::BluetoothManager;
 use crate::engine::service::RemapperService;
 use crate::permissions::{check_permissions, run_setup_permissions, run_restore_permissions, PermissionStatus};
+use crate::autostart::{is_autostart_enabled, set_autostart};
 
 pub struct AppState {
     pub config_mgr: Arc<Mutex<ConfigManager>>,
@@ -73,6 +79,20 @@ async fn run_restore_permissions_cmd() -> Result<String, String> {
 }
 
 #[tauri::command]
+fn get_autostart_status() -> bool {
+    is_autostart_enabled()
+}
+
+#[tauri::command]
+fn set_autostart_cmd(enabled: bool, state: State<'_, AppState>) -> Result<(), String> {
+    set_autostart(enabled)?;
+    let mut cfg = state.config_mgr.lock().unwrap().load();
+    cfg.autostart = enabled;
+    state.config_mgr.lock().unwrap().save(&cfg)?;
+    Ok(())
+}
+
+#[tauri::command]
 fn simulate_gesture(trigger_id: String, state: State<'_, AppState>) -> Result<(), String> {
     if let Some(service) = state.service.lock().unwrap().as_ref() {
         service.simulate_trigger(&trigger_id);
@@ -97,11 +117,77 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .manage(app_state)
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                // Prevent app from quitting on close: minimize to tray instead
+                api.prevent_close();
+                let _ = window.hide();
+            }
+        })
         .setup(move |app| {
             let handle = app.handle().clone();
-            let srv = RemapperService::new(handle, config_mgr);
+            let srv = RemapperService::new(handle.clone(), config_mgr);
             srv.start();
             *service_holder.lock().unwrap() = Some(srv);
+
+            // Configure System Tray
+            let show_i = MenuItem::with_id(app, "show", "Mostra MouseDeck", true, None::<&str>)?;
+            let hide_i = MenuItem::with_id(app, "hide", "Nascondi nella Tray", true, None::<&str>)?;
+            let quit_i = MenuItem::with_id(app, "quit", "Esci da MouseDeck", true, None::<&str>)?;
+            let tray_menu = Menu::with_items(app, &[&show_i, &hide_i, &quit_i])?;
+
+            if let Some(icon) = app.default_window_icon() {
+                let _tray = TrayIconBuilder::new()
+                    .icon(icon.clone())
+                    .menu(&tray_menu)
+                    .show_menu_on_left_click(false)
+                    .tooltip("MouseDeck • Linux Mouse Suite")
+                    .on_menu_event(|app, event| match event.id.as_ref() {
+                        "show" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        "hide" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.hide();
+                            }
+                        }
+                        "quit" => {
+                            app.exit(0);
+                        }
+                        _ => {}
+                    })
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            let app = tray.app_handle();
+                            if let Some(window) = app.get_webview_window("main") {
+                                if window.is_visible().unwrap_or(false) {
+                                    let _ = window.hide();
+                                } else {
+                                    let _ = window.show();
+                                    let _ = window.set_focus();
+                                }
+                            }
+                        }
+                    })
+                    .build(app)?;
+            }
+
+            // Check if application was launched minimized/hidden (e.g. at boot)
+            let is_minimized = std::env::args().any(|a| a == "--minimized" || a == "--hidden");
+            if is_minimized {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.hide();
+                }
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -113,6 +199,8 @@ pub fn run() {
             check_system_permissions,
             run_setup_permissions_cmd,
             run_restore_permissions_cmd,
+            get_autostart_status,
+            set_autostart_cmd,
             simulate_gesture,
             reconnect_bluetooth,
         ])
