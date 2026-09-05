@@ -41,13 +41,9 @@ ARCH="x86_64"
 
 log_info "Creazione pacchetto Arch Linux per ${PKG_NAME} v${PKG_VER}-${PKG_REL} (${ARCH})..."
 
-# 1. Build frontend
-log_info "[1/4] Compilazione interfaccia frontend (Vite / React)..."
-npm run build
-
-# 2. Build backend
-log_info "[2/4] Compilazione backend Rust in modalità Release..."
-cargo build --release --manifest-path src-tauri/Cargo.toml
+# 1. Build app with Tauri CLI (embeds web frontend into binary with custom-protocol)
+log_info "[1/3] Compilazione produzione con Tauri CLI (embedded web assets)..."
+npm run tauri -- build --no-bundle
 
 # Find compiled binary
 BIN_PATH=""
@@ -69,7 +65,7 @@ STAGING_DIR="${BUILD_DIR}/staging"
 rm -rf "${BUILD_DIR}"
 mkdir -p "${STAGING_DIR}"
 
-log_info "[3/4] Assemblaggio file di sistema e metadati Arch..."
+log_info "[2/3] Assemblaggio file di sistema e metadati Arch..."
 
 # Stage files into staging root
 mkdir -p "${STAGING_DIR}/usr/bin"
@@ -130,7 +126,7 @@ package() {
 }
 INNER_EOF
 
-log_info "[4/4] Creazione pacchetto con makepkg (.pkg.tar.zst)..."
+log_info "[3/3] Creazione pacchetto con makepkg (.pkg.tar.zst)..."
 cd "${BUILD_DIR}"
 makepkg -f -d
 

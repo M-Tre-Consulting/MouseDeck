@@ -18,8 +18,7 @@ conflicts=('mousedeck-bin' 'mousedeck-git')
 build() {
     export RUSTUP_TOOLCHAIN=stable
     npm ci || npm install
-    npm run build
-    cargo build --release --manifest-path src-tauri/Cargo.toml
+    npm run tauri -- build --no-bundle
 }
 
 package() {
