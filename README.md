@@ -66,7 +66,38 @@ npm run tauri dev
 npm run build
 cd src-tauri && cargo build --release
 ```
-The optimized binary will be placed in `src-tauri/target/release/mousedeck`.
+The optimized binary will be placed in `src-tauri/target/release/mousedeck` (or `tauri-app`).
+
+---
+
+## 📦 Arch Linux Packaging (`.pkg.tar.zst`)
+
+MouseDeck provides first-class native packaging for Arch Linux, Manjaro, EndeavourOS, CachyOS, and Omarchy.
+
+### 1. Build and Package with one command:
+```bash
+npm run package:arch
+```
+*(or run `./scripts/build-arch-package.sh` directly)*
+
+This compiles the release binary and automatically generates a standard Arch package in `dist/mousedeck-1.0.0-1-x86_64.pkg.tar.zst` (~2.6 MB).
+
+### 2. Install on your system:
+```bash
+sudo pacman -U dist/mousedeck-1.0.0-1-x86_64.pkg.tar.zst
+```
+Or build and install immediately in a single pass:
+```bash
+./scripts/build-arch-package.sh --install
+```
+
+### What is included in the package:
+- 🚀 `/usr/bin/mousedeck` (standalone, stripped, LTO-optimized binary)
+- 🖥️ `/usr/share/applications/mousedeck.desktop` (XDG desktop entry)
+- 🎨 `/usr/share/icons/hicolor/` (full icon set: 16px, 24px, 32px, 48px, 64px, 128px, 256px, 512px)
+- 🔐 `/usr/share/polkit-1/actions/io.github.mousedeck.policy` (native Polkit action)
+- ⚙️ `/usr/lib/udev/rules.d/70-mousedeck.rules` (system udev rules for `uaccess` and `input` group)
+- 🔌 `/usr/lib/modules-load.d/mousedeck-uinput.conf` (automatic `uinput` module load at boot)
 
 ---
 

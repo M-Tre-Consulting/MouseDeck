@@ -1,0 +1,11 @@
+# -------------------------------------------------------------------------
+# MouseDeck - Hardware Input & Virtual uinput Rules
+# -------------------------------------------------------------------------
+
+# Accesso in lettura/cattura al mouse Microsoft Sculpt Comfort (045e:07a2)
+SUBSYSTEM=="input", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="uaccess", MODE="0660", GROUP="input"
+KERNEL=="event*", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="uaccess", MODE="0660", GROUP="input"
+KERNEL=="event*", ATTRS{name}=="Microsoft Sculpt Comfort Mouse*", TAG+="uaccess", MODE="0660", GROUP="input"
+
+# Accesso al modulo uinput per l'emissione di tasti e click virtuali
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput", MODE="0660", GROUP="input"

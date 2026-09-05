@@ -1,6 +1,8 @@
-# Node
+# Node & Distribution
 node_modules/
 dist/
+dist-arch/
+*.pkg.tar.zst
 .npm/
 
 # Rust / Cargo

@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=MouseDeck
+GenericName=Mouse Dashboard & Remapper
+Comment=Modern Linux mouse dashboard & hardware remapper for Bluetooth and ergonomic mice
+Exec=mousedeck %U
+Icon=mousedeck
+Terminal=false
+Categories=Utility;Settings;HardwareSettings;
+Keywords=mouse;remapper;sculpt;comfort;touch;strip;bluetooth;uinput;
+StartupNotify=true
+StartupWMClass=mousedeck
+Actions=Settings;
+
+[Desktop Action Settings]
+Name=Open Settings
+Exec=mousedeck

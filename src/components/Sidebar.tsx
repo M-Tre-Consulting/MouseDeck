@@ -6,7 +6,6 @@ import {
   Sparkles,
   Settings,
   RefreshCw,
-  Mouse,
   Battery,
 } from "lucide-react";
 
@@ -44,9 +43,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex flex-col">
         {/* Window drag area / Header */}
         <div className="h-12 px-5 flex items-center gap-2.5 titlebar-drag-region">
-          <div className="w-6 h-6 rounded-md bg-[#0078d4] flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
-            <Mouse className="w-3.5 h-3.5" />
-          </div>
+          <img
+            src="/icon.png"
+            alt="MouseDeck"
+            className="w-6 h-6 rounded-md object-contain shadow-sm shadow-cyan-500/20"
+          />
           <span className="text-xs font-bold tracking-wider uppercase text-slate-200">
             MouseDeck
           </span>

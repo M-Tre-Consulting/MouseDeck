@@ -1,0 +1,57 @@
+# Maintainer: Quark <quark@localhost>
+pkgname=mousedeck
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Modern Linux mouse dashboard & hardware remapper with Touch Strip support"
+arch=('x86_64')
+url="https://github.com/M-Tre-Consulting/MouseDeck"
+license=('MIT')
+depends=('gtk3' 'webkit2gtk-4.1' 'libappindicator-gtk3' 'polkit')
+makedepends=('cargo' 'nodejs' 'npm' 'git')
+optdepends=(
+    'bluez: Bluetooth device telemetry and discovery'
+    'bluez-utils: Bluetooth device management'
+)
+provides=('mousedeck')
+conflicts=('mousedeck-bin' 'mousedeck-git')
+
+build() {
+    export RUSTUP_TOOLCHAIN=stable
+    npm ci || npm install
+    npm run build
+    cargo build --release --manifest-path src-tauri/Cargo.toml
+}
+
+package() {
+    # Install binary
+    if [ -f "src-tauri/target/release/mousedeck" ]; then
+        install -Dm755 "src-tauri/target/release/mousedeck" "$pkgdir/usr/bin/mousedeck"
+    else
+        install -Dm755 "src-tauri/target/release/tauri-app" "$pkgdir/usr/bin/mousedeck"
+    fi
+
+    # Install desktop entry
+    install -Dm644 packaging/arch/mousedeck.desktop "$pkgdir/usr/share/applications/mousedeck.desktop"
+
+    # Install icons for all resolutions
+    for size in 16 24 32 48 64 128 256 512; do
+        if [ -f "packaging/arch/icons/mousedeck_${size}.png" ]; then
+            install -Dm644 "packaging/arch/icons/mousedeck_${size}.png" \
+                "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/mousedeck.png"
+        fi
+    done
+    install -Dm644 packaging/arch/icons/mousedeck_512.png "$pkgdir/usr/share/pixmaps/mousedeck.png"
+
+    # Install Polkit policy for privilege escalation
+    install -Dm644 packaging/arch/io.github.mousedeck.policy \
+        "$pkgdir/usr/share/polkit-1/actions/io.github.mousedeck.policy"
+
+    # Install system udev rules and modules-load config
+    install -Dm644 packaging/arch/70-mousedeck.rules \
+        "$pkgdir/usr/lib/udev/rules.d/70-mousedeck.rules"
+    install -Dm644 packaging/arch/mousedeck-uinput.conf \
+        "$pkgdir/usr/lib/modules-load.d/mousedeck-uinput.conf"
+
+    # Install documentation
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

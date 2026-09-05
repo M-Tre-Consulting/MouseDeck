@@ -1,13 +1,14 @@
 {
   "name": "mousedeck",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "package:arch": "bash scripts/build-arch-package.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
