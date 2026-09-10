@@ -22,6 +22,28 @@ Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides a dedic
 - **Multi-Source Battery Telemetry:** Queries BlueZ D-Bus, UPower, and sysfs to display battery status, connection signal, MAC address, and host adapter info. Handles modern BLE rechargeable mice (0–100% gauge) as well as classic BT 3.0 AA alkaline mice.
 - **Minimalist Desktop Aesthetic:** Dark graphite interface inspired by native macOS Settings, Raycast, and Linear, complete with dynamic keycap visualizers and grouped settings tables.
 - **Live Event Workbench:** An interactive SVG vector diagram of the mouse that lights up in real-time as you swipe or press the touch strip.
+- **Fail-Safe Cursor Protection:** Exclusive grabbing (`EVIOCGRAB`) is activated only if `/dev/uinput` is writable and verified. If permissions are missing, MouseDeck defaults to passive monitor mode without grabbing, ensuring that your physical mouse pointer never freezes.
+
+---
+
+## 📋 Device & Feature Support Matrix
+
+| Dispositivo / Modello | Metodo Connessione | Controlli Rimappabili | Telemetria / Batteria | Stato Supporto |
+| :--- | :--- | :--- | :--- | :--- |
+| **Logitech G502 X Lightspeed / PLUS** | LIGHTSPEED 2.4 GHz & USB-C Cablato | • G6 Sniper (DPI Shift paddle)<br>• G4 / G5 (Tasti laterali pollice)<br>• G7 / G8 (Alette indice regolazione DPI)<br>• G9 (Tasto profilo / dorsale)<br>• Clic rotella centrale & Tilt 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs hidpp) | **Supportato al 100%** (Driver nativo) |
+| **Logitech G502 HERO / Lightspeed** | LIGHTSPEED 2.4 GHz & USB Cablato | • G6 Sniper (DPI Shift)<br>• G4 / G5 Tasti pollice<br>• G7 / G8 Tasti indice DPI<br>• G9 Tasto profilo<br>• Clic rotella & Tilt 4 direzioni | ✅ Batteria / Stato via UPower | **Supportato al 100%** (Compatibile) |
+| **Microsoft Sculpt Comfort Mouse** | Bluetooth 3.0 / Classic BT | • Striscia touch capacitiva blu (Swipe Su / Giù)<br>• Clic tasto Windows (Tocco capacitivo)<br>• Clic rotella centrale & Tilt orizzontale | ✅ Voltaggio / Stato via BlueZ D-Bus | **Supportato al 100%** (Driver nativo) |
+| **Mouse Multitasto Generici** | USB / 2.4 GHz / Bluetooth | • Clic centrale rotella<br>• Tasti laterali standard (`BTN_SIDE`, `BTN_EXTRA`) | ℹ️ UPower generico (se supportato dal kernel) | 🧪 Supporto Base |
+
+### 🖥️ Compatibilità Server Grafico & Desktop Environment
+
+| Ambiente Desktop / Compositor | Display Server | Stato | Dettagli Funzionalità |
+| :--- | :--- | :--- | :--- |
+| **Hyprland** | Wayland | ✅ Testato & Supportato | Grab hardware evdev + emulazione virtuale uinput a latenza zero |
+| **Sway** | Wayland | ✅ Testato & Supportato | Piena compatibilità con scorciatoie, workspace e comandi |
+| **GNOME (40+)** | Wayland & X11 | ✅ Testato & Supportato | Esecuzione tray di sistema (richiede estensione AppIndicator su GNOME) |
+| **KDE Plasma (5/6)** | Wayland & X11 | ✅ Testato & Supportato | Integrazione completa con barra di sistema e gestione profili |
+| **Altri WM (i3, bspwm, XFCE)** | X11 / Wayland | ✅ Supportato | Richiede modulo kernel `uinput` e permessi `uaccess` |
 
 ---
 
