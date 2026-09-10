@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Master Squircle Clip to prevent any shadow bleed outside -->
+    <clipPath id="squircleClip">
+      <rect x="32" y="32" width="448" height="448" rx="108" />
+    </clipPath>
+
+    <!-- Deep Midnight Graphite Canvas Gradient -->
+    <radialGradient id="bgCanvas" cx="50%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#1f2433"/>
+      <stop offset="55%" stop-color="#11131a"/>
+      <stop offset="100%" stop-color="#08090d"/>
+    </radialGradient>
+
+    <!-- Outer Squircle Bevel Stroke -->
+    <linearGradient id="squircleBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(56, 189, 248, 0.45)"/>
+      <stop offset="35%" stop-color="rgba(255, 255, 255, 0.14)"/>
+      <stop offset="100%" stop-color="rgba(255, 255, 255, 0.03)"/>
+    </linearGradient>
+
+    <!-- Electric Cyan to Royal Blue Accent -->
+    <linearGradient id="cyanAccent" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+
+    <!-- Mouse Outer Shell: Matte Dark Titanium -->
+    <linearGradient id="shellGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3d465c"/>
+      <stop offset="50%" stop-color="#2a303f"/>
+      <stop offset="100%" stop-color="#1c202a"/>
+    </linearGradient>
+
+    <!-- Left & Right Click Surfaces -->
+    <linearGradient id="btnLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4d5873"/>
+      <stop offset="100%" stop-color="#31394c"/>
+    </linearGradient>
+
+    <linearGradient id="btnRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#444e66"/>
+      <stop offset="100%" stop-color="#2b3243"/>
+    </linearGradient>
+
+    <!-- Inner Ambient Occlusion Shadow for Mouse -->
+    <filter id="mouseShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Cyan Glow -->
+    <filter id="cyanGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#06b6d4" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle with contained clip -->
+  <g clip-path="url(#squircleClip)">
+    <rect x="32" y="32" width="448" height="448" rx="108" fill="url(#bgCanvas)"/>
+    
+    <!-- Subtle top ambient light crescent -->
+    <ellipse cx="256" cy="70" rx="180" ry="80" fill="#38bdf8" opacity="0.06"/>
+
+    <!-- Main Mouse Object (Centered) -->
+    <g filter="url(#mouseShadow)">
+      
+      <!-- Outer Mouse Chassis Silhouette -->
+      <!-- Smooth, confident ergonomic curves. Width: 260, Height: 366 -->
+      <path d="M 256 72
+               C 342 72, 386 126, 386 212
+               C 386 278, 372 322, 372 356
+               C 372 404, 332 444, 256 444
+               C 180 444, 140 404, 140 356
+               C 140 322, 126 278, 126 212
+               C 126 126, 170 72, 256 72 Z"
+            fill="url(#shellGrad)" stroke="#4d5873" stroke-width="2.5"/>
+
+      <!-- Ergonomic Side Grips (Symmetrical Left & Right Grooves) -->
+      <!-- Left Grip -->
+      <path d="M 132 242 C 144 286, 144 328, 133 368" fill="none" stroke="#161922" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 133 268 C 143 296, 143 324, 135 350" fill="none" stroke="url(#cyanAccent)" stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#cyanGlow)"/>
+
+      <!-- Right Grip -->
+      <path d="M 380 242 C 368 286, 368 328, 379 368" fill="none" stroke="#161922" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 379 268 C 369 296, 369 324, 377 350" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+
+      <!-- Precision Negative Space: Horizontal Separation Seam -->
+      <path d="M 136 236 C 178 252, 334 252, 376 236" fill="none" stroke="#0e1017" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- Center Spine Parting Cutout -->
+      <line x1="256" y1="78" x2="256" y2="236" stroke="#0e1017" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- Left Click Surface -->
+      <path d="M 247 84
+               C 178 88, 138 134, 138 222
+               C 138 232, 144 234, 156 234
+               L 247 234 Z"
+            fill="url(#btnLeft)"/>
+
+      <!-- Right Click Surface -->
+      <path d="M 265 84
+               L 265 234
+               L 356 234
+               C 368 234, 374 232, 374 222
+               C 374 134, 334 88, 265 84 Z"
+            fill="url(#btnRight)"/>
+
+      <!-- Center Scroll Wheel Well (Crisp recessed slot) -->
+      <rect x="241" y="112" width="30" height="82" rx="15" fill="#08090d" stroke="#252c3d" stroke-width="2"/>
+
+      <!-- Scroll Wheel Accent (Pure Electric Cyan Pill) -->
+      <g filter="url(#cyanGlow)">
+        <rect x="246" y="120" width="20" height="66" rx="10" fill="url(#cyanAccent)"/>
+        <!-- Wheel tactile ridges -->
+        <line x1="249" y1="138" x2="263" y2="138" stroke="#082038" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="249" y1="153" x2="263" y2="153" stroke="#082038" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="249" y1="168" x2="263" y2="168" stroke="#082038" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+
+      <!-- Side G-Buttons (Minimal Precision Wing Indicators on Left Shoulder) -->
+      <rect x="128" y="146" width="6.5" height="26" rx="3.25" fill="#38bdf8" filter="url(#cyanGlow)"/>
+      <rect x="127" y="178" width="6.5" height="26" rx="3.25" fill="#0284c7"/>
+
+      <!-- Palm Rest "Deck" Brand Mark (Sleek Geometric Chevron Stack) -->
+      <g transform="translate(256, 338)">
+        <!-- Top Chevron (Muted Slate Titanium) -->
+        <path d="M -34 -14 L 0 2 L 34 -14" fill="none" stroke="#5a6785" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Bottom Chevron (Glowing Cyan) -->
+        <path d="M -26 8 L 0 24 L 26 8" fill="none" stroke="url(#cyanAccent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#cyanGlow)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Squircle Border Overlay -->
+  <rect x="32" y="32" width="448" height="448" rx="108" fill="none" stroke="url(#squircleBorder)" stroke-width="2"/>
+</svg>
