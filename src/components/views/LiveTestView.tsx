@@ -4,6 +4,7 @@ import { KeyComboBadge } from "../Keycap";
 import { GestureEventPayload } from "../../types";
 import { Trash2, ArrowUp, ArrowDown, Sparkles, Crosshair, ArrowLeft, ArrowRight, MousePointer, Sliders } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
+import { useI18n } from "../../i18n";
 
 interface LiveTestViewProps {
   lastEvent: GestureEventPayload | null;
@@ -18,6 +19,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
   onClearHistory,
   activeDriver = "logitech_g502_x",
 }) => {
+  const { t, language } = useI18n();
   const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
   const isG502 = activeDriver === "logitech_g502_x" || (lastEvent && lastEvent.trigger_id.startsWith("g"));
 
@@ -44,34 +46,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
   };
 
   const getGestureTitle = (id: string) => {
-    switch (id) {
-      case "g4_back":
-        return "Tasto Indietro (G4)";
-      case "g5_forward":
-        return "Tasto Avanti (G5)";
-      case "g6_sniper":
-        return "Tasto Sniper / DPI Shift (G6)";
-      case "g7_dpi_down":
-        return "Tasto DPI Giù (G7)";
-      case "g8_dpi_up":
-        return "Tasto DPI Su (G8)";
-      case "g9_profile":
-        return "Tasto Profilo (G9)";
-      case "swipe_up":
-        return "Swipe Up (Scorri in Alto)";
-      case "swipe_down":
-        return "Swipe Down (Scorri in Basso)";
-      case "windows_click":
-        return "Pulsante Windows (Click/Tap)";
-      case "tilt_left":
-        return "Inclinazione Sinistra (Tilt Left)";
-      case "tilt_right":
-        return "Inclinazione Destra (Tilt Right)";
-      case "middle_click":
-        return "Click Rotellina Centrale";
-      default:
-        return id;
-    }
+    return t(`triggers.${id}.name`, id);
   };
 
   return (
@@ -79,12 +54,12 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
       {/* Top Header */}
       <div>
         <h1 className="text-xl font-semibold text-white tracking-tight">
-          Test in Tempo Reale
+          {t("test.title", "Test in Tempo Reale")}
         </h1>
         <p className="text-xs text-slate-400 mt-0.5">
           {isG502
-            ? "Premi i tasti programmabili del tuo Logitech G502 X per vederli catturati istantaneamente dal motore Rust."
-            : "Esegui gesti sulla touch strip per vederli catturati istantaneamente dal motore Rust."}
+            ? t("test.subtitleG502", "Premi i tasti programmabili del tuo Logitech G502 X per vederli catturati istantaneamente dal motore Rust.")
+            : t("test.subtitleSculpt", "Esegui gesti sulla touch strip per vederli catturati istantaneamente dal motore Rust.")}
         </p>
       </div>
 
@@ -100,8 +75,12 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
           />
           <p className="text-[11px] text-slate-500 text-center mt-3">
             {isG502
-              ? "I tasti G6, G4, G5, G7, G8, G9 e la rotellina si illuminano all'attivazione."
-              : "La touch strip blu e la rotellina si illuminano all'attivazione."}
+              ? (language === "en"
+                  ? "Buttons G6, G4, G5, G7, G8, G9 and scroll wheel illuminate when triggered."
+                  : "I tasti G6, G4, G5, G7, G8, G9 e la rotellina si illuminano all'attivazione.")
+              : (language === "en"
+                  ? "The blue touch strip and scroll wheel illuminate when triggered."
+                  : "La touch strip blu e la rotellina si illuminano all'attivazione.")}
           </p>
         </div>
 
@@ -111,7 +90,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
           <div className="desktop-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Ultimo Evento Rilevato
+                {language === "en" ? "Last Detected Event" : "Ultimo Evento Rilevato"}
               </span>
               {lastEvent && (
                 <span className="text-[11px] font-mono text-cyan-400">
@@ -126,7 +105,9 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                   {getGestureTitle(lastEvent.trigger_id)}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Azione eseguita:</span>
+                  <span className="text-xs text-slate-400">
+                    {language === "en" ? "Executed Action:" : "Azione eseguita:"}
+                  </span>
                   {lastEvent.action_type === "key_combo" ? (
                     <KeyComboBadge combo={lastEvent.action_value} />
                   ) : (
@@ -139,8 +120,12 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
             ) : (
               <div className="py-2 text-xs text-slate-500 italic">
                 {isG502
-                  ? "In attesa di eventi hardware. Prova a premere il tasto Sniper o i tasti laterali."
-                  : "Nessun gesto ricevuto. Prova a scorrere il pollice sulla touch strip."}
+                  ? (language === "en"
+                      ? "Waiting for hardware events. Try clicking Sniper or side buttons."
+                      : "In attesa di eventi hardware. Prova a premere il tasto Sniper o i tasti laterali.")
+                  : (language === "en"
+                      ? "No gestures received. Try swiping thumb on the touch strip."
+                      : "Nessun gesto ricevuto. Prova a scorrere il pollice sulla touch strip.")}
               </div>
             )}
           </div>
@@ -148,7 +133,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
           {/* Test Simulation Buttons */}
           <div className="desktop-card p-3.5 space-y-2">
             <span className="text-[11px] font-semibold text-slate-400 block">
-              Simulazione Software:
+              {language === "en" ? "Software Simulation:" : "Simulazione Software:"}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {isG502 ? (
@@ -165,35 +150,35 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
                     <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
-                    Indietro (G4)
+                    {language === "en" ? "Back (G4)" : "Indietro (G4)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g5_forward")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
                     <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
-                    Avanti (G5)
+                    {language === "en" ? "Forward (G5)" : "Avanti (G5)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g8_dpi_up")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
                     <ArrowUp className="w-3.5 h-3.5 text-cyan-400" />
-                    DPI Su (G8)
+                    {language === "en" ? "DPI Up (G8)" : "DPI Su (G8)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g7_dpi_down")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
                     <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
-                    DPI Giù (G7)
+                    {language === "en" ? "DPI Down (G7)" : "DPI Giù (G7)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g9_profile")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
                     <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-                    Profilo (G9)
+                    {language === "en" ? "Profile (G9)" : "Profilo (G9)"}
                   </button>
                 </>
               ) : (
@@ -241,7 +226,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                 className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
               >
                 <MousePointer className="w-3.5 h-3.5 text-slate-400" />
-                Click Centrale
+                {language === "en" ? "Middle Click" : "Click Centrale"}
               </button>
             </div>
           </div>
@@ -250,7 +235,9 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
           <div className="desktop-card overflow-hidden">
             <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Log Eventi in Tempo Reale ({history.length})
+                {language === "en"
+                  ? `Live Event Stream (${history.length})`
+                  : `Log Eventi in Tempo Reale (${history.length})`}
               </span>
               {history.length > 0 && (
                 <button
@@ -258,7 +245,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                   className="text-[11px] text-slate-500 hover:text-rose-400 transition-colors flex items-center gap-1"
                 >
                   <Trash2 className="w-3 h-3" />
-                  Svuota
+                  {language === "en" ? "Clear" : "Svuota"}
                 </button>
               )}
             </div>
@@ -266,7 +253,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
             <div className="max-h-64 overflow-y-auto divide-y divide-white/[0.03]">
               {history.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-500">
-                  La cronologia degli eventi apparirà qui man mano che utilizzi il mouse.
+                  {t("test.noEventsYet", "La cronologia degli eventi apparirà qui man mano che utilizzi il mouse.")}
                 </div>
               ) : (
                 history.map((ev, idx) => (

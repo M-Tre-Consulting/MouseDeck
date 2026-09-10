@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ActionConfig } from "../types";
 import { KeyComboBadge, Keycap } from "./Keycap";
+import { useI18n } from "../i18n";
 import {
   X,
   Keyboard,
@@ -42,6 +43,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   currentAction,
   onSave,
 }) => {
+  const { t, language } = useI18n();
   const [actionType, setActionType] = useState<string>("key_combo");
   const [value, setValue] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -156,8 +158,8 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   const handleSave = () => {
     let finalName = name.trim();
     if (!finalName) {
-      if (actionType === "key_combo") finalName = value || "Nessuna azione";
-      else if (actionType === "disabled") finalName = "Disabilitato";
+      if (actionType === "key_combo") finalName = value || (language === "en" ? "No action" : "Nessuna azione");
+      else if (actionType === "disabled") finalName = language === "en" ? "Disabled" : "Disabilitato";
       else if (actionType === "media") {
         const item = mediaOptions.find((m) => m.id === value);
         finalName = item ? item.title : value;
@@ -191,49 +193,49 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   const TriggerIcon = getTriggerIcon(triggerId);
 
   const categories = [
-    { id: "key_combo", label: "Scorciatoia", icon: Keyboard },
-    { id: "media", label: "Media", icon: Music },
-    { id: "mouse_button", label: "Tasti Mouse", icon: MousePointer },
-    { id: "command", label: "Comando Shell", icon: Terminal },
-    { id: "disabled", label: "Disabilita", icon: Ban },
+    { id: "key_combo", label: t("modal.tabKeyboard", "Scorciatoia"), icon: Keyboard },
+    { id: "media", label: t("modal.tabMedia", "Media"), icon: Music },
+    { id: "mouse_button", label: t("modal.tabMouse", "Tasti Mouse"), icon: MousePointer },
+    { id: "command", label: t("modal.tabCommand", "Comando Shell"), icon: Terminal },
+    { id: "disabled", label: t("modal.tabDisabled", "Disabilita"), icon: Ban },
   ];
 
   // Media Options
   const mediaOptions = [
     {
       id: "VolumeUp",
-      title: "Alza Volume",
-      desc: "Incrementa volume di sistema",
+      title: language === "en" ? "Volume Up" : "Alza Volume",
+      desc: language === "en" ? "Increase system volume" : "Incrementa volume di sistema",
       icon: Volume2,
     },
     {
       id: "VolumeDown",
-      title: "Abbassa Volume",
-      desc: "Riduce volume di sistema",
+      title: language === "en" ? "Volume Down" : "Abbassa Volume",
+      desc: language === "en" ? "Decrease system volume" : "Riduce volume di sistema",
       icon: Volume1,
     },
     {
       id: "Mute",
-      title: "Muto Audio",
-      desc: "Silenzia o riattiva l'audio",
+      title: language === "en" ? "Mute Audio" : "Muto Audio",
+      desc: language === "en" ? "Toggle audio mute" : "Silenzia o riattiva l'audio",
       icon: VolumeX,
     },
     {
       id: "PlayPause",
-      title: "Play / Pausa",
-      desc: "Controlla riproduzione media",
+      title: language === "en" ? "Play / Pause" : "Play / Pausa",
+      desc: language === "en" ? "Control media playback" : "Controlla riproduzione media",
       icon: Play,
     },
     {
       id: "NextTrack",
-      title: "Traccia Successiva",
-      desc: "Avanza al prossimo brano",
+      title: language === "en" ? "Next Track" : "Traccia Successiva",
+      desc: language === "en" ? "Skip to next track" : "Avanza al prossimo brano",
       icon: SkipForward,
     },
     {
       id: "PreviousTrack",
-      title: "Traccia Precedente",
-      desc: "Ritorna al brano precedente",
+      title: language === "en" ? "Previous Track" : "Traccia Precedente",
+      desc: language === "en" ? "Return to previous track" : "Ritorna al brano precedente",
       icon: SkipBack,
     },
   ];
@@ -242,50 +244,50 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   const mouseOptions = [
     {
       id: "BTN_MIDDLE",
-      title: "Click Centrale",
-      desc: "Pulsante 3 della rotellina",
-      sub: "Apre link in nuova tab",
+      title: language === "en" ? "Middle Click" : "Click Centrale",
+      desc: language === "en" ? "Scroll wheel Button 3" : "Pulsante 3 della rotellina",
+      sub: language === "en" ? "Open link in new tab" : "Apre link in nuova tab",
     },
     {
       id: "BTN_SIDE",
-      title: "Tasto Indietro",
-      desc: "Pulsante pollice inferiore",
-      sub: "Cronologia browser indietro",
+      title: language === "en" ? "Back Button" : "Tasto Indietro",
+      desc: language === "en" ? "Lower thumb button" : "Pulsante pollice inferiore",
+      sub: language === "en" ? "Browser history back" : "Cronologia browser indietro",
     },
     {
       id: "BTN_EXTRA",
-      title: "Tasto Avanti",
-      desc: "Pulsante pollice superiore",
-      sub: "Cronologia browser avanti",
+      title: language === "en" ? "Forward Button" : "Tasto Avanti",
+      desc: language === "en" ? "Upper thumb button" : "Pulsante pollice superiore",
+      sub: language === "en" ? "Browser history forward" : "Cronologia browser avanti",
     },
     {
       id: "BTN_LEFT",
-      title: "Click Sinistro",
-      desc: "Pulsante primario standard",
-      sub: "Selezione e trascinamento",
+      title: language === "en" ? "Left Click" : "Click Sinistro",
+      desc: language === "en" ? "Primary mouse button" : "Pulsante primario standard",
+      sub: language === "en" ? "Selection and drag" : "Selezione e trascinamento",
     },
     {
       id: "BTN_RIGHT",
-      title: "Click Destro",
-      desc: "Pulsante secondario standard",
-      sub: "Menu contestuale",
+      title: language === "en" ? "Right Click" : "Click Destro",
+      desc: language === "en" ? "Secondary mouse button" : "Pulsante secondario standard",
+      sub: language === "en" ? "Context menu" : "Menu contestuale",
     },
   ];
 
   // Quick Preset Shortcuts
   const shortcutPresets = [
-    { label: "Workspace Succ", combo: "Super+Page_Down", category: "Desktop" },
-    { label: "Workspace Prec", combo: "Super+Page_Up", category: "Desktop" },
-    { label: "Panoramica / Super", combo: "Super", category: "Desktop" },
-    { label: "Chiudi Finestra", combo: "Alt+F4", category: "Desktop" },
-    { label: "Copia", combo: "Ctrl+c", category: "Appunti" },
-    { label: "Incolla", combo: "Ctrl+v", category: "Appunti" },
-    { label: "Annulla", combo: "Ctrl+z", category: "Appunti" },
-    { label: "Ripristina", combo: "Ctrl+y", category: "Appunti" },
-    { label: "Nuova Scheda", combo: "Ctrl+t", category: "Browser" },
-    { label: "Chiudi Scheda", combo: "Ctrl+w", category: "Browser" },
-    { label: "Scheda Succ", combo: "Ctrl+Tab", category: "Browser" },
-    { label: "Scheda Prec", combo: "Ctrl+Shift+Tab", category: "Browser" },
+    { label: language === "en" ? "Next Workspace" : "Workspace Succ", combo: "Super+Page_Down", category: "Desktop" },
+    { label: language === "en" ? "Prev Workspace" : "Workspace Prec", combo: "Super+Page_Up", category: "Desktop" },
+    { label: language === "en" ? "Overview / Super" : "Panoramica / Super", combo: "Super", category: "Desktop" },
+    { label: language === "en" ? "Close Window" : "Chiudi Finestra", combo: "Alt+F4", category: "Desktop" },
+    { label: language === "en" ? "Copy" : "Copia", combo: "Ctrl+c", category: "Appunti" },
+    { label: language === "en" ? "Paste" : "Incolla", combo: "Ctrl+v", category: "Appunti" },
+    { label: language === "en" ? "Undo" : "Annulla", combo: "Ctrl+z", category: "Appunti" },
+    { label: language === "en" ? "Redo" : "Ripristina", combo: "Ctrl+y", category: "Appunti" },
+    { label: language === "en" ? "New Tab" : "Nuova Scheda", combo: "Ctrl+t", category: "Browser" },
+    { label: language === "en" ? "Close Tab" : "Chiudi Scheda", combo: "Ctrl+w", category: "Browser" },
+    { label: language === "en" ? "Next Tab" : "Scheda Succ", combo: "Ctrl+Tab", category: "Browser" },
+    { label: language === "en" ? "Prev Tab" : "Scheda Prec", combo: "Ctrl+Shift+Tab", category: "Browser" },
   ];
 
   // Shell Command Quick Templates
@@ -307,7 +309,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
       cmd: "playerctl play-pause",
     },
     {
-      name: "Screenshot Rapido",
+      name: language === "en" ? "Quick Screenshot" : "Screenshot Rapido",
       cmd: "grim -g \"$(slurp)\"",
     },
   ];
@@ -334,7 +336,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Configura l'azione hardware intercettata all'attivazione
+                {t("modal.subtitle", "Configura l'azione hardware intercettata all'attivazione")}
               </p>
             </div>
           </div>
@@ -342,7 +344,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-lg hover:bg-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
-            title="Chiudi (Esc)"
+            title={language === "en" ? "Close (Esc)" : "Chiudi (Esc)"}
           >
             <X className="w-4 h-4" />
           </button>
@@ -363,14 +365,14 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                     setIsRecording(false);
                     if (cat.id === "media" && (!value || !mediaOptions.some((m) => m.id === value))) {
                       setValue("VolumeUp");
-                      setName("Alza Volume");
+                      setName(language === "en" ? "Volume Up" : "Alza Volume");
                     }
                     if (cat.id === "mouse_button" && (!value || !mouseOptions.some((m) => m.id === value))) {
                       setValue("BTN_MIDDLE");
-                      setName("Click Centrale");
+                      setName(language === "en" ? "Middle Click" : "Click Centrale");
                     }
                     if (cat.id === "disabled") {
-                      setName("Disabilitato");
+                      setName(language === "en" ? "Disabled" : "Disabilitato");
                     }
                   }}
                   className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
@@ -415,7 +417,9 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                     }`}
                   />
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    {isRecording ? "In ascolto della tastiera..." : "Combinazione Registrata"}
+                    {isRecording
+                      ? t("modal.recording", "In ascolto della tastiera...")
+                      : (language === "en" ? "Recorded Combination" : "Combinazione Registrata")}
                   </span>
                 </div>
 
@@ -426,19 +430,23 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                       <div className="flex items-center gap-1.5">
                         <KeyComboBadge combo={liveModifiers} size="lg" />
                         <span className="text-cyan-400 text-xs font-mono animate-pulse">
-                          + premi tasto...
+                          {language === "en" ? "+ press key..." : "+ premi tasto..."}
                         </span>
                       </div>
                     ) : (
                       <span className="text-xs text-cyan-300 font-medium">
-                        Premi la combinazione desiderata (es. Ctrl+Shift+T, Super+Page_Up)...
+                        {language === "en"
+                          ? "Press desired key combination (e.g. Ctrl+Shift+T, Super+Page_Up)..."
+                          : "Premi la combinazione desiderata (es. Ctrl+Shift+T, Super+Page_Up)..."}
                       </span>
                     )
                   ) : value ? (
                     <KeyComboBadge combo={value} size="lg" />
                   ) : (
                     <span className="text-xs text-slate-500 italic">
-                      Nessuna combinazione assegnata. Clicca qui per registrare.
+                      {language === "en"
+                        ? "No combination assigned. Click here to record."
+                        : "Nessuna combinazione assegnata. Clicca qui per registrare."}
                     </span>
                   )}
                 </div>
@@ -457,7 +465,9 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                         : "bg-white/[0.05] text-slate-300 border-white/[0.08] hover:bg-white/[0.09]"
                     }`}
                   >
-                    {isRecording ? "Interrompi Registrazione" : "Registra Nuova Combinazione"}
+                    {isRecording
+                      ? (language === "en" ? "Stop Recording" : "Interrompi Registrazione")
+                      : (language === "en" ? "Record New Combination" : "Registra Nuova Combinazione")}
                   </button>
 
                   {value && (
@@ -469,10 +479,10 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                         setName("");
                       }}
                       className="px-2 py-1 rounded-md text-[11px] text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent transition-colors flex items-center gap-1 cursor-pointer"
-                      title="Cancella scorciatoia"
+                      title={language === "en" ? "Delete shortcut" : "Cancella scorciatoia"}
                     >
                       <Trash2 className="w-3 h-3" />
-                      Cancella
+                      {language === "en" ? "Clear" : "Cancella"}
                     </button>
                   )}
                 </div>
@@ -482,14 +492,16 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Preset Rapidi & Macro Comuni
+                    {t("modal.quickPresets", "Preset Rapidi & Macro Comuni")}
                   </span>
                   <button
                     type="button"
                     onClick={() => setShowManualInput(!showManualInput)}
                     className="text-[11px] text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
                   >
-                    {showManualInput ? "Nascondi editor manuale" : "Modifica manuale testo"}
+                    {showManualInput
+                      ? (language === "en" ? "Hide manual editor" : "Nascondi editor manuale")
+                      : (language === "en" ? "Manual text edit" : "Modifica manuale testo")}
                   </button>
                 </div>
 
@@ -497,7 +509,9 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                 {showManualInput && (
                   <div className="p-2.5 rounded-xl bg-[#090a0f] border border-white/[0.06] space-y-1">
                     <label className="block text-[11px] text-slate-400">
-                      Stringa combinazione (formato: <code className="text-cyan-400 font-mono">Super+Page_Up</code>)
+                      {language === "en"
+                        ? <>Combination string (format: <code className="text-cyan-400 font-mono">Super+Page_Up</code>)</>
+                        : <>Stringa combinazione (formato: <code className="text-cyan-400 font-mono">Super+Page_Up</code>)</>}
                     </label>
                     <input
                       type="text"
@@ -546,7 +560,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
           {actionType === "media" && (
             <div className="space-y-2">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-                Seleziona Azione Multimediale
+                {t("modal.mediaControls", "Seleziona Azione Multimediale")}
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -602,7 +616,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
           {actionType === "mouse_button" && (
             <div className="space-y-2">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-                Pulsante Virtuale del Mouse
+                {t("modal.mouseButtonGrid", "Pulsante Virtuale del Mouse")}
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -659,7 +673,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Comando Shell Linux da Eseguire
+                  {t("modal.shellCommand", "Comando Shell Linux da Eseguire")}
                 </label>
                 <div className="relative rounded-xl overflow-hidden border border-white/[0.08] bg-[#090a0e] p-3 flex items-center gap-2">
                   <span className="font-mono text-xs text-cyan-400 font-bold select-none">$</span>
@@ -676,7 +690,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               {/* Shell quick templates */}
               <div className="space-y-1.5">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-                  Script & Comandi Suggeriti
+                  {language === "en" ? "Suggested Scripts & Commands" : "Script & Comandi Suggeriti"}
                 </span>
                 <div className="space-y-1">
                   {shellPresets.map((sh, idx) => (
@@ -708,9 +722,13 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               <div className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
                 <Ban className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-semibold text-white">Tasto Disabilitato</h4>
+              <h4 className="text-sm font-semibold text-white">
+                {language === "en" ? "Button Disabled" : "Tasto Disabilitato"}
+              </h4>
               <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                La pressione di questo tasto hardware verrà intercettata e soppressa. Nessun evento di input verrà inviato al sistema.
+                {language === "en"
+                  ? "Pressing this hardware button will be captured and suppressed. No input event will be sent to the system."
+                  : "La pressione di questo tasto hardware verrà intercettata e soppressa. Nessun evento di input verrà inviato al sistema."}
               </p>
             </div>
           )}
@@ -720,26 +738,26 @@ export const ActionModal: React.FC<ActionModalProps> = ({
             <div className="pt-2 border-t border-white/[0.05] grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                  Etichetta / Nome Tasto
+                  {t("modal.actionName", "Etichetta / Nome Tasto")}
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={value || "Nome personalizzato"}
+                  placeholder={value || (language === "en" ? "Custom name" : "Nome personalizzato")}
                   className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
                 <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                  Descrizione Opzionale
+                  {t("modal.actionDesc", "Descrizione Opzionale")}
                 </label>
                 <input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="es. Scorri al desktop seguente"
+                  placeholder={language === "en" ? "e.g. Switch to next workspace" : "es. Scorri al desktop seguente"}
                   className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500"
                 />
               </div>
@@ -751,11 +769,11 @@ export const ActionModal: React.FC<ActionModalProps> = ({
         <div className="px-6 py-3.5 border-t border-white/[0.06] bg-[#0c0d12] flex items-center justify-between">
           <div className="flex items-center gap-2 text-[11px] text-slate-500">
             <span className="flex items-center gap-1">
-              <Keycap label="Esc" size="sm" variant="muted" /> per chiudere
+              <Keycap label="Esc" size="sm" variant="muted" /> {language === "en" ? "to close" : "per chiudere"}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Keycap label="↵ Enter" size="sm" variant="muted" /> per salvare
+              <Keycap label="↵ Enter" size="sm" variant="muted" /> {language === "en" ? "to save" : "per salvare"}
             </span>
           </div>
 
@@ -765,7 +783,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               onClick={onClose}
               className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer"
             >
-              Annulla
+              {t("common.cancel", "Annulla")}
             </button>
             <button
               type="button"
@@ -773,7 +791,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold transition-all shadow-[0_0_12px_rgba(6,182,212,0.35)] flex items-center gap-1.5 cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
-              Salva Rimappatura
+              {t("modal.saveAction", "Salva Rimappatura")}
             </button>
           </div>
         </div>

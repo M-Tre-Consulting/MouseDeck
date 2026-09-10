@@ -7,7 +7,9 @@ import {
   Settings,
   RefreshCw,
   Battery,
+  Globe,
 } from "lucide-react";
+import { useI18n } from "../i18n";
 
 interface SidebarProps {
   device: BluetoothDeviceInfo | null;
@@ -29,12 +31,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
 }) => {
   const isConnected = device?.connected ?? false;
+  const { t, language, setLanguage, languages } = useI18n();
 
   const navItems = [
-    { id: "dashboard", label: "Panoramica", icon: LayoutDashboard },
-    { id: "remap", label: "Pulsanti & Gesti", icon: Sliders },
-    { id: "test", label: "Test in Tempo Reale", icon: Sparkles },
-    { id: "settings", label: "Sistema & Permessi", icon: Settings },
+    { id: "dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard },
+    { id: "remap", label: t("sidebar.remap"), icon: Sliders },
+    { id: "test", label: t("sidebar.test"), icon: Sparkles },
+    { id: "settings", label: t("sidebar.settings"), icon: Settings },
   ];
 
   return (
@@ -79,11 +82,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 />
                 <span className={isConnected ? "text-slate-300 font-medium" : "text-slate-500"}>
-                  {isConnected ? "Connesso" : "Non connesso"}
+                  {isConnected ? t("common.connected") : t("common.disconnected")}
                 </span>
               </div>
               <span className="font-mono text-[10px] text-slate-500">
-                {device?.address ? device.address.slice(-8) : "BT 3.0"}
+                {device?.address ? device.address.slice(-8) : "BT / 2.4G"}
               </span>
             </div>
 
@@ -99,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       : "text-slate-500"
                   }`}
                 />
-                <span>Batteria</span>
+                <span>{t("sidebar.battery")}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 {device?.battery_percentage != null ? (
@@ -155,28 +158,54 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Footer: Master toggle */}
-      <div className="p-3 border-t border-white/[0.06] bg-[#0c0d12]">
-        <div className="flex items-center justify-between px-2 py-1.5">
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-slate-300">Rimappatura</span>
-            <span className="text-[10px] text-slate-500">
-              {enabled ? "Motore attivo" : "Disattivato"}
-            </span>
+      {/* Footer: Language selector & Master toggle */}
+      <div className="border-t border-white/[0.06] bg-[#0c0d12]">
+        {/* Language switcher */}
+        <div className="px-4 py-2 flex items-center justify-between text-xs border-b border-white/[0.04]">
+          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+            <Globe className="w-3.5 h-3.5 text-slate-500" />
+            <span>{t("sidebar.language")}</span>
           </div>
+          <div className="flex items-center bg-white/[0.04] p-0.5 rounded-lg border border-white/[0.06]">
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => setLanguage(lang.code)}
+                className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                  language === lang.code
+                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-xs"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {lang.code.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
 
-          <button
-            onClick={() => onToggleEnabled(!enabled)}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-              enabled ? "bg-[#0078d4]" : "bg-slate-700"
-            }`}
-          >
-            <span
-              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                enabled ? "translate-x-4.5" : "translate-x-0.5"
+        {/* Master engine toggle */}
+        <div className="p-3">
+          <div className="flex items-center justify-between px-2 py-1">
+            <div className="flex flex-col">
+              <span className="text-xs font-medium text-slate-300">{t("sidebar.remap")}</span>
+              <span className="text-[10px] text-slate-500">
+                {enabled ? t("sidebar.engineActive") : t("sidebar.enginePaused")}
+              </span>
+            </div>
+
+            <button
+              onClick={() => onToggleEnabled(!enabled)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+                enabled ? "bg-[#0078d4]" : "bg-slate-700"
               }`}
-            />
-          </button>
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                  enabled ? "translate-x-4.5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

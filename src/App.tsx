@@ -17,7 +17,10 @@ import { RemapView } from "./components/views/RemapView";
 import { LiveTestView } from "./components/views/LiveTestView";
 import { SettingsView } from "./components/views/SettingsView";
 
+import { useI18n } from "./i18n";
+
 export function App() {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [device, setDevice] = useState<BluetoothDeviceInfo | null>(null);
   const [config, setConfig] = useState<AppConfig>({
@@ -186,10 +189,10 @@ export function App() {
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-amber-200">
-                      Permessi Hardware non Configurati
+                      {t("banner.permsMissingTitle")}
                     </div>
                     <p className="text-[11px] text-amber-300/80 mt-0.5">
-                      MouseDeck può configurare le regole udev creando automaticamente un backup di ripristino istantaneo.
+                      {t("banner.permsMissingDesc")}
                     </p>
                   </div>
                 </div>
@@ -205,13 +208,13 @@ export function App() {
                     ) : (
                       <ShieldCheck className="w-3.5 h-3.5" />
                     )}
-                    Configura con Backup
+                    {t("banner.configureBtn")}
                   </button>
                   <button
                     onClick={() => setActiveTab("settings")}
                     className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-slate-300 text-xs font-medium border border-white/[0.08] transition-colors"
                   >
-                    Dettagli
+                    {t("banner.detailsBtn")}
                   </button>
                 </div>
               </div>

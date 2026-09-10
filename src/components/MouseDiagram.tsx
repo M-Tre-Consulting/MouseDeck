@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ActionConfig } from "../types";
 import { KeyComboBadge } from "./Keycap";
+import { useI18n } from "../i18n";
 
 export interface MouseDiagramProps {
   activeTrigger?: string | null;
@@ -160,6 +161,10 @@ const DiagramTooltip: React.FC<{
   viewBoxWidth: number;
   viewBoxHeight: number;
 }> = ({ info, action, triggerId, viewBoxWidth, viewBoxHeight }) => {
+  const { t, language } = useI18n();
+  const displayName = t(`triggers.${triggerId}.name`, info.name);
+  const displayDesc = t(`triggers.${triggerId}.desc`, info.desc);
+
   const leftPct = (info.pos.x / viewBoxWidth) * 100;
   const topPct = (info.pos.y / viewBoxHeight) * 100;
   const isRightSide = info.pos.x > viewBoxWidth / 2;
@@ -184,15 +189,15 @@ const DiagramTooltip: React.FC<{
       <div className="flex items-center gap-1.5 mb-1">
         <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] animate-pulse shrink-0" />
         <span className="font-semibold text-xs text-white leading-tight truncate">
-          {info.name}
+          {displayName}
         </span>
       </div>
-      <p className="text-[10px] text-slate-400 leading-tight mb-1.5">{info.desc}</p>
+      <p className="text-[10px] text-slate-400 leading-tight mb-1.5">{displayDesc}</p>
 
       {action ? (
         <div className="pt-1.5 border-t border-white/[0.08] flex items-center justify-between gap-2">
           <span className="text-[10px] text-slate-500 font-medium uppercase shrink-0">
-            Azione:
+            {language === "en" ? "Action:" : "Azione:"}
           </span>
           {action.type === "key_combo" ? (
             <KeyComboBadge combo={action.value} size="sm" />
@@ -204,13 +209,15 @@ const DiagramTooltip: React.FC<{
         </div>
       ) : (
         <div className="pt-1.5 border-t border-white/[0.08] text-[10px] text-slate-500 italic">
-          Azione predefinita di sistema
+          {language === "en" ? "System default action" : "Azione predefinita di sistema"}
         </div>
       )}
 
       <div className="mt-1.5 pt-1 border-t border-white/[0.05] flex items-center justify-between text-[9px] text-slate-500 font-mono">
         <span>{triggerId}</span>
-        <span className="text-cyan-400 font-sans font-medium">Clicca per rimappare ↗</span>
+        <span className="text-cyan-400 font-sans font-medium">
+          {language === "en" ? "Click to remap ↗" : "Clicca per rimappare ↗"}
+        </span>
       </div>
     </div>
   );

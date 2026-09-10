@@ -16,6 +16,7 @@ import {
   Crosshair,
   Sliders,
 } from "lucide-react";
+import { useI18n } from "../../i18n";
 
 interface RemapViewProps {
   config: AppConfig;
@@ -30,6 +31,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
   onApplyPreset,
   onChangeDriver,
 }) => {
+  const { t, language } = useI18n();
   const isG502 = config.active_driver === "logitech_g502_x";
 
   const [selectedTrigger, setSelectedTrigger] = useState<{
@@ -52,24 +54,31 @@ export const RemapView: React.FC<RemapViewProps> = ({
     setTimeout(() => setPresetSuccess(false), 2000);
   };
 
+  const getTriggerName = (id: string, fallback: string) => {
+    return t(`triggers.${id}.name`, fallback);
+  };
+  const getTriggerDesc = (id: string, fallback: string) => {
+    return t(`triggers.${id}.desc`, fallback);
+  };
+
   // Triggers for Logitech G502 X
   const g502ThumbTriggers = [
     {
       id: "g6_sniper",
-      name: "Tasto Sniper (G6 - DPI Shift)",
-      desc: "Pulsante frontale a paletta sul poggia-pollice",
+      name: getTriggerName("g6_sniper", "Tasto Sniper (G6)"),
+      desc: getTriggerDesc("g6_sniper", "Pulsante DPI Shift"),
       icon: Crosshair,
     },
     {
       id: "g4_back",
-      name: "Pulsante Laterale Indietro (G4)",
-      desc: "Tasto pollice inferiore (default: Indietro nel browser)",
+      name: getTriggerName("g4_back", "Pulsante Laterale Indietro (G4)"),
+      desc: getTriggerDesc("g4_back", "Tasto pollice inferiore"),
       icon: ArrowLeft,
     },
     {
       id: "g5_forward",
-      name: "Pulsante Laterale Avanti (G5)",
-      desc: "Tasto pollice superiore (default: Avanti nel browser)",
+      name: getTriggerName("g5_forward", "Pulsante Laterale Avanti (G5)"),
+      desc: getTriggerDesc("g5_forward", "Tasto pollice superiore"),
       icon: ArrowRight,
     },
   ];
@@ -77,20 +86,20 @@ export const RemapView: React.FC<RemapViewProps> = ({
   const g502IndexTriggers = [
     {
       id: "g8_dpi_up",
-      name: "Pulsante Indice Superiore (G8)",
-      desc: "Tasto affiancato al click sinistro in alto (DPI Su / Volume)",
+      name: getTriggerName("g8_dpi_up", "Pulsante Indice Superiore (G8)"),
+      desc: getTriggerDesc("g8_dpi_up", "Tasto affiancato al click sinistro in alto"),
       icon: ArrowUp,
     },
     {
       id: "g7_dpi_down",
-      name: "Pulsante Indice Inferiore (G7)",
-      desc: "Tasto affiancato al click sinistro in basso (DPI Giù / Volume)",
+      name: getTriggerName("g7_dpi_down", "Pulsante Indice Inferiore (G7)"),
+      desc: getTriggerDesc("g7_dpi_down", "Tasto affiancato al click sinistro in basso"),
       icon: ArrowDown,
     },
     {
       id: "g9_profile",
-      name: "Pulsante Profilo / Extra (G9)",
-      desc: "Tasto centrale dietro la levetta di sblocco rotellina",
+      name: getTriggerName("g9_profile", "Pulsante Profilo / Extra (G9)"),
+      desc: getTriggerDesc("g9_profile", "Tasto centrale dietro rotellina"),
       icon: Sliders,
     },
   ];
@@ -99,20 +108,20 @@ export const RemapView: React.FC<RemapViewProps> = ({
   const sculptStripTriggers = [
     {
       id: "swipe_up",
-      name: "Swipe Up (Scorri in Alto)",
-      desc: "Scorrimento verso l'alto sulla striscia blu",
+      name: getTriggerName("swipe_up", "Swipe Up (Scorri in Alto)"),
+      desc: getTriggerDesc("swipe_up", "Gesto verso l'alto sulla striscia blu"),
       icon: ArrowUp,
     },
     {
       id: "swipe_down",
-      name: "Swipe Down (Scorri in Basso)",
-      desc: "Scorrimento verso il basso sulla striscia blu",
+      name: getTriggerName("swipe_down", "Swipe Down (Scorri in Basso)"),
+      desc: getTriggerDesc("swipe_down", "Gesto verso il basso sulla striscia blu"),
       icon: ArrowDown,
     },
     {
       id: "windows_click",
-      name: "Pulsante Windows (Click/Tap)",
-      desc: "Pressione fisica della striscia blu",
+      name: getTriggerName("windows_click", "Pulsante Windows Touch"),
+      desc: getTriggerDesc("windows_click", "Pressione capacitiva striscia blu"),
       icon: Sparkles,
     },
   ];
@@ -120,20 +129,20 @@ export const RemapView: React.FC<RemapViewProps> = ({
   const wheelTriggers = [
     {
       id: "tilt_left",
-      name: "Inclinazione Sinistra (Tilt Left)",
-      desc: "Spinta della rotellina verso sinistra",
+      name: getTriggerName("tilt_left", "Inclinazione Sinistra (Tilt L)"),
+      desc: getTriggerDesc("tilt_left", "Spinta rotellina verso sinistra"),
       icon: ArrowLeft,
     },
     {
       id: "tilt_right",
-      name: "Inclinazione Destra (Tilt Right)",
-      desc: "Spinta della rotellina verso destra",
+      name: getTriggerName("tilt_right", "Inclinazione Destra (Tilt R)"),
+      desc: getTriggerDesc("tilt_right", "Spinta rotellina verso destra"),
       icon: ArrowRight,
     },
     {
       id: "middle_click",
-      name: "Pulsante Rotellina Centrale",
-      desc: "Pressione verticale della rotellina (Click 3)",
+      name: getTriggerName("middle_click", "Click Rotellina Centrale"),
+      desc: getTriggerDesc("middle_click", "Pulsante 3 rotellina"),
       icon: MousePointer,
     },
   ];
@@ -145,14 +154,14 @@ export const RemapView: React.FC<RemapViewProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold text-white tracking-tight">
-              Rimappatura Tasti & Gesti
+              {t("remap.title", "Rimappatura Tasti & Gesti")}
             </h1>
             <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
               {isG502 ? "Logitech G502 X" : "Sculpt Comfort"}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Clicca su qualsiasi tasto per riconfigurarlo. Le modifiche vengono intercettate ed eseguite a livello hardware istantaneamente.
+            {t("remap.subtitle", "Clicca su qualsiasi tasto per riconfigurarlo. Le modifiche vengono intercettate ed eseguite a livello hardware istantaneamente.")}
           </p>
         </div>
 
@@ -163,14 +172,18 @@ export const RemapView: React.FC<RemapViewProps> = ({
               onChange={(e) => onChangeDriver(e.target.value)}
               className="px-2.5 py-1 rounded-lg bg-[#151821] border border-white/[0.08] text-[11px] text-slate-300 focus:outline-none focus:border-cyan-500"
             >
-              <option value="logitech_g502_x">Modulo G502 X Lightspeed</option>
-              <option value="microsoft_sculpt_comfort">Modulo Sculpt Comfort</option>
+              <option value="logitech_g502_x">
+                {language === "en" ? "G502 X Lightspeed Driver" : "Modulo G502 X Lightspeed"}
+              </option>
+              <option value="microsoft_sculpt_comfort">
+                {language === "en" ? "Sculpt Comfort Driver" : "Modulo Sculpt Comfort"}
+              </option>
             </select>
           )}
 
           <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
-            Hardware Sincronizzato
+            {language === "en" ? "Hardware Synced" : "Hardware Sincronizzato"}
           </div>
         </div>
       </div>
@@ -181,18 +194,24 @@ export const RemapView: React.FC<RemapViewProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] animate-pulse" />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan-300 font-mono">
-              Mappa Interattiva Hardware
+              {language === "en" ? "Interactive Hardware Map" : "Mappa Interattiva Hardware"}
             </span>
           </div>
           <h2 className="text-base font-semibold text-white tracking-tight">
             {isG502 ? "Logitech G502 X Lightspeed" : "Microsoft Sculpt Comfort Mouse"}
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Passa il mouse sui tasti per visualizzare il tooltip dell'azione attiva in tempo reale, oppure clicca direttamente su un pulsante del mouse per riconfigurarlo.
+            {language === "en"
+              ? "Hover over controls to view real-time action tooltips, or click directly on a mouse button to configure it."
+              : "Passa il mouse sui tasti per visualizzare il tooltip dell'azione attiva in tempo reale, oppure clicca direttamente su un pulsante del mouse per riconfigurarlo."}
           </p>
           <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-400">
             <span className="px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.06] text-cyan-300 font-mono">
-              {hoveredTrigger ? `Tasto attivo: ${hoveredTrigger}` : isG502 ? "9 Tasti programmabili" : "6 Gesti programmabili"}
+              {hoveredTrigger
+                ? (language === "en" ? `Active key: ${hoveredTrigger}` : `Tasto attivo: ${hoveredTrigger}`)
+                : isG502
+                ? (language === "en" ? "9 Programmable buttons" : "9 Tasti programmabili")
+                : (language === "en" ? "6 Programmable gestures" : "6 Gesti programmabili")}
             </span>
           </div>
         </div>
@@ -216,7 +235,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
           {/* G502 Group 1: Thumb cluster */}
           <div className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
-              <span>Cluster Pollice (Sniper & Tasti Laterali)</span>
+              <span>{t("remap.g502ThumbGroup", "Cluster Pollice (Sniper & Tasti Laterali)")}</span>
               <span className="text-[10px] text-cyan-400 font-mono">G6 • G4 • G5</span>
             </h2>
 
@@ -279,7 +298,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
           {/* G502 Group 2: Index Wing & Profile Buttons */}
           <div className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
-              <span>Tasti Ala Indice & Switch Profilo</span>
+              <span>{t("remap.g502IndexGroup", "Tasti Ala Indice & Switch Profilo")}</span>
               <span className="text-[10px] text-cyan-400 font-mono">G8 • G7 • G9</span>
             </h2>
 
@@ -343,7 +362,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
         /* Sculpt Comfort: Touch Strip Group */
         <div className="space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">
-            Touch Strip Laterale Windows (Striscia Blu)
+            {t("remap.sculptGroup", "Touch Strip Laterale Windows (Striscia Blu)")}
           </h2>
 
           <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
@@ -351,7 +370,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
               const Icon = t.icon;
               const action = activeMappings[t.id];
               const isKeyCombo = action?.type === "key_combo";
-              const displayName = action?.name || action?.value || "Nessuna azione";
+              const displayName = action?.name || action?.value || (language === "en" ? "No action" : "Nessuna azione");
               const isHovered = hoveredTrigger === t.id;
 
               return (
@@ -400,7 +419,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
       {/* Common: Rotellina a 4 Vie (Tilt & Click) */}
       <div className="space-y-2">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
-          <span>Rotellina Dual-Mode & Inclinazione a 4 Vie</span>
+          <span>{t("remap.wheelGroup", "Rotellina Dual-Mode & Inclinazione a 4 Vie")}</span>
           <span className="text-[10px] text-slate-500 font-mono">Tilt L • Tilt R • Click</span>
         </h2>
 
@@ -461,7 +480,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
       {/* Preset configurations */}
       <div className="space-y-2 pt-2">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1">
-          Profili Predefiniti & Preset Rapidi
+          {t("remap.presets", "Profili Predefiniti & Preset Rapidi")}
         </h2>
 
         <div className="desktop-card p-4 space-y-3">
@@ -473,16 +492,20 @@ export const RemapView: React.FC<RemapViewProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-200">
-                    Carica una Configurazione Rapida
+                    {language === "en" ? "Load a Quick Configuration" : "Carica una Configurazione Rapida"}
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-slate-300 border border-white/[0.06]">
-                    Profilo Attuale: {config.active_profile}
+                    {t("remap.profile", "Profilo Attuale")}: {config.active_profile}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                  Scegli un profilo tematico pronto all'uso per rimappare automaticamente tutti i tasti del mouse in un colpo solo.
+                  {language === "en"
+                    ? "Choose a ready-to-use thematic profile to automatically map all mouse controls in one click."
+                    : "Scegli un profilo tematico pronto all'uso per rimappare automaticamente tutti i tasti del mouse in un colpo solo."}
                   <span className="text-amber-400/80 block mt-0.5">
-                    Nota: il caricamento di un preset sovrascrive le assegnazioni attuali del profilo attivo.
+                    {language === "en"
+                      ? "Note: loading a preset overwrites the current assignments of the active profile."
+                      : "Nota: il caricamento di un preset sovrascrive le assegnazioni attuali del profilo attivo."}
                   </span>
                 </p>
               </div>
@@ -496,17 +519,33 @@ export const RemapView: React.FC<RemapViewProps> = ({
               >
                 {isG502 ? (
                   <>
-                    <option value="gaming">Gaming FPS / MOBA (Sniper, Melee, Ping)</option>
-                    <option value="productivity">Produttività (Copia, Incolla, Launcher)</option>
-                    <option value="multimedia">Controllo Multimediale (Volume, Mute, Tracce)</option>
-                    <option value="browser">Navigazione Web (Schede, Zoom, Cronologia)</option>
+                    <option value="gaming">
+                      {t("remap.presetsList.gaming", "Gaming FPS / MOBA (Sniper, Melee, Ping)")}
+                    </option>
+                    <option value="productivity">
+                      {t("remap.presetsList.productivity", "Produttività (Copia, Incolla, Launcher)")}
+                    </option>
+                    <option value="multimedia">
+                      {t("remap.presetsList.multimedia", "Controllo Multimediale (Volume, Mute, Tracce)")}
+                    </option>
+                    <option value="browser">
+                      {t("remap.presetsList.browser", "Navigazione Web (Schede, Zoom, Cronologia)")}
+                    </option>
                   </>
                 ) : (
                   <>
-                    <option value="desktop_navigation">Navigazione Desktop (Workspaces)</option>
-                    <option value="productivity">Produttività (Copia, Incolla, Ricerca)</option>
-                    <option value="multimedia">Controllo Multimediale (Volume, Tracce)</option>
-                    <option value="browser">Navigazione Web (Schede & Cronologia)</option>
+                    <option value="desktop_navigation">
+                      {t("remap.presetsList.desktop_navigation", "Navigazione Desktop (Workspaces)")}
+                    </option>
+                    <option value="productivity">
+                      {t("remap.presetsList.productivity", "Produttività (Copia, Incolla, Ricerca)")}
+                    </option>
+                    <option value="multimedia">
+                      {t("remap.presetsList.multimedia", "Controllo Multimediale (Volume, Tracce)")}
+                    </option>
+                    <option value="browser">
+                      {t("remap.presetsList.browser", "Navigazione Web (Schede & Cronologia)")}
+                    </option>
                   </>
                 )}
               </select>
@@ -520,7 +559,9 @@ export const RemapView: React.FC<RemapViewProps> = ({
                 }`}
               >
                 {presetSuccess ? <Check className="w-3.5 h-3.5" /> : null}
-                {presetSuccess ? "Preset Caricato!" : "Carica Preset"}
+                {presetSuccess
+                  ? t("remap.presetApplied", "Preset Caricato!")
+                  : t("remap.applyPreset", "Carica Preset")}
               </button>
             </div>
           </div>
