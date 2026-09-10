@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = [
     { id: "dashboard", label: "Panoramica", icon: LayoutDashboard },
-    { id: "remap", label: "Touch Strip & Gesti", icon: Sliders },
+    { id: "remap", label: "Pulsanti & Gesti", icon: Sliders },
     { id: "test", label: "Test in Tempo Reale", icon: Sparkles },
     { id: "settings", label: "Sistema & Permessi", icon: Settings },
   ];

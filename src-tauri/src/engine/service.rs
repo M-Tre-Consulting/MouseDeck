@@ -5,8 +5,8 @@ use evdev::Device;
 use tauri::{AppHandle, Emitter};
 
 use crate::config::ConfigManager;
-use crate::drivers::sculpt_comfort::SculptComfortDriver;
-use crate::drivers::trait_def::{DeviceDriver, GestureResult};
+use crate::drivers::DriverRegistry;
+use crate::drivers::trait_def::GestureResult;
 use crate::engine::emitter::UInputEmitter;
 
 #[derive(Clone, serde::Serialize)]
@@ -40,13 +40,11 @@ impl RemapperService {
         let emitter = self.emitter.clone();
 
         thread::spawn(move || {
-            let mut driver = SculptComfortDriver::new();
-
             loop {
                 // Check if remapping is enabled
-                let is_enabled = {
+                let (is_enabled, active_driver_id) = {
                     let cfg = cfg_mgr.lock().unwrap().load();
-                    cfg.enabled
+                    (cfg.enabled, cfg.active_driver.clone())
                 };
 
                 if !is_enabled {
@@ -54,9 +52,11 @@ impl RemapperService {
                     continue;
                 }
 
-                // Identify nodes
+                let mut driver = DriverRegistry::instantiate_driver(&active_driver_id);
+
+                // Identify target input node
                 let nodes = driver.identify_input_nodes();
-                let kbd_path = match nodes.get("keyboard") {
+                let target_path = match nodes.get("device").or_else(|| nodes.get("keyboard")).or_else(|| nodes.get("mouse")) {
                     Some(p) => p.clone(),
                     None => {
                         thread::sleep(Duration::from_millis(1500));
@@ -65,7 +65,7 @@ impl RemapperService {
                 };
 
                 // Open device
-                let mut kbd_dev = match Device::open(&kbd_path) {
+                let mut dev = match Device::open(&target_path) {
                     Ok(d) => d,
                     Err(_) => {
                         // Permission denied or node disappeared
@@ -74,52 +74,81 @@ impl RemapperService {
                     }
                 };
 
-                // Grab device so default Windows gestures are consumed
-                if let Err(e) = kbd_dev.grab() {
-                    eprintln!("[RemapperService] Non è stato possibile afferrare {}: {}", kbd_path, e);
-                } else {
-                    println!("[RemapperService] Dispositivo {} afferrato con successo!", kbd_path);
-                }
+                // Grab device
+                let is_grabbed = match dev.grab() {
+                    Ok(_) => {
+                        println!("[RemapperService] Dispositivo {} afferrato con successo!", target_path);
+                        true
+                    }
+                    Err(e) => {
+                        eprintln!("[RemapperService] Impossibile afferrare in esclusiva {} (fallback monitor): {}", target_path, e);
+                        false
+                    }
+                };
 
                 driver.reset_state();
 
-                // Event loop
+                // Event loop for this device
                 loop {
-                    // Check if still enabled
-                    let enabled = {
+                    // Check if still enabled and driver hasn't changed
+                    let (enabled, current_driver_id) = {
                         let cfg = cfg_mgr.lock().unwrap().load();
-                        cfg.enabled
+                        (cfg.enabled, cfg.active_driver.clone())
                     };
-                    if !enabled {
+
+                    if !enabled || current_driver_id != active_driver_id {
                         break;
                     }
 
-                    let should_break = match kbd_dev.fetch_events() {
+                    let should_break = match dev.fetch_events() {
                         Ok(events) => {
                             for ev in events {
-                                if ev.event_type() == evdev::EventType::KEY {
-                                    let res = driver.process_keyboard_event(ev.code(), ev.value());
-                                    if let GestureResult::Trigger(trigger_id) = res {
+                                let res = match ev.event_type() {
+                                    evdev::EventType::KEY => driver.process_keyboard_event(ev.code(), ev.value()),
+                                    evdev::EventType::RELATIVE => driver.process_mouse_event(ev.event_type().0, ev.code(), ev.value()),
+                                    evdev::EventType::SYNCHRONIZATION => GestureResult::PassThrough,
+                                    _ => GestureResult::PassThrough,
+                                };
+
+                                match res {
+                                    GestureResult::Trigger(trigger_id) => {
                                         let cfg = cfg_mgr.lock().unwrap().load();
                                         let active_map = cfg.profiles.get(&cfg.active_profile)
                                             .cloned()
                                             .unwrap_or_default();
 
                                         if let Some(action) = active_map.get(&trigger_id) {
-                                            emitter.lock().unwrap().execute_action(action);
+                                            if action.action_type == "passthrough" {
+                                                if is_grabbed {
+                                                    emitter.lock().unwrap().emit_raw_event(&ev);
+                                                }
+                                            } else {
+                                                emitter.lock().unwrap().execute_action(action);
 
-                                            // Emit Tauri event to frontend
-                                            let now = std::time::SystemTime::now();
-                                            let dt: chrono::DateTime<chrono::Local> = now.into();
-                                            let payload = GestureEventPayload {
-                                                trigger_id: trigger_id.clone(),
-                                                action_name: action.name.clone(),
-                                                action_type: action.action_type.clone(),
-                                                action_value: action.value.clone(),
-                                                timestamp: dt.format("%H:%M:%S").to_string(),
-                                            };
-                                            let _ = app.emit("gesture-triggered", payload);
+                                                // Emit Tauri event to frontend
+                                                let now = std::time::SystemTime::now();
+                                                let dt: chrono::DateTime<chrono::Local> = now.into();
+                                                let payload = GestureEventPayload {
+                                                    trigger_id: trigger_id.clone(),
+                                                    action_name: action.name.clone(),
+                                                    action_type: action.action_type.clone(),
+                                                    action_value: action.value.clone(),
+                                                    timestamp: dt.format("%H:%M:%S").to_string(),
+                                                };
+                                                let _ = app.emit("gesture-triggered", payload);
+                                            }
+                                        } else if is_grabbed {
+                                            // Unmapped: pass through original event
+                                            emitter.lock().unwrap().emit_raw_event(&ev);
                                         }
+                                    }
+                                    GestureResult::PassThrough => {
+                                        if is_grabbed {
+                                            emitter.lock().unwrap().emit_raw_event(&ev);
+                                        }
+                                    }
+                                    GestureResult::Consume => {
+                                        // Consumed, do not forward
                                     }
                                 }
                             }
@@ -136,7 +165,9 @@ impl RemapperService {
                     }
                 }
 
-                let _ = kbd_dev.ungrab();
+                if is_grabbed {
+                    let _ = dev.ungrab();
+                }
                 thread::sleep(Duration::from_millis(1000));
             }
         });

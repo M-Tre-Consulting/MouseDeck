@@ -1,12 +1,14 @@
 # MouseDeck 🖱️⚡
-> **Universal Linux Mouse Dashboard & Gesture Remapper (with Specialized Driver for Microsoft Sculpt Comfort Mouse)**  
+> **Universal Linux Mouse Dashboard & Gesture Remapper (Specialized Drivers for Logitech G502 X Lightspeed & Microsoft Sculpt Comfort Mouse)**  
 > Built with **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, and **Linux evdev/uinput**. Native support for **Wayland** (Hyprland, Sway, GNOME, KDE) and **X11**.
 
 ---
 
 ## 🌟 Overview
 
-**MouseDeck** is a modern Linux desktop utility designed to monitor, configure, and remap advanced pointing devices. It was born to unlock the full potential of the legendary **Microsoft Sculpt Comfort Mouse** (Bluetooth 3.0 Classic), whose signature **capacitive blue touch strip (Windows button)** emits hardcoded key chords that Linux desktop environments either mishandle or ignore.
+**MouseDeck** is a modern Linux desktop utility designed to monitor, configure, and remap advanced pointing devices.
+- **Logitech G502 X Lightspeed / PLUS:** Native low-latency Linux driver for LIGHTSPEED 2.4GHz wireless and USB wired connections. Program the G6 Sniper (DPI Shift) paddle, G4/G5 thumb keys, G7/G8 index wing buttons, G9 profile button, and dual-mode 4-way tilt scroll wheel with live telemetry and battery gauge.
+- **Microsoft Sculpt Comfort Mouse:** Low-latency driver for the signature capacitive blue touch strip (Windows button), intercepting and canceling hardcoded OS chords.
 
 Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides a dedicated, low-latency driver for the Sculpt Comfort while laying the groundwork to support any mouse with custom gesture strips, tilt wheels, or extra thumb keys.
 
@@ -171,7 +173,8 @@ mousedeck/
         ├── bluetooth/          # BlueZ D-Bus, UPower & battery monitor
         ├── drivers/            # Modular driver registry (DeviceDriver trait)
         │   ├── trait_def.rs    # Pluggable driver interface
-        │   └── sculpt_comfort.rs # Specialized driver for 045e:07a2
+        │   ├── sculpt_comfort.rs # Specialized driver for Microsoft Sculpt (045e:07a2)
+        │   └── g502_x.rs       # Specialized driver for Logitech G502 X (046d:c547/4099)
         └── engine/             # High-speed evdev loop & uinput virtual emitter
 ```
 

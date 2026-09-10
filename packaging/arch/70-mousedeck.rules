@@ -7,5 +7,12 @@ SUBSYSTEM=="input", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="u
 KERNEL=="event*", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="uaccess", MODE="0660", GROUP="input"
 KERNEL=="event*", ATTRS{name}=="Microsoft Sculpt Comfort Mouse*", TAG+="uaccess", MODE="0660", GROUP="input"
 
+# Accesso in lettura/cattura a Logitech G502 / G502 X Series (046d:c547, 046d:4099, 046d:c099, 046d:c08b)
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c547", TAG+="uaccess", MODE="0660", GROUP="input"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="4099", TAG+="uaccess", MODE="0660", GROUP="input"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c099", TAG+="uaccess", MODE="0660", GROUP="input"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c08b", TAG+="uaccess", MODE="0660", GROUP="input"
+KERNEL=="event*", ATTRS{name}=="*G502*", TAG+="uaccess", MODE="0660", GROUP="input"
+
 # Accesso al modulo uinput per l'emissione di tasti e click virtuali
 KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput", MODE="0660", GROUP="input"

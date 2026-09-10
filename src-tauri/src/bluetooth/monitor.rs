@@ -1,3 +1,4 @@
+use std::fs;
 use std::process::Command;
 use crate::bluetooth::info::BluetoothDeviceInfo;
 
@@ -5,7 +6,17 @@ pub struct BluetoothManager;
 
 impl BluetoothManager {
     pub async fn get_target_device() -> Option<BluetoothDeviceInfo> {
-        // Query bluetoothctl devices
+        // 1. Check for Logitech G502 X in sysfs power_supply (direct hardware telemetry)
+        if let Some(dev) = Self::detect_g502_from_sysfs() {
+            return Some(dev);
+        }
+
+        // 2. Check for Logitech G502 X in /proc/bus/input/devices
+        if let Some(dev) = Self::detect_g502_from_proc() {
+            return Some(dev);
+        }
+
+        // 3. Query bluetoothctl devices (for Microsoft Sculpt Comfort and other BT mice)
         if let Ok(output) = Command::new("bluetoothctl").arg("devices").output() {
             let stdout = String::from_utf8_lossy(&output.stdout);
             
@@ -51,7 +62,134 @@ impl BluetoothManager {
                 }
             }
         }
+
         None
+    }
+
+    fn detect_g502_from_sysfs() -> Option<BluetoothDeviceInfo> {
+        let base_path = "/sys/class/power_supply";
+        if let Ok(entries) = fs::read_dir(base_path) {
+            for entry in entries.flatten() {
+                let p = entry.path();
+                let model_path = p.join("model_name");
+                if let Ok(model_raw) = fs::read_to_string(&model_path) {
+                    let model = model_raw.trim();
+                    if model.to_lowercase().contains("g502") {
+                        let full_name = if model.starts_with("Logitech") {
+                            model.to_string()
+                        } else {
+                            format!("Logitech {}", model)
+                        };
+
+                        let serial = fs::read_to_string(p.join("serial_number"))
+                            .map(|s| s.trim().to_string())
+                            .unwrap_or_else(|_| "LIGHTSPEED-DONGLE".to_string());
+
+                        let mut info = BluetoothDeviceInfo::new(serial, full_name.clone());
+                        info.alias = full_name;
+                        info.connected = true;
+                        info.paired = true;
+                        info.trusted = true;
+                        info.adapter = "LIGHTSPEED Wireless 2.4GHz".to_string();
+                        info.vendor_id = Some("046d".to_string());
+                        info.product_id = Some("4099".to_string());
+                        info.is_sculpt_comfort = false;
+                        info.is_g502_x = true;
+                        info.driver_id = "logitech_g502_x".to_string();
+
+                        if let Ok(cap_str) = fs::read_to_string(p.join("capacity")) {
+                            if let Ok(val) = cap_str.trim().parse::<u8>() {
+                                info.battery_percentage = Some(val);
+                                let status = fs::read_to_string(p.join("status"))
+                                    .unwrap_or_default()
+                                    .trim()
+                                    .to_string();
+                                
+                                let status_label = if status.eq_ignore_ascii_case("charging") {
+                                    "In carica"
+                                } else {
+                                    "LIGHTSPEED Ricaricabile"
+                                };
+                                info.battery_status_text = format!("{}% ({})", val, status_label);
+                            }
+                        }
+
+                        return Some(info);
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    fn detect_g502_from_proc() -> Option<BluetoothDeviceInfo> {
+        if let Ok(content) = fs::read_to_string("/proc/bus/input/devices") {
+            for block in content.split("\n\n") {
+                let lower = block.to_lowercase();
+                if lower.contains("g502") {
+                    let mut name = "Logitech G502 X Lightspeed".to_string();
+                    let mut uniq = "LIGHTSPEED-WIRELESS".to_string();
+
+                    for line in block.lines() {
+                        if line.starts_with("N: Name=") {
+                            name = line.replace("N: Name=", "").trim_matches('"').to_string();
+                        } else if line.starts_with("U: Uniq=") {
+                            let u = line.replace("U: Uniq=", "").trim().to_string();
+                            if !u.is_empty() {
+                                uniq = u;
+                            }
+                        }
+                    }
+
+                    let mut info = BluetoothDeviceInfo::new(uniq, name.clone());
+                    info.alias = name;
+                    info.connected = true;
+                    info.paired = true;
+                    info.trusted = true;
+                    info.adapter = "LIGHTSPEED Wireless 2.4GHz".to_string();
+                    info.vendor_id = Some("046d".to_string());
+                    info.product_id = Some("4099".to_string());
+                    info.is_sculpt_comfort = false;
+                    info.is_g502_x = true;
+                    info.driver_id = "logitech_g502_x".to_string();
+
+                    // Check upower for battery
+                    Self::check_upower_for_mouse(&mut info);
+
+                    return Some(info);
+                }
+            }
+        }
+        None
+    }
+
+    fn check_upower_for_mouse(info: &mut BluetoothDeviceInfo) {
+        if let Ok(output) = Command::new("upower").arg("-e").output() {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            for dev_path in stdout.lines() {
+                let dev_clean = dev_path.trim();
+                if dev_clean.contains("mouse") || dev_clean.contains("hidpp") {
+                    if let Ok(info_out) = Command::new("upower").args(["-i", dev_clean]).output() {
+                        let info_str = String::from_utf8_lossy(&info_out.stdout);
+                        if info_str.to_lowercase().contains("g502") || info_str.contains(&info.address) {
+                            for l in info_str.lines() {
+                                if l.trim().starts_with("percentage:") {
+                                    if let Some(pct_part) = l.split(':').nth(1) {
+                                        let clean = pct_part.trim().trim_end_matches('%').trim();
+                                        if let Ok(val) = clean.parse::<f32>() {
+                                            let u_val = val.round() as u8;
+                                            info.battery_percentage = Some(u_val);
+                                            info.battery_status_text = format!("{}% (LIGHTSPEED Ricaricabile)", u_val);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fn fill_device_details(info: &mut BluetoothDeviceInfo, mac: &str) {
@@ -134,6 +272,12 @@ impl BluetoothManager {
     }
 
     pub fn reconnect(address: &str) -> Result<(), String> {
+        // If it's a USB or non-Bluetooth address, trigger udev device rescan
+        if !address.contains(':') || address.starts_with("LIGHTSPEED") {
+            let _ = Command::new("udevadm").args(["trigger", "--subsystem-match=input"]).output();
+            return Ok(());
+        }
+
         let _ = Command::new("bluetoothctl").args(["disconnect", address]).output();
         std::thread::sleep(std::time::Duration::from_millis(500));
         let res = Command::new("bluetoothctl").args(["connect", address]).output()

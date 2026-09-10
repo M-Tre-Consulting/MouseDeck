@@ -29,6 +29,15 @@ export interface BluetoothDeviceInfo {
   battery_percentage?: number;
   battery_status_text?: string;
   is_sculpt_comfort: boolean;
+  is_g502_x?: boolean;
+  driver_id?: string;
+}
+
+export interface DriverInfo {
+  id: string;
+  name: string;
+  vendor_id: string;
+  product_id: string;
 }
 
 export interface PermissionStatus {

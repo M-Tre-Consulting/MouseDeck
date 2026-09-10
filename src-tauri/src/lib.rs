@@ -52,8 +52,8 @@ fn save_mapping(trigger_id: String, action: ActionConfig, state: State<'_, AppSt
 
 #[tauri::command]
 fn apply_preset(preset_key: String, state: State<'_, AppState>) -> Result<AppConfig, String> {
-    if let Some(preset) = get_preset_mappings(&preset_key) {
-        let mut cfg = state.config_mgr.lock().unwrap().load();
+    let mut cfg = state.config_mgr.lock().unwrap().load();
+    if let Some(preset) = get_preset_mappings(&preset_key, &cfg.active_driver) {
         let profile = cfg.active_profile.clone();
         cfg.profiles.insert(profile, preset);
         state.config_mgr.lock().unwrap().save(&cfg)?;
@@ -61,6 +61,21 @@ fn apply_preset(preset_key: String, state: State<'_, AppState>) -> Result<AppCon
     } else {
         Err("Preset non trovato".to_string())
     }
+}
+
+#[tauri::command]
+fn get_available_drivers() -> Vec<crate::drivers::DriverInfo> {
+    crate::drivers::DriverRegistry::list_drivers()
+}
+
+#[tauri::command]
+fn set_active_driver(driver_id: String, state: State<'_, AppState>) -> Result<AppConfig, String> {
+    let mut cfg = state.config_mgr.lock().unwrap().load();
+    cfg.active_driver = driver_id.clone();
+    let profile = cfg.active_profile.clone();
+    cfg.profiles.insert(profile, crate::config::get_default_mappings(&driver_id));
+    state.config_mgr.lock().unwrap().save(&cfg)?;
+    Ok(cfg)
 }
 
 #[tauri::command]
@@ -203,6 +218,8 @@ pub fn run() {
             set_autostart_cmd,
             simulate_gesture,
             reconnect_bluetooth,
+            get_available_drivers,
+            set_active_driver,
         ])
         .run(tauri::generate_context!())
         .expect("Errore durante l'esecuzione di MouseDeck");

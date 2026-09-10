@@ -3,7 +3,7 @@ use std::thread;
 use std::time::Duration;
 use evdev::{
     uinput::VirtualDevice,
-    AttributeSet, InputEvent, KeyCode,
+    AttributeSet, InputEvent, KeyCode, RelativeAxisCode,
 };
 use crate::config::ActionConfig;
 
@@ -21,11 +21,11 @@ impl UInputEmitter {
 
     fn init_virtual_device() -> Option<VirtualDevice> {
         let mut keys = AttributeSet::<KeyCode>::new();
-        // Insert all standard keys
+        // Standard keys
         for code in 1..255 {
             keys.insert(KeyCode::new(code));
         }
-        // Insert mouse buttons
+        // Mouse buttons
         keys.insert(KeyCode::BTN_LEFT);
         keys.insert(KeyCode::BTN_RIGHT);
         keys.insert(KeyCode::BTN_MIDDLE);
@@ -33,8 +33,17 @@ impl UInputEmitter {
         keys.insert(KeyCode::BTN_EXTRA);
         keys.insert(KeyCode::BTN_FORWARD);
         keys.insert(KeyCode::BTN_BACK);
+        keys.insert(KeyCode::BTN_TASK);
+        keys.insert(KeyCode::BTN_0);
+        keys.insert(KeyCode::BTN_1);
+        keys.insert(KeyCode::BTN_2);
+        keys.insert(KeyCode::BTN_3);
+        keys.insert(KeyCode::BTN_4);
+        keys.insert(KeyCode::BTN_5);
+        keys.insert(KeyCode::BTN_6);
+        keys.insert(KeyCode::BTN_7);
 
-        // Insert media keys
+        // Media keys
         keys.insert(KeyCode::KEY_VOLUMEUP);
         keys.insert(KeyCode::KEY_VOLUMEDOWN);
         keys.insert(KeyCode::KEY_MUTE);
@@ -42,27 +51,48 @@ impl UInputEmitter {
         keys.insert(KeyCode::KEY_NEXTSONG);
         keys.insert(KeyCode::KEY_PREVIOUSSONG);
 
+        let mut rel_axes = AttributeSet::<RelativeAxisCode>::new();
+        rel_axes.insert(RelativeAxisCode::REL_X);
+        rel_axes.insert(RelativeAxisCode::REL_Y);
+        rel_axes.insert(RelativeAxisCode::REL_WHEEL);
+        rel_axes.insert(RelativeAxisCode::REL_HWHEEL);
+        rel_axes.insert(RelativeAxisCode::REL_WHEEL_HI_RES);
+        rel_axes.insert(RelativeAxisCode::REL_HWHEEL_HI_RES);
+
         match VirtualDevice::builder() {
-            Ok(builder) => match builder.name("MouseDeck Virtual Input Device").with_keys(&keys) {
+            Ok(builder) => match builder
+                .name("MouseDeck Virtual Input Device")
+                .with_keys(&keys)
+                .and_then(|b| b.with_relative_axes(&rel_axes))
+            {
                 Ok(b) => match b.build() {
                     Ok(vd) => {
-                        println!("[UInputEmitter] Virtual device initialized successfully.");
+                        println!("[UInputEmitter] Dispositivo virtuale inizializzato con successo.");
                         Some(vd)
                     }
                     Err(e) => {
-                        eprintln!("[UInputEmitter] VirtualDevice build error: {}", e);
+                        eprintln!("[UInputEmitter] Errore build VirtualDevice: {}", e);
                         None
                     }
                 },
                 Err(e) => {
-                    eprintln!("[UInputEmitter] with_keys error: {}", e);
+                    eprintln!("[UInputEmitter] Errore configurazione assi/tasti VirtualDevice: {}", e);
                     None
                 }
             },
             Err(e) => {
-                eprintln!("[UInputEmitter] VirtualDevice::builder error: {}", e);
+                eprintln!("[UInputEmitter] Errore VirtualDevice::builder: {}", e);
                 None
             }
+        }
+    }
+
+    pub fn emit_raw_event(&mut self, ev: &InputEvent) {
+        if self.virtual_dev.is_none() {
+            self.virtual_dev = Self::init_virtual_device();
+        }
+        if let Some(dev) = self.virtual_dev.as_mut() {
+            let _ = dev.emit(&[*ev]);
         }
     }
 
@@ -88,7 +118,7 @@ impl UInputEmitter {
         let dev = match self.virtual_dev.as_mut() {
             Some(d) => d,
             None => {
-                eprintln!("[UInputEmitter] Virtual device not available.");
+                eprintln!("[UInputEmitter] Dispositivo virtuale non disponibile.");
                 return;
             }
         };
@@ -139,6 +169,9 @@ impl UInputEmitter {
             "btn_right" | "right" => KeyCode::BTN_RIGHT,
             "btn_side" | "side" | "back" => KeyCode::BTN_SIDE,
             "btn_extra" | "extra" | "forward" => KeyCode::BTN_EXTRA,
+            "btn_forward" => KeyCode::BTN_FORWARD,
+            "btn_task" => KeyCode::BTN_TASK,
+            "btn_0" => KeyCode::BTN_0,
             _ => KeyCode::BTN_MIDDLE,
         };
 
@@ -221,6 +254,25 @@ fn parse_key(name: &str) -> Option<KeyCode> {
         "8" => Some(KeyCode::KEY_8),
         "9" => Some(KeyCode::KEY_9),
         "0" => Some(KeyCode::KEY_0),
+        "minus" | "-" => Some(KeyCode::KEY_MINUS),
+        "equal" | "plus" | "=" | "+" => Some(KeyCode::KEY_EQUAL),
+        "f1" => Some(KeyCode::KEY_F1),
+        "f2" => Some(KeyCode::KEY_F2),
+        "f3" => Some(KeyCode::KEY_F3),
+        "f4" => Some(KeyCode::KEY_F4),
+        "f5" => Some(KeyCode::KEY_F5),
+        "f6" => Some(KeyCode::KEY_F6),
+        "f7" => Some(KeyCode::KEY_F7),
+        "f8" => Some(KeyCode::KEY_F8),
+        "f9" => Some(KeyCode::KEY_F9),
+        "f10" => Some(KeyCode::KEY_F10),
+        "f11" => Some(KeyCode::KEY_F11),
+        "f12" => Some(KeyCode::KEY_F12),
+        "delete" | "del" => Some(KeyCode::KEY_DELETE),
+        "insert" | "ins" => Some(KeyCode::KEY_INSERT),
+        "home" => Some(KeyCode::KEY_HOME),
+        "end" => Some(KeyCode::KEY_END),
+        "print" | "printscreen" | "prtscr" => Some(KeyCode::KEY_SYSRQ),
         _ => None,
     }
 }

@@ -24,7 +24,7 @@ export function App() {
     enabled: true,
     autostart: false,
     active_profile: "Predefinito",
-    active_driver: "microsoft_sculpt_comfort",
+    active_driver: "logitech_g502_x",
     profiles: {},
   });
   const [permissions, setPermissions] = useState<PermissionStatus | null>(null);
@@ -128,6 +128,15 @@ export function App() {
     }
   };
 
+  const handleChangeDriver = async (driverId: string) => {
+    try {
+      const updated: AppConfig = await invoke("set_active_driver", { driverId });
+      setConfig(updated);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleRefreshBt = async () => {
     setIsRefreshingBt(true);
     await fetchDeviceStatus();
@@ -212,8 +221,10 @@ export function App() {
             <DashboardView
               device={device}
               activeProfile={config.active_profile}
+              activeDriver={config.active_driver}
               onNavigateToRemap={() => setActiveTab("remap")}
               onRefreshBluetooth={handleRefreshBt}
+              onSelectDriver={handleChangeDriver}
             />
           )}
 
@@ -222,6 +233,7 @@ export function App() {
               config={config}
               onSaveAction={handleSaveAction}
               onApplyPreset={handleApplyPreset}
+              onChangeDriver={handleChangeDriver}
             />
           )}
 
@@ -230,6 +242,7 @@ export function App() {
               lastEvent={lastEvent}
               history={history}
               onClearHistory={() => setHistory([])}
+              activeDriver={config.active_driver}
             />
           )}
 

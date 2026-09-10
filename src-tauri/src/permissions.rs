@@ -7,10 +7,17 @@ const UDEV_RULES_CONTENT: &str = r#"# ------------------------------------------
 # MouseDeck - Hardware Input & Virtual uinput Rules
 # -------------------------------------------------------------------------
 
-# Accesso in lettura/cattura al mouse Microsoft Sculpt Comfort (045e:07a2)
+# Microsoft Sculpt Comfort (045e:07a2)
 SUBSYSTEM=="input", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="uaccess", MODE="0660"
 KERNEL=="event*", ATTRS{id/vendor}=="045e", ATTRS{id/product}=="07a2", TAG+="uaccess", MODE="0660"
 KERNEL=="event*", ATTRS{name}=="Microsoft Sculpt Comfort Mouse*", TAG+="uaccess", MODE="0660"
+
+# Logitech G502 / G502 X Series (046d:c547, 046d:4099, 046d:c099, 046d:c08b)
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c547", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="4099", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c099", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c08b", TAG+="uaccess", MODE="0660"
+KERNEL=="event*", ATTRS{name}=="*G502*", TAG+="uaccess", MODE="0660"
 
 # Accesso al modulo uinput per l'emissione di tasti e click virtuali
 KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput", MODE="0660"
@@ -71,7 +78,8 @@ pub fn check_permissions() -> PermissionStatus {
     let mut nodes_ok = true;
     if let Ok(content) = std::fs::read_to_string("/proc/bus/input/devices") {
         for block in content.split("\n\n") {
-            if block.contains("Sculpt Comfort") {
+            let lower = block.to_lowercase();
+            if lower.contains("sculpt comfort") || lower.contains("g502") {
                 for line in block.lines() {
                     if line.starts_with("H: Handlers=") {
                         for part in line.split_whitespace() {
