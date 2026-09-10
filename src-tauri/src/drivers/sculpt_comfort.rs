@@ -163,6 +163,8 @@ impl DeviceDriver for SculptComfortDriver {
         if ev_type == EV_KEY && code == BTN_MIDDLE {
             if value == 1 {
                 return GestureResult::Trigger("middle_click".to_string());
+            } else if value == 0 {
+                return GestureResult::TriggerRelease("middle_click".to_string());
             }
             return GestureResult::Consume;
         }

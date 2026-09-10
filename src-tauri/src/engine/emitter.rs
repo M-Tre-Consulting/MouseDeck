@@ -11,12 +11,36 @@ const EV_KEY: u16 = 1;
 
 pub struct UInputEmitter {
     virtual_dev: Option<VirtualDevice>,
+    last_init_attempt: Option<std::time::Instant>,
 }
 
 impl UInputEmitter {
     pub fn new() -> Self {
         let dev = Self::init_virtual_device();
-        Self { virtual_dev: dev }
+        Self {
+            virtual_dev: dev,
+            last_init_attempt: Some(std::time::Instant::now()),
+        }
+    }
+
+    pub fn is_ready(&mut self) -> bool {
+        if self.virtual_dev.is_some() {
+            return true;
+        }
+        // Throttle initialization attempts to once every 2 seconds to avoid CPU spin
+        let now = std::time::Instant::now();
+        if let Some(last) = self.last_init_attempt {
+            if now.duration_since(last) < Duration::from_secs(2) {
+                return false;
+            }
+        }
+        self.last_init_attempt = Some(now);
+        self.virtual_dev = Self::init_virtual_device();
+        self.virtual_dev.is_some()
+    }
+
+    fn syn_report() -> InputEvent {
+        InputEvent::new(evdev::EventType::SYNCHRONIZATION.0, 0, 0)
     }
 
     fn init_virtual_device() -> Option<VirtualDevice> {
@@ -67,7 +91,7 @@ impl UInputEmitter {
             {
                 Ok(b) => match b.build() {
                     Ok(vd) => {
-                        println!("[UInputEmitter] Dispositivo virtuale inizializzato con successo.");
+                        println!("[UInputEmitter] Dispositivo virtuale /dev/uinput inizializzato con successo.");
                         Some(vd)
                     }
                     Err(e) => {
@@ -81,18 +105,26 @@ impl UInputEmitter {
                 }
             },
             Err(e) => {
-                eprintln!("[UInputEmitter] Errore VirtualDevice::builder: {}", e);
+                eprintln!("[UInputEmitter] Impossibile aprire /dev/uinput (permessi mancanti?): {}", e);
                 None
             }
         }
     }
 
-    pub fn emit_raw_event(&mut self, ev: &InputEvent) {
-        if self.virtual_dev.is_none() {
-            self.virtual_dev = Self::init_virtual_device();
+    pub fn emit_raw_event(&mut self, ev: &InputEvent) -> bool {
+        if !self.is_ready() {
+            return false;
         }
         if let Some(dev) = self.virtual_dev.as_mut() {
-            let _ = dev.emit(&[*ev]);
+            match dev.emit(&[*ev]) {
+                Ok(_) => true,
+                Err(e) => {
+                    eprintln!("[UInputEmitter] Errore emit_raw_event: {}", e);
+                    false
+                }
+            }
+        } else {
+            false
         }
     }
 
@@ -111,16 +143,14 @@ impl UInputEmitter {
             return;
         }
 
-        if self.virtual_dev.is_none() {
-            self.virtual_dev = Self::init_virtual_device();
+        if !self.is_ready() {
+            eprintln!("[UInputEmitter] Dispositivo virtuale non pronto o /dev/uinput non accessibile.");
+            return;
         }
 
         let dev = match self.virtual_dev.as_mut() {
             Some(d) => d,
-            None => {
-                eprintln!("[UInputEmitter] Dispositivo virtuale non disponibile.");
-                return;
-            }
+            None => return,
         };
 
         match action.action_type.as_str() {
@@ -145,20 +175,22 @@ impl UInputEmitter {
             return;
         }
 
-        // Press down
+        // Press down + flush frame with SYN_REPORT
         let mut down_events = Vec::new();
         for k in &keys_to_press {
             down_events.push(InputEvent::new(EV_KEY, k.code(), 1));
         }
+        down_events.push(Self::syn_report());
         let _ = dev.emit(&down_events);
 
         thread::sleep(Duration::from_millis(15));
 
-        // Release in reverse
+        // Release in reverse + flush frame with SYN_REPORT
         let mut up_events = Vec::new();
         for k in keys_to_press.iter().rev() {
             up_events.push(InputEvent::new(EV_KEY, k.code(), 0));
         }
+        up_events.push(Self::syn_report());
         let _ = dev.emit(&up_events);
     }
 
@@ -170,15 +202,16 @@ impl UInputEmitter {
             "btn_side" | "side" | "back" => KeyCode::BTN_SIDE,
             "btn_extra" | "extra" | "forward" => KeyCode::BTN_EXTRA,
             "btn_forward" => KeyCode::BTN_FORWARD,
+            "btn_back" => KeyCode::BTN_BACK,
             "btn_task" => KeyCode::BTN_TASK,
             "btn_0" => KeyCode::BTN_0,
             _ => KeyCode::BTN_MIDDLE,
         };
 
-        let down = [InputEvent::new(EV_KEY, key.code(), 1)];
+        let down = [InputEvent::new(EV_KEY, key.code(), 1), Self::syn_report()];
         let _ = dev.emit(&down);
         thread::sleep(Duration::from_millis(15));
-        let up = [InputEvent::new(EV_KEY, key.code(), 0)];
+        let up = [InputEvent::new(EV_KEY, key.code(), 0), Self::syn_report()];
         let _ = dev.emit(&up);
     }
 
@@ -193,10 +226,10 @@ impl UInputEmitter {
             _ => return,
         };
 
-        let down = [InputEvent::new(EV_KEY, key.code(), 1)];
+        let down = [InputEvent::new(EV_KEY, key.code(), 1), Self::syn_report()];
         let _ = dev.emit(&down);
         thread::sleep(Duration::from_millis(15));
-        let up = [InputEvent::new(EV_KEY, key.code(), 0)];
+        let up = [InputEvent::new(EV_KEY, key.code(), 0), Self::syn_report()];
         let _ = dev.emit(&up);
     }
 }

@@ -132,13 +132,17 @@ impl DeviceDriver for G502XDriver {
                 _ => GestureResult::PassThrough,
             }
         } else if value == 0 {
-            // Key release: consume handled remappable buttons to avoid OS side effects
+            // Key release: emit TriggerRelease so service.rs can distinguish between
+            // custom actions (consume release) and passthrough/unmapped actions (emit release).
             match code {
-                BTN_SIDE | BTN_EXTRA | BTN_0 | BTN_6 | KEY_PROG1 |
-                BTN_BACK | BTN_1 | KEY_VOLUMEDOWN |
-                BTN_FORWARD | BTN_2 | KEY_VOLUMEUP |
-                BTN_TASK | BTN_3 | KEY_PROG2 |
-                BTN_MIDDLE => GestureResult::Consume,
+                BTN_SIDE => GestureResult::TriggerRelease("g4_back".to_string()),
+                BTN_EXTRA => GestureResult::TriggerRelease("g5_forward".to_string()),
+                BTN_0 | BTN_6 | KEY_PROG1 => GestureResult::TriggerRelease("g6_sniper".to_string()),
+                BTN_BACK | BTN_1 | KEY_VOLUMEDOWN => GestureResult::TriggerRelease("g7_dpi_down".to_string()),
+                BTN_FORWARD | BTN_2 | KEY_VOLUMEUP => GestureResult::TriggerRelease("g8_dpi_up".to_string()),
+                BTN_TASK | BTN_3 | KEY_PROG2 => GestureResult::TriggerRelease("g9_profile".to_string()),
+                BTN_MIDDLE => GestureResult::TriggerRelease("middle_click".to_string()),
+                BTN_LEFT | BTN_RIGHT => GestureResult::PassThrough,
                 _ => GestureResult::PassThrough,
             }
         } else {
@@ -207,9 +211,9 @@ mod tests {
         assert_eq!(driver.process_keyboard_event(BTN_LEFT, 1), GestureResult::PassThrough);
         assert_eq!(driver.process_keyboard_event(BTN_RIGHT, 1), GestureResult::PassThrough);
 
-        // Key up must consume handled triggers
-        assert_eq!(driver.process_keyboard_event(BTN_SIDE, 0), GestureResult::Consume);
-        assert_eq!(driver.process_keyboard_event(BTN_0, 0), GestureResult::Consume);
+        // Key up emits TriggerRelease
+        assert_eq!(driver.process_keyboard_event(BTN_SIDE, 0), GestureResult::TriggerRelease("g4_back".into()));
+        assert_eq!(driver.process_keyboard_event(BTN_0, 0), GestureResult::TriggerRelease("g6_sniper".into()));
     }
 
     #[test]

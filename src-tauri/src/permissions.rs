@@ -230,6 +230,11 @@ pub fn perform_native_install(target_user: &str) -> Result<String, String> {
     // Fix permissions on /dev/uinput
     let _ = Command::new("chmod").args(["0660", "/dev/uinput"]).output();
     let _ = Command::new("chgrp").args(["input", "/dev/uinput"]).output();
+    if !target_user.is_empty() && target_user != "root" {
+        let _ = Command::new("setfacl")
+            .args(["-m", &format!("u:{}:rw", target_user), "/dev/uinput"])
+            .output();
+    }
 
     // Fix ownership of user config directory
     let user_mousedeck_dir = user_home.join(".config/mousedeck");
@@ -277,6 +282,12 @@ pub fn perform_native_restore(target_user: &str) -> Result<String, String> {
 
     if !user_was_in_input && !target_user.is_empty() && target_user != "root" {
         let _ = Command::new("gpasswd").args(["-d", target_user, "input"]).output();
+    }
+
+    if !target_user.is_empty() && target_user != "root" && Path::new("/dev/uinput").exists() {
+        let _ = Command::new("setfacl")
+            .args(["-x", &format!("u:{}", target_user), "/dev/uinput"])
+            .output();
     }
 
     // Reload udev

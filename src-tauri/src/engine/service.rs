@@ -74,19 +74,29 @@ impl RemapperService {
                     }
                 };
 
-                // Grab device
-                let is_grabbed = match dev.grab() {
-                    Ok(_) => {
-                        println!("[RemapperService] Dispositivo {} afferrato con successo!", target_path);
-                        true
-                    }
-                    Err(e) => {
-                        eprintln!("[RemapperService] Impossibile afferrare in esclusiva {} (fallback monitor): {}", target_path, e);
-                        false
+                // Check if virtual device (/dev/uinput) is ready BEFORE attempting exclusive grab!
+                // If /dev/uinput is not accessible, grabbing would swallow all pointer events
+                // and freeze the mouse cursor.
+                let uinput_ready = emitter.lock().unwrap().is_ready();
+                let mut is_grabbed = if !uinput_ready {
+                    eprintln!("[RemapperService] ATTENZIONE: /dev/uinput non pronto o permessi mancanti.");
+                    eprintln!("[RemapperService] Grab esclusivo DISATTIVATO: esecuzione in modalità monitor passivo (il cursore non si bloccherà).");
+                    false
+                } else {
+                    match dev.grab() {
+                        Ok(_) => {
+                            println!("[RemapperService] Dispositivo {} afferrato con successo!", target_path);
+                            true
+                        }
+                        Err(e) => {
+                            eprintln!("[RemapperService] Impossibile afferrare in esclusiva {} (fallback monitor): {}", target_path, e);
+                            false
+                        }
                     }
                 };
 
                 driver.reset_state();
+                let mut last_grab_check = std::time::Instant::now();
 
                 // Event loop for this device
                 loop {
@@ -100,6 +110,23 @@ impl RemapperService {
                         break;
                     }
 
+                    // If not grabbed yet (e.g. waiting for permissions), periodically try to promote to grab
+                    if !is_grabbed && last_grab_check.elapsed() > Duration::from_secs(2) {
+                        last_grab_check = std::time::Instant::now();
+                        if emitter.lock().unwrap().is_ready() {
+                            match dev.grab() {
+                                Ok(_) => {
+                                    println!("[RemapperService] Permessi /dev/uinput acquisiti! Dispositivo {} ora afferrato in esclusiva.", target_path);
+                                    is_grabbed = true;
+                                }
+                                Err(e) => {
+                                    eprintln!("[RemapperService] Tentativo grab fallito: {}", e);
+                                }
+                            }
+                        }
+                    }
+
+                    let mut needs_ungrab = false;
                     let should_break = match dev.fetch_events() {
                         Ok(events) => {
                             for ev in events {
@@ -119,8 +146,10 @@ impl RemapperService {
 
                                         if let Some(action) = active_map.get(&trigger_id) {
                                             if action.action_type == "passthrough" {
-                                                if is_grabbed {
-                                                    emitter.lock().unwrap().emit_raw_event(&ev);
+                                                if is_grabbed && !emitter.lock().unwrap().emit_raw_event(&ev) {
+                                                    is_grabbed = false;
+                                                    needs_ungrab = true;
+                                                    eprintln!("[RemapperService] Fail-safe: rilascio grab per evitare blocco del mouse.");
                                                 }
                                             } else {
                                                 emitter.lock().unwrap().execute_action(action);
@@ -137,14 +166,36 @@ impl RemapperService {
                                                 };
                                                 let _ = app.emit("gesture-triggered", payload);
                                             }
-                                        } else if is_grabbed {
+                                        } else if is_grabbed && !emitter.lock().unwrap().emit_raw_event(&ev) {
                                             // Unmapped: pass through original event
-                                            emitter.lock().unwrap().emit_raw_event(&ev);
+                                            is_grabbed = false;
+                                            needs_ungrab = true;
+                                            eprintln!("[RemapperService] Fail-safe: rilascio grab per evitare blocco del mouse.");
                                         }
                                     }
+                                    GestureResult::TriggerRelease(trigger_id) => {
+                                        let cfg = cfg_mgr.lock().unwrap().load();
+                                        let active_map = cfg.profiles.get(&cfg.active_profile)
+                                            .cloned()
+                                            .unwrap_or_default();
+
+                                        let is_passthrough = match active_map.get(&trigger_id) {
+                                            Some(action) => action.action_type == "passthrough",
+                                            None => true, // unmapped buttons default to passthrough
+                                        };
+
+                                        if is_passthrough && is_grabbed && !emitter.lock().unwrap().emit_raw_event(&ev) {
+                                            is_grabbed = false;
+                                            needs_ungrab = true;
+                                            eprintln!("[RemapperService] Fail-safe: rilascio grab per evitare blocco del mouse.");
+                                        }
+                                        // Custom mapped actions consume release automatically
+                                    }
                                     GestureResult::PassThrough => {
-                                        if is_grabbed {
-                                            emitter.lock().unwrap().emit_raw_event(&ev);
+                                        if is_grabbed && !emitter.lock().unwrap().emit_raw_event(&ev) {
+                                            is_grabbed = false;
+                                            needs_ungrab = true;
+                                            eprintln!("[RemapperService] Fail-safe: rilascio grab per evitare blocco del mouse.");
                                         }
                                     }
                                     GestureResult::Consume => {
@@ -159,6 +210,10 @@ impl RemapperService {
                             true
                         }
                     };
+
+                    if needs_ungrab {
+                        let _ = dev.ungrab();
+                    }
 
                     if should_break {
                         break;

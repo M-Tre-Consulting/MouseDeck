@@ -5,6 +5,7 @@ pub enum GestureResult {
     PassThrough,
     Consume,
     Trigger(String),
+    TriggerRelease(String),
 }
 
 pub trait DeviceDriver: Send + Sync {

@@ -144,6 +144,9 @@ RULE
     if [ -e /dev/uinput ]; then
         chmod 0660 /dev/uinput || true
         chgrp input /dev/uinput 2>/dev/null || true
+        if [ -n "$TARGET_USER" ] && [ "$TARGET_USER" != "root" ]; then
+            setfacl -m u:"$TARGET_USER":rw /dev/uinput 2>/dev/null || true
+        fi
     fi
 
     # 10. Copia mirror manifest nella home dell'utente per lettura senza root
@@ -198,6 +201,10 @@ do_restore() {
     if [ "$USER_WAS_IN_INPUT" = "false" ] && [ -n "$TARGET_USER" ]; then
         echo "-> Rimozione utente '$TARGET_USER' dal gruppo 'input'..."
         gpasswd -d "$TARGET_USER" input 2>/dev/null || true
+    fi
+
+    if [ -n "$TARGET_USER" ] && [ "$TARGET_USER" != "root" ] && [ -e /dev/uinput ]; then
+        setfacl -x u:"$TARGET_USER" /dev/uinput 2>/dev/null || true
     fi
 
     # 4. Ricarica udev
