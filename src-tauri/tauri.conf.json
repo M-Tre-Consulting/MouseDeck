@@ -26,13 +26,39 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "rpm"],
+    "targets": ["deb", "rpm", "appimage"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0",
+          "libappindicator3-1"
+        ],
+        "files": {
+          "/usr/lib/udev/rules.d/70-mousedeck.rules": "../packaging/arch/70-mousedeck.rules",
+          "/usr/lib/modules-load.d/mousedeck-uinput.conf": "../packaging/arch/mousedeck-uinput.conf",
+          "/usr/share/polkit-1/actions/io.github.mousedeck.policy": "../packaging/arch/io.github.mousedeck.policy"
+        }
+      },
+      "rpm": {
+        "depends": [
+          "webkit2gtk4.1",
+          "gtk3",
+          "libappindicator-gtk3"
+        ],
+        "files": {
+          "/usr/lib/udev/rules.d/70-mousedeck.rules": "../packaging/arch/70-mousedeck.rules",
+          "/usr/lib/modules-load.d/mousedeck-uinput.conf": "../packaging/arch/mousedeck-uinput.conf",
+          "/usr/share/polkit-1/actions/io.github.mousedeck.policy": "../packaging/arch/io.github.mousedeck.policy"
+        }
+      }
+    }
   }
 }

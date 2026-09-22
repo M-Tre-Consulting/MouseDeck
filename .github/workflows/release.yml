@@ -1,0 +1,126 @@
+name: Release & Distro Packaging
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-ubuntu-fedora:
+    name: Build Ubuntu (.deb), Fedora (.rpm) & AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libudev-dev \
+            rpm \
+            squashfs-tools
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Tauri bundles (.deb, .rpm, .AppImage)
+        run: npm run tauri build
+
+      - name: Organize release artifacts
+        run: |
+          mkdir -p artifacts
+          find src-tauri/target/release/bundle/deb -name "*.deb" -exec cp {} artifacts/ \; || true
+          find src-tauri/target/release/bundle/rpm -name "*.rpm" -exec cp {} artifacts/ \; || true
+          find src-tauri/target/release/bundle/appimage -name "*.AppImage" -exec cp {} artifacts/ \; || true
+
+      - name: Upload Debian / Fedora / AppImage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-bundles
+          path: artifacts/*
+          if-no-files-found: error
+
+  build-arch:
+    name: Build Arch Linux / Omarchy (.pkg.tar.zst)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update system and install Arch dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed nodejs npm rust git webkit2gtk-4.1 gtk3 libappindicator-gtk3 sudo
+
+      - name: Setup non-root build user for makepkg
+        run: |
+          useradd -m -s /bin/bash builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Compile and package with makepkg
+        run: |
+          su builder -c "npm ci || npm install"
+          su builder -c "bash scripts/build-arch-package.sh"
+
+      - name: Upload Arch Linux package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-package
+          path: dist/*.pkg.tar.zst
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [build-ubuntu-fedora, build-arch]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Generate SHA256 checksums
+        working-directory: release-assets
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
