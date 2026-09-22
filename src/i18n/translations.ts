@@ -46,6 +46,8 @@ export interface Translations {
   dashboard: {
     g502Active: string;
     sculptActive: string;
+    anywhere2sActive: string;
+    anywhere3Active: string;
     engineSubtitle: string;
     reconnect: string;
     reconnectSent: string;
@@ -71,6 +73,7 @@ export interface Translations {
     selectDriver: string;
     g502ThumbGroup: string;
     g502IndexGroup: string;
+    anywhereThumbGroup: string;
     wheelGroup: string;
     sculptGroup: string;
     clickToRemap: string;
@@ -89,6 +92,7 @@ export interface Translations {
     title: string;
     subtitleG502: string;
     subtitleSculpt: string;
+    subtitleAnywhere: string;
     diagramTitle: string;
     diagramHelp: string;
     historyTitle: string;
@@ -211,6 +215,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       g502Active: "Driver G502 X Attivo",
       sculptActive: "Driver Sculpt Attivo",
+      anywhere2sActive: "Driver MX Anywhere 2S Attivo",
+      anywhere3Active: "Driver MX Anywhere 3 Attivo",
       engineSubtitle: "MouseDeck Hardware Engine",
       reconnect: "Ricarica",
       reconnectSent: "Comando di riconnessione inviato.",
@@ -236,6 +242,7 @@ export const translations: Record<Language, Translations> = {
       selectDriver: "Driver Selezionato",
       g502ThumbGroup: "Tasti Pollice (G4 / G5 / G6)",
       g502IndexGroup: "Tasti Indice & Profilo (G7 / G8 / G9)",
+      anywhereThumbGroup: "Pulsanti Laterali Pollice (Avanti / Indietro)",
       wheelGroup: "Rotellina & Inclinazione (4 Direzioni)",
       sculptGroup: "Gesti Striscia Touch Blu",
       clickToRemap: "Clicca per rimappare",
@@ -256,6 +263,8 @@ export const translations: Record<Language, Translations> = {
         "Premi i tasti programmabili del tuo Logitech G502 X per vederli catturati istantaneamente dal motore Rust.",
       subtitleSculpt:
         "Esegui gesti sulla touch strip per vederli catturati istantaneamente dal motore Rust.",
+      subtitleAnywhere:
+        "Premi i pulsanti del tuo Logitech MX Anywhere per vederli catturati istantaneamente dal motore Rust.",
       diagramTitle: "Diagramma Interattivo Hardware",
       diagramHelp: "I tasti e i gesti si illuminano in tempo reale quando vengono attivati dal mouse fisico.",
       historyTitle: "Cronologia Eventi Ricevuti",
@@ -383,6 +392,14 @@ export const translations: Record<Language, Translations> = {
         name: "Pulsante Windows Touch",
         desc: "Clic capacitivo sulla striscia blu",
       },
+      back: {
+        name: "Pulsante Laterale Indietro",
+        desc: "Tasto pollice inferiore (default: Cronologia Indietro)",
+      },
+      forward: {
+        name: "Pulsante Laterale Avanti",
+        desc: "Tasto pollice superiore (default: Cronologia Avanti)",
+      },
     },
   },
   en: {
@@ -432,6 +449,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       g502Active: "G502 X Driver Active",
       sculptActive: "Sculpt Driver Active",
+      anywhere2sActive: "MX Anywhere 2S Driver Active",
+      anywhere3Active: "MX Anywhere 3 Driver Active",
       engineSubtitle: "MouseDeck Hardware Engine",
       reconnect: "Refresh",
       reconnectSent: "Reconnection command sent.",
@@ -457,6 +476,7 @@ export const translations: Record<Language, Translations> = {
       selectDriver: "Selected Driver",
       g502ThumbGroup: "Thumb Buttons (G4 / G5 / G6)",
       g502IndexGroup: "Index & Profile Buttons (G7 / G8 / G9)",
+      anywhereThumbGroup: "Thumb Side Buttons (Back / Forward)",
       wheelGroup: "Scroll Wheel & 4-Way Tilt",
       sculptGroup: "Blue Touch Strip Gestures",
       clickToRemap: "Click to remap",
@@ -477,6 +497,8 @@ export const translations: Record<Language, Translations> = {
         "Press programmable buttons on your Logitech G502 X to watch them captured in real-time by the Rust engine.",
       subtitleSculpt:
         "Perform gestures on the blue touch strip to watch them captured in real-time by the Rust engine.",
+      subtitleAnywhere:
+        "Press buttons on your Logitech MX Anywhere to watch them captured in real-time by the Rust engine.",
       diagramTitle: "Interactive Hardware Diagram",
       diagramHelp: "Buttons and gestures illuminate in real-time when triggered on the physical mouse.",
       historyTitle: "Received Event Stream",
@@ -603,6 +625,14 @@ export const translations: Record<Language, Translations> = {
       windows_click: {
         name: "Windows Touch Button",
         desc: "Capacitive tap on blue Windows strip",
+      },
+      back: {
+        name: "Side Back Button",
+        desc: "Lower thumb button (default: Browser Back)",
+      },
+      forward: {
+        name: "Side Forward Button",
+        desc: "Upper thumb button (default: Browser Forward)",
       },
     },
   },

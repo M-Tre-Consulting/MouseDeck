@@ -1,12 +1,14 @@
 pub mod trait_def;
 pub mod sculpt_comfort;
 pub mod g502_x;
+pub mod mx_anywhere;
 
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use crate::drivers::trait_def::DeviceDriver;
 use crate::drivers::sculpt_comfort::SculptComfortDriver;
 use crate::drivers::g502_x::G502XDriver;
+use crate::drivers::mx_anywhere::MxAnywhereDriver;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DriverInfo {
@@ -29,6 +31,12 @@ impl DriverRegistry {
 
         let g502 = G502XDriver::new();
         drivers.insert(g502.driver_id().to_string(), Box::new(g502));
+
+        let mx2s = MxAnywhereDriver::new_2s();
+        drivers.insert(mx2s.driver_id().to_string(), Box::new(mx2s));
+
+        let mx3 = MxAnywhereDriver::new_3();
+        drivers.insert(mx3.driver_id().to_string(), Box::new(mx3));
 
         Self { drivers }
     }
@@ -55,6 +63,18 @@ impl DriverRegistry {
                 product_id: "c547".to_string(),
             },
             DriverInfo {
+                id: "logitech_mx_anywhere_2s".to_string(),
+                name: "Logitech MX Anywhere 2S".to_string(),
+                vendor_id: "046d".to_string(),
+                product_id: "406a".to_string(),
+            },
+            DriverInfo {
+                id: "logitech_mx_anywhere_3".to_string(),
+                name: "Logitech MX Anywhere 3".to_string(),
+                vendor_id: "046d".to_string(),
+                product_id: "4090".to_string(),
+            },
+            DriverInfo {
                 id: "microsoft_sculpt_comfort".to_string(),
                 name: "Microsoft Sculpt Comfort Mouse".to_string(),
                 vendor_id: "045e".to_string(),
@@ -66,6 +86,8 @@ impl DriverRegistry {
     pub fn instantiate_driver(id: &str) -> Box<dyn DeviceDriver> {
         match id {
             "logitech_g502_x" => Box::new(G502XDriver::new()),
+            "logitech_mx_anywhere_2s" => Box::new(MxAnywhereDriver::new_2s()),
+            "logitech_mx_anywhere_3" => Box::new(MxAnywhereDriver::new_3()),
             _ => Box::new(SculptComfortDriver::new()),
         }
     }

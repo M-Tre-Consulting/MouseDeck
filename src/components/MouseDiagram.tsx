@@ -103,6 +103,37 @@ export const SCULPT_TRIGGER_INFO: Record<
   },
 };
 
+export const MX_ANYWHERE_TRIGGER_INFO: Record<
+  string,
+  { name: string; desc: string; pos: { x: number; y: number } }
+> = {
+  back: {
+    name: "Pulsante Laterale Indietro",
+    desc: "Tasto pollice inferiore (Back)",
+    pos: { x: 50, y: 172 },
+  },
+  forward: {
+    name: "Pulsante Laterale Avanti",
+    desc: "Tasto pollice superiore (Forward)",
+    pos: { x: 50, y: 132 },
+  },
+  middle_click: {
+    name: "Click Rotellina MagSpeed",
+    desc: "Pulsante 3 centrale della rotella",
+    pos: { x: 120, y: 78 },
+  },
+  tilt_left: {
+    name: "Inclinazione Sinistra (Tilt L)",
+    desc: "Spinta rotellina verso sinistra",
+    pos: { x: 98, y: 78 },
+  },
+  tilt_right: {
+    name: "Inclinazione Destra (Tilt R)",
+    desc: "Spinta rotellina verso destra",
+    pos: { x: 142, y: 78 },
+  },
+};
+
 export const MouseDiagram: React.FC<MouseDiagramProps> = ({
   activeTrigger,
   hoveredTrigger,
@@ -120,9 +151,34 @@ export const MouseDiagram: React.FC<MouseDiagramProps> = ({
     (activeTrigger && activeTrigger.startsWith("g")) ||
     (hoveredTrigger && hoveredTrigger.startsWith("g"));
 
+  const isMxAnywhere =
+    driverId === "logitech_mx_anywhere_2s" ||
+    driverId === "logitech_mx_anywhere_3" ||
+    activeTrigger === "back" ||
+    activeTrigger === "forward" ||
+    hoveredTrigger === "back" ||
+    hoveredTrigger === "forward";
+
   if (isG502) {
     return (
       <G502Diagram
+        activeTrigger={activeTrigger}
+        hoveredTrigger={hoveredTrigger}
+        className={className}
+        width={width}
+        height={height}
+        onTriggerClick={onTriggerClick}
+        onTriggerHover={onTriggerHover}
+        mappings={mappings}
+        showTooltips={showTooltips}
+      />
+    );
+  }
+
+  if (isMxAnywhere) {
+    return (
+      <MxAnywhereDiagram
+        driverId={driverId}
         activeTrigger={activeTrigger}
         hoveredTrigger={hoveredTrigger}
         className={className}
@@ -894,4 +950,360 @@ const SculptDiagram: React.FC<{
     </div>
   );
 };
+
+// =============================================================================
+// Logitech MX Anywhere 2S / 3 Vector Diagram
+// =============================================================================
+const MxAnywhereDiagram: React.FC<{
+  driverId?: string;
+  activeTrigger?: string | null;
+  hoveredTrigger?: string | null;
+  className?: string;
+  width: number;
+  height: number;
+  onTriggerClick?: (triggerId: string, triggerName: string) => void;
+  onTriggerHover?: (triggerId: string | null) => void;
+  mappings?: Record<string, ActionConfig>;
+  showTooltips?: boolean;
+}> = ({
+  driverId,
+  activeTrigger,
+  hoveredTrigger,
+  className = "",
+  width,
+  height,
+  onTriggerClick,
+  onTriggerHover,
+  mappings = {},
+  showTooltips = true,
+}) => {
+  const [internalHover, setInternalHover] = useState<string | null>(null);
+  const currentHover = hoveredTrigger !== undefined ? hoveredTrigger : internalHover;
+
+  const isBack = activeTrigger === "back" || currentHover === "back";
+  const isForward = activeTrigger === "forward" || currentHover === "forward";
+  const isMiddleClick = activeTrigger === "middle_click" || currentHover === "middle_click";
+  const isTiltLeft = activeTrigger === "tilt_left" || currentHover === "tilt_left";
+  const isTiltRight = activeTrigger === "tilt_right" || currentHover === "tilt_right";
+
+  const handleHover = (id: string | null) => {
+    setInternalHover(id);
+    onTriggerHover?.(id);
+  };
+
+  const handleClick = (id: string) => {
+    const info = MX_ANYWHERE_TRIGGER_INFO[id];
+    onTriggerClick?.(id, info?.name || id);
+  };
+
+  const activeTooltipInfo = currentHover ? MX_ANYWHERE_TRIGGER_INFO[currentHover] : null;
+  const is3Series = driverId === "logitech_mx_anywhere_3";
+
+  return (
+    <div className={`relative inline-flex items-center justify-center select-none ${className}`}>
+      <svg
+        viewBox="0 0 240 310"
+        width={width}
+        height={height}
+        className="transition-all duration-300 drop-shadow-2xl overflow-visible"
+      >
+        <defs>
+          <linearGradient id="mxChassis" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#222631" />
+            <stop offset="45%" stopColor="#181a23" />
+            <stop offset="100%" stopColor="#0d0e14" />
+          </linearGradient>
+
+          <linearGradient id="mxGrip" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#15171f" />
+            <stop offset="100%" stopColor="#0a0b0f" />
+          </linearGradient>
+
+          <linearGradient id="mxClicker" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#2b303d" />
+            <stop offset="100%" stopColor="#161821" />
+          </linearGradient>
+
+          <linearGradient id="mxActiveGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#00f2fe" />
+            <stop offset="100%" stopColor="#38bdf8" />
+          </linearGradient>
+
+          <linearGradient id="mxMetalWheel" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3a4153" />
+            <stop offset="35%" stopColor="#73819c" />
+            <stop offset="65%" stopColor="#94a3b8" />
+            <stop offset="100%" stopColor="#3a4153" />
+          </linearGradient>
+
+          <filter id="mxGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+
+        {/* Ambient shadow */}
+        <ellipse cx="120" cy="165" rx="82" ry="120" fill="rgba(0,0,0,0.5)" filter="blur(10px)" />
+
+        {/* Left textured grip zone (faceted silicone pattern) */}
+        <path
+          d="M 52 110
+             C 46 135, 46 185, 54 215
+             C 58 228, 66 242, 75 252
+             L 68 245
+             C 52 225, 42 185, 42 150
+             C 42 125, 46 100, 52 110
+             Z"
+          fill="url(#mxGrip)"
+          stroke="#262b3a"
+          strokeWidth="1"
+        />
+
+        {/* Faceted grip lines (left) */}
+        <path d="M 45 140 L 52 145 L 47 155" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+        <path d="M 46 165 L 53 170 L 48 180" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+        <path d="M 49 190 L 55 195 L 52 205" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+
+        {/* Right textured grip zone */}
+        <path
+          d="M 188 110
+             C 194 135, 194 185, 186 215
+             C 182 228, 174 242, 165 252
+             L 172 245
+             C 188 225, 198 185, 198 150
+             C 198 125, 194 100, 188 110
+             Z"
+          fill="url(#mxGrip)"
+          stroke="#262b3a"
+          strokeWidth="1"
+        />
+        <path d="M 195 140 L 188 145 L 193 155" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+        <path d="M 194 165 L 187 170 L 192 180" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+        <path d="M 191 190 L 185 195 L 188 205" stroke="#1f2330" strokeWidth="1.2" fill="none" />
+
+        {/* Main Body Chassis (Pebble Symmetrical Form) */}
+        <path
+          d="M 80 40
+             C 105 32, 135 32, 160 40
+             C 182 50, 192 85, 192 135
+             C 192 190, 185 240, 162 268
+             C 145 285, 95 285, 78 268
+             C 55 240, 48 190, 48 135
+             C 48 85, 58 50, 80 40
+             Z"
+          fill="url(#mxChassis)"
+          stroke="#2d3345"
+          strokeWidth="1.5"
+        />
+
+        {/* Left Primary Clicker */}
+        <path
+          d="M 80 40
+             C 100 33, 115 33, 118 35
+             L 118 122
+             L 52 122
+             C 48 95, 58 60, 80 40
+             Z"
+          fill="url(#mxClicker)"
+          stroke="#32384a"
+          strokeWidth="1"
+        />
+
+        {/* Right Primary Clicker */}
+        <path
+          d="M 160 40
+             C 140 33, 125 33, 122 35
+             L 122 122
+             L 188 122
+             C 192 95, 182 60, 160 40
+             Z"
+          fill="url(#mxClicker)"
+          stroke="#32384a"
+          strokeWidth="1"
+        />
+
+        {/* Center Divider Gap */}
+        <line x1="120" y1="35" x2="120" y2="120" stroke="#0e1017" strokeWidth="2" />
+
+        {/* Thumb Forward Button */}
+        <g
+          className="cursor-pointer"
+          onMouseEnter={() => handleHover("forward")}
+          onMouseLeave={() => handleHover(null)}
+          onClick={() => handleClick("forward")}
+        >
+          <path
+            d="M 44 122
+               C 44 116, 52 116, 54 117
+               L 54 144
+               C 52 144, 43 142, 43 136
+               Z"
+            fill={isForward ? "url(#mxActiveGlow)" : "#252b3b"}
+            stroke={isForward ? "#38bdf8" : "#3b445c"}
+            strokeWidth={isForward ? "1.8" : "1"}
+            filter={isForward ? "url(#mxGlow)" : undefined}
+            className="transition-all duration-150"
+          />
+          <text
+            x="48"
+            y="133"
+            fontSize="6"
+            fontWeight="bold"
+            textAnchor="middle"
+            fill={isForward ? "#0c0d12" : "#94a3b8"}
+            className="pointer-events-none"
+          >
+            F
+          </text>
+        </g>
+
+        {/* Thumb Back Button */}
+        <g
+          className="cursor-pointer"
+          onMouseEnter={() => handleHover("back")}
+          onMouseLeave={() => handleHover(null)}
+          onClick={() => handleClick("back")}
+        >
+          <path
+            d="M 43 148
+               C 43 145, 52 147, 54 147
+               L 54 174
+               C 52 176, 45 174, 45 168
+               Z"
+            fill={isBack ? "url(#mxActiveGlow)" : "#252b3b"}
+            stroke={isBack ? "#38bdf8" : "#3b445c"}
+            strokeWidth={isBack ? "1.8" : "1"}
+            filter={isBack ? "url(#mxGlow)" : undefined}
+            className="transition-all duration-150"
+          />
+          <text
+            x="49"
+            y="163"
+            fontSize="6"
+            fontWeight="bold"
+            textAnchor="middle"
+            fill={isBack ? "#0c0d12" : "#94a3b8"}
+            className="pointer-events-none"
+          >
+            B
+          </text>
+        </g>
+
+        {/* Scroll Wheel Well */}
+        <rect x="110" y="50" width="20" height="56" rx="4" fill="#0b0c12" stroke="#1d212d" strokeWidth="1" />
+
+        {/* Tilt Left Arrow */}
+        <path
+          d="M 106 74 L 100 78 L 106 82 Z"
+          fill={isTiltLeft ? "#00f2fe" : "#333d52"}
+          filter={isTiltLeft ? "url(#mxGlow)" : undefined}
+          className="transition-colors duration-150 cursor-pointer"
+          onMouseEnter={() => handleHover("tilt_left")}
+          onMouseLeave={() => handleHover(null)}
+          onClick={() => handleClick("tilt_left")}
+        />
+
+        {/* Tilt Right Arrow */}
+        <path
+          d="M 134 74 L 140 78 L 134 82 Z"
+          fill={isTiltRight ? "#00f2fe" : "#333d52"}
+          filter={isTiltRight ? "url(#mxGlow)" : undefined}
+          className="transition-colors duration-150 cursor-pointer"
+          onMouseEnter={() => handleHover("tilt_right")}
+          onMouseLeave={() => handleHover(null)}
+          onClick={() => handleClick("tilt_right")}
+        />
+
+        {/* MagSpeed Machined Aluminum Wheel */}
+        <g
+          className="cursor-pointer"
+          onMouseEnter={() => handleHover("middle_click")}
+          onMouseLeave={() => handleHover(null)}
+          onClick={() => handleClick("middle_click")}
+        >
+          <rect
+            x="112"
+            y="54"
+            width="16"
+            height="48"
+            rx="4"
+            fill={isMiddleClick ? "url(#mxActiveGlow)" : "url(#mxMetalWheel)"}
+            stroke={isMiddleClick ? "#38bdf8" : "#64748b"}
+            strokeWidth={isMiddleClick ? "2" : "1"}
+            filter={isMiddleClick ? "url(#mxGlow)" : undefined}
+            className="transition-all duration-150"
+          />
+
+          {/* Wheel Texture Grips */}
+          {[-12, -6, 0, 6, 12].map((offset) => (
+            <line
+              key={offset}
+              x1="114"
+              y1={78 + offset}
+              x2="126"
+              y2={78 + offset}
+              stroke={isMiddleClick ? "#0c0d12" : "#1e2430"}
+              strokeWidth="1.2"
+            />
+          ))}
+        </g>
+
+        {/* Mode Shift / Gesture Button behind wheel */}
+        <rect
+          x="114"
+          y="114"
+          width="12"
+          height="12"
+          rx="2"
+          fill="#1b1f2b"
+          stroke="#30384a"
+          strokeWidth="1"
+        />
+        <circle cx="120" cy="120" r="2" fill="#475569" />
+
+        {/* Model Subtitle / Series Text */}
+        <text
+          x="120"
+          y="200"
+          fontSize="9"
+          fontWeight="bold"
+          textAnchor="middle"
+          letterSpacing="1.5"
+          fill="#475569"
+          className="select-none font-sans"
+        >
+          {is3Series ? "MX ANYWHERE 3" : "MX ANYWHERE 2S"}
+        </text>
+
+        {/* Logitech "logi" logo badge */}
+        <g transform="translate(108, 220)">
+          <text
+            x="12"
+            y="12"
+            fontSize="11"
+            fontWeight="bold"
+            textAnchor="middle"
+            fill="#334155"
+            letterSpacing="0.5"
+            className="select-none font-sans"
+          >
+            logi
+          </text>
+        </g>
+      </svg>
+
+      {/* Floating Tooltip */}
+      {showTooltips && activeTooltipInfo && currentHover && (
+        <DiagramTooltip
+          info={activeTooltipInfo}
+          action={mappings[currentHover]}
+          triggerId={currentHover}
+          viewBoxWidth={240}
+          viewBoxHeight={310}
+        />
+      )}
+    </div>
+  );
+};
+
 

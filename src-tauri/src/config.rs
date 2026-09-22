@@ -23,14 +23,17 @@ pub struct AppConfig {
 
 impl Default for AppConfig {
     fn default() -> Self {
-        let is_g502_detected = if let Ok(content) = fs::read_to_string("/proc/bus/input/devices") {
-            content.to_lowercase().contains("g502")
-        } else {
-            false
-        };
-
-        let initial_driver = if is_g502_detected {
-            "logitech_g502_x".to_string()
+        let initial_driver = if let Ok(content) = fs::read_to_string("/proc/bus/input/devices") {
+            let lower = content.to_lowercase();
+            if lower.contains("g502") {
+                "logitech_g502_x".to_string()
+            } else if lower.contains("anywhere 2s") {
+                "logitech_mx_anywhere_2s".to_string()
+            } else if lower.contains("anywhere 3") {
+                "logitech_mx_anywhere_3".to_string()
+            } else {
+                "microsoft_sculpt_comfort".to_string()
+            }
         } else {
             "microsoft_sculpt_comfort".to_string()
         };
@@ -49,10 +52,10 @@ impl Default for AppConfig {
 }
 
 pub fn get_default_mappings(driver_id: &str) -> HashMap<String, ActionConfig> {
-    if driver_id == "logitech_g502_x" {
-        get_default_g502_mappings()
-    } else {
-        get_default_sculpt_mappings()
+    match driver_id {
+        "logitech_g502_x" => get_default_g502_mappings(),
+        "logitech_mx_anywhere_2s" | "logitech_mx_anywhere_3" => get_default_mx_anywhere_mappings(),
+        _ => get_default_sculpt_mappings(),
     }
 }
 
@@ -202,10 +205,10 @@ pub fn get_default_g502_mappings() -> HashMap<String, ActionConfig> {
 }
 
 pub fn get_preset_mappings(preset_key: &str, driver_id: &str) -> Option<HashMap<String, ActionConfig>> {
-    if driver_id == "logitech_g502_x" {
-        get_g502_preset_mappings(preset_key)
-    } else {
-        get_sculpt_preset_mappings(preset_key)
+    match driver_id {
+        "logitech_g502_x" => get_g502_preset_mappings(preset_key),
+        "logitech_mx_anywhere_2s" | "logitech_mx_anywhere_3" => get_mx_anywhere_preset_mappings(preset_key),
+        _ => get_sculpt_preset_mappings(preset_key),
     }
 }
 
@@ -307,6 +310,95 @@ fn get_sculpt_preset_mappings(preset_key: &str) -> Option<HashMap<String, Action
     }
 }
 
+pub fn get_default_mx_anywhere_mappings() -> HashMap<String, ActionConfig> {
+    let mut m = HashMap::new();
+    m.insert(
+        "back".to_string(),
+        ActionConfig {
+            action_type: "key_combo".to_string(),
+            value: "Alt+Left".to_string(),
+            name: "Indietro Browser / App".to_string(),
+            description: "Pulsante laterale inferiore (Indietro)".to_string(),
+        },
+    );
+    m.insert(
+        "forward".to_string(),
+        ActionConfig {
+            action_type: "key_combo".to_string(),
+            value: "Alt+Right".to_string(),
+            name: "Avanti Browser / App".to_string(),
+            description: "Pulsante laterale superiore (Avanti)".to_string(),
+        },
+    );
+    m.insert(
+        "tilt_left".to_string(),
+        ActionConfig {
+            action_type: "key_combo".to_string(),
+            value: "Super+Page_Up".to_string(),
+            name: "Workspace Precedente".to_string(),
+            description: "Inclinazione rotellina a sinistra".to_string(),
+        },
+    );
+    m.insert(
+        "tilt_right".to_string(),
+        ActionConfig {
+            action_type: "key_combo".to_string(),
+            value: "Super+Page_Down".to_string(),
+            name: "Workspace Successivo".to_string(),
+            description: "Inclinazione rotellina a destra".to_string(),
+        },
+    );
+    m.insert(
+        "middle_click".to_string(),
+        ActionConfig {
+            action_type: "mouse_button".to_string(),
+            value: "BTN_MIDDLE".to_string(),
+            name: "Click Centrale".to_string(),
+            description: "Pressione verticale della rotellina".to_string(),
+        },
+    );
+    m
+}
+
+fn get_mx_anywhere_preset_mappings(preset_key: &str) -> Option<HashMap<String, ActionConfig>> {
+    let mut m = HashMap::new();
+    match preset_key {
+        "desktop_navigation" => {
+            m.insert("back".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Alt+Left".into(), name: "Indietro".into(), description: "Cronologia indietro".into() });
+            m.insert("forward".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Alt+Right".into(), name: "Avanti".into(), description: "Cronologia avanti".into() });
+            m.insert("tilt_left".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Super+Page_Up".into(), name: "Workspace Precedente".into(), description: "Spazio di lavoro precedente".into() });
+            m.insert("tilt_right".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Super+Page_Down".into(), name: "Workspace Successivo".into(), description: "Spazio di lavoro successivo".into() });
+            m.insert("middle_click".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Super".into(), name: "Panoramica / Launcher".into(), description: "Apre la panoramica di sistema".into() });
+            Some(m)
+        }
+        "productivity" => {
+            m.insert("back".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+c".into(), name: "Copia".into(), description: "Copia negli appunti".into() });
+            m.insert("forward".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+v".into(), name: "Incolla".into(), description: "Incolla dagli appunti".into() });
+            m.insert("tilt_left".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+z".into(), name: "Annulla".into(), description: "Undo ultima operazione".into() });
+            m.insert("tilt_right".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+y".into(), name: "Ripristina".into(), description: "Redo operazione".into() });
+            m.insert("middle_click".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Super+Space".into(), name: "Ricerca Rapida".into(), description: "Apre la ricerca file/app".into() });
+            Some(m)
+        }
+        "multimedia" => {
+            m.insert("back".to_string(), ActionConfig { action_type: "media".into(), value: "PreviousTrack".into(), name: "Traccia Precedente".into(), description: "Brano precedente".into() });
+            m.insert("forward".to_string(), ActionConfig { action_type: "media".into(), value: "NextTrack".into(), name: "Traccia Successiva".into(), description: "Brano successivo".into() });
+            m.insert("tilt_left".to_string(), ActionConfig { action_type: "media".into(), value: "VolumeDown".into(), name: "Volume Giù".into(), description: "Diminuisce il volume".into() });
+            m.insert("tilt_right".to_string(), ActionConfig { action_type: "media".into(), value: "VolumeUp".into(), name: "Volume Su".into(), description: "Aumenta il volume".into() });
+            m.insert("middle_click".to_string(), ActionConfig { action_type: "media".into(), value: "PlayPause".into(), name: "Play / Pausa".into(), description: "Riproduci o metti in pausa".into() });
+            Some(m)
+        }
+        "browser" => {
+            m.insert("back".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Alt+Left".into(), name: "Pagina Indietro".into(), description: "Cronologia indietro".into() });
+            m.insert("forward".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Alt+Right".into(), name: "Pagina Avanti".into(), description: "Cronologia avanti".into() });
+            m.insert("tilt_left".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+Shift+Tab".into(), name: "Scheda Precedente".into(), description: "Tab a sinistra".into() });
+            m.insert("tilt_right".to_string(), ActionConfig { action_type: "key_combo".into(), value: "Ctrl+Tab".into(), name: "Scheda Successiva".into(), description: "Tab a destra".into() });
+            m.insert("middle_click".to_string(), ActionConfig { action_type: "mouse_button".into(), value: "BTN_MIDDLE".into(), name: "Click Centrale".into(), description: "Apre link in nuova tab".into() });
+            Some(m)
+        }
+        _ => None,
+    }
+}
+
 pub struct ConfigManager {
     config_path: PathBuf,
 }
@@ -380,6 +472,32 @@ mod tests {
             assert!(map.contains_key("g6_sniper"));
             assert!(map.contains_key("g4_back"));
             assert!(map.contains_key("g5_forward"));
+        }
+    }
+
+    #[test]
+    fn test_mx_anywhere_default_mappings() {
+        for driver_id in &["logitech_mx_anywhere_2s", "logitech_mx_anywhere_3"] {
+            let mappings = get_default_mappings(driver_id);
+            assert!(mappings.contains_key("back"), "Missing 'back' for {}", driver_id);
+            assert!(mappings.contains_key("forward"), "Missing 'forward' for {}", driver_id);
+            assert!(mappings.contains_key("tilt_left"), "Missing 'tilt_left' for {}", driver_id);
+            assert!(mappings.contains_key("tilt_right"), "Missing 'tilt_right' for {}", driver_id);
+            assert!(mappings.contains_key("middle_click"), "Missing 'middle_click' for {}", driver_id);
+        }
+    }
+
+    #[test]
+    fn test_mx_anywhere_presets() {
+        for driver_id in &["logitech_mx_anywhere_2s", "logitech_mx_anywhere_3"] {
+            for preset in &["desktop_navigation", "productivity", "multimedia", "browser"] {
+                let res = get_preset_mappings(preset, driver_id);
+                assert!(res.is_some(), "Preset {} should exist for {}", preset, driver_id);
+                let map = res.unwrap();
+                assert!(map.contains_key("back"));
+                assert!(map.contains_key("forward"));
+                assert!(map.contains_key("middle_click"));
+            }
         }
     }
 }

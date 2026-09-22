@@ -19,6 +19,14 @@ SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c099", TAG+="u
 SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="c08b", TAG+="uaccess", MODE="0660"
 KERNEL=="event*", ATTRS{name}=="*G502*", TAG+="uaccess", MODE="0660"
 
+# Logitech MX Anywhere Series (046d:406a, 046d:4069, 046d:4090, 046d:4096, 046d:b025)
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="406a", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="4069", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="4090", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="4096", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="input", ATTRS{id/vendor}=="046d", ATTRS{id/product}=="b025", TAG+="uaccess", MODE="0660"
+KERNEL=="event*", ATTRS{name}=="*Anywhere*", TAG+="uaccess", MODE="0660"
+
 # Accesso al modulo uinput per l'emissione di tasti e click virtuali
 KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput", MODE="0660"
 "#;
@@ -79,7 +87,7 @@ pub fn check_permissions() -> PermissionStatus {
     if let Ok(content) = std::fs::read_to_string("/proc/bus/input/devices") {
         for block in content.split("\n\n") {
             let lower = block.to_lowercase();
-            if lower.contains("sculpt comfort") || lower.contains("g502") {
+            if lower.contains("sculpt comfort") || lower.contains("g502") || lower.contains("anywhere") {
                 for line in block.lines() {
                     if line.starts_with("H: Handlers=") {
                         for part in line.split_whitespace() {

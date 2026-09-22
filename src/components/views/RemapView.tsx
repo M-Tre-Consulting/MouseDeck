@@ -33,6 +33,9 @@ export const RemapView: React.FC<RemapViewProps> = ({
 }) => {
   const { t, language } = useI18n();
   const isG502 = config.active_driver === "logitech_g502_x";
+  const isAnywhere2s = config.active_driver === "logitech_mx_anywhere_2s";
+  const isAnywhere3 = config.active_driver === "logitech_mx_anywhere_3";
+  const isMxAnywhere = isAnywhere2s || isAnywhere3;
 
   const [selectedTrigger, setSelectedTrigger] = useState<{
     id: string;
@@ -60,6 +63,22 @@ export const RemapView: React.FC<RemapViewProps> = ({
   const getTriggerDesc = (id: string, fallback: string) => {
     return t(`triggers.${id}.desc`, fallback);
   };
+
+  // Triggers for Logitech MX Anywhere 2S / 3
+  const mxAnywhereThumbTriggers = [
+    {
+      id: "forward",
+      name: getTriggerName("forward", "Pulsante Laterale Avanti (Forward)"),
+      desc: getTriggerDesc("forward", "Tasto pollice superiore (Avanti)"),
+      icon: ArrowRight,
+    },
+    {
+      id: "back",
+      name: getTriggerName("back", "Pulsante Laterale Indietro (Back)"),
+      desc: getTriggerDesc("back", "Tasto pollice inferiore (Indietro)"),
+      icon: ArrowLeft,
+    },
+  ];
 
   // Triggers for Logitech G502 X
   const g502ThumbTriggers = [
@@ -147,6 +166,13 @@ export const RemapView: React.FC<RemapViewProps> = ({
     },
   ];
 
+  const getDeviceDisplayName = () => {
+    if (isG502) return "Logitech G502 X";
+    if (isAnywhere2s) return "Logitech MX Anywhere 2S";
+    if (isAnywhere3) return "Logitech MX Anywhere 3";
+    return "Sculpt Comfort";
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Top Header */}
@@ -157,7 +183,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
               {t("remap.title", "Rimappatura Tasti & Gesti")}
             </h1>
             <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-              {isG502 ? "Logitech G502 X" : "Sculpt Comfort"}
+              {getDeviceDisplayName()}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -174,6 +200,12 @@ export const RemapView: React.FC<RemapViewProps> = ({
             >
               <option value="logitech_g502_x">
                 {language === "en" ? "G502 X Lightspeed Driver" : "Modulo G502 X Lightspeed"}
+              </option>
+              <option value="logitech_mx_anywhere_2s">
+                {language === "en" ? "MX Anywhere 2S Driver" : "Modulo MX Anywhere 2S"}
+              </option>
+              <option value="logitech_mx_anywhere_3">
+                {language === "en" ? "MX Anywhere 3 Driver" : "Modulo MX Anywhere 3"}
               </option>
               <option value="microsoft_sculpt_comfort">
                 {language === "en" ? "Sculpt Comfort Driver" : "Modulo Sculpt Comfort"}
@@ -198,7 +230,13 @@ export const RemapView: React.FC<RemapViewProps> = ({
             </span>
           </div>
           <h2 className="text-base font-semibold text-white tracking-tight">
-            {isG502 ? "Logitech G502 X Lightspeed" : "Microsoft Sculpt Comfort Mouse"}
+            {isG502
+              ? "Logitech G502 X Lightspeed"
+              : isAnywhere2s
+              ? "Logitech MX Anywhere 2S"
+              : isAnywhere3
+              ? "Logitech MX Anywhere 3"
+              : "Microsoft Sculpt Comfort Mouse"}
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed">
             {language === "en"
@@ -211,6 +249,8 @@ export const RemapView: React.FC<RemapViewProps> = ({
                 ? (language === "en" ? `Active key: ${hoveredTrigger}` : `Tasto attivo: ${hoveredTrigger}`)
                 : isG502
                 ? (language === "en" ? "9 Programmable buttons" : "9 Tasti programmabili")
+                : isMxAnywhere
+                ? (language === "en" ? "5 Programmable controls" : "5 Controlli programmabili")
                 : (language === "en" ? "6 Programmable gestures" : "6 Gesti programmabili")}
             </span>
           </div>
@@ -358,6 +398,69 @@ export const RemapView: React.FC<RemapViewProps> = ({
             </div>
           </div>
         </>
+      ) : isMxAnywhere ? (
+        /* Logitech MX Anywhere 2S / 3: Thumb Buttons Group */
+        <div className="space-y-2">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
+            <span>{t("remap.anywhereThumbGroup", "Pulsanti Laterali Pollice (Avanti / Indietro)")}</span>
+            <span className="text-[10px] text-cyan-400 font-mono">Forward • Back</span>
+          </h2>
+
+          <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
+            {mxAnywhereThumbTriggers.map((t) => {
+              const Icon = t.icon;
+              const action = activeMappings[t.id];
+              const isKeyCombo = action?.type === "key_combo";
+              const displayName = action?.name || action?.value || "Standard";
+              const isHovered = hoveredTrigger === t.id;
+
+              return (
+                <div
+                  key={t.id}
+                  onClick={() => setSelectedTrigger({ id: t.id, name: t.name })}
+                  onMouseEnter={() => setHoveredTrigger(t.id)}
+                  onMouseLeave={() => setHoveredTrigger(null)}
+                  className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
+                    isHovered
+                      ? "bg-cyan-500/[0.08] border-l-2 border-cyan-400 pl-3.5"
+                      : "hover:bg-white/[0.02]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors ${
+                      isHovered
+                        ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
+                        : "bg-[#161a24] border-white/[0.06] text-cyan-400"
+                    }`}>
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h3 className={`text-xs font-medium transition-colors ${
+                        isHovered ? "text-cyan-200" : "text-slate-200 group-hover:text-white"
+                      }`}>
+                        {t.name}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{t.desc}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {isKeyCombo ? (
+                      <KeyComboBadge combo={action.value} />
+                    ) : (
+                      <span className="text-xs font-mono text-slate-300 px-2 py-0.5 rounded bg-white/[0.05]">
+                        {displayName}
+                      </span>
+                    )}
+                    <ChevronRight className={`w-4 h-4 transition-colors ${
+                      isHovered ? "text-cyan-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
+                    }`} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       ) : (
         /* Sculpt Comfort: Touch Strip Group */
         <div className="space-y-2">

@@ -30,6 +30,7 @@ export interface BluetoothDeviceInfo {
   battery_status_text?: string;
   is_sculpt_comfort: boolean;
   is_g502_x?: boolean;
+  is_mx_anywhere?: boolean;
   driver_id?: string;
 }
 

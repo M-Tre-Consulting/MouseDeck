@@ -22,6 +22,9 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
   const { t, language } = useI18n();
   const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
   const isG502 = activeDriver === "logitech_g502_x" || (lastEvent && lastEvent.trigger_id.startsWith("g"));
+  const isMxAnywhere =
+    activeDriver?.startsWith("logitech_mx_anywhere") ||
+    (lastEvent && (lastEvent.trigger_id === "back" || lastEvent.trigger_id === "forward"));
 
   useEffect(() => {
     if (lastEvent) {
@@ -59,6 +62,8 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
         <p className="text-xs text-slate-400 mt-0.5">
           {isG502
             ? t("test.subtitleG502", "Premi i tasti programmabili del tuo Logitech G502 X per vederli catturati istantaneamente dal motore Rust.")
+            : isMxAnywhere
+            ? t("test.subtitleAnywhere", "Premi i pulsanti del tuo Logitech MX Anywhere per vederli catturati istantaneamente dal motore Rust.")
             : t("test.subtitleSculpt", "Esegui gesti sulla touch strip per vederli catturati istantaneamente dal motore Rust.")}
         </p>
       </div>
@@ -69,7 +74,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
         <div className="md:col-span-5 desktop-card p-6 flex flex-col items-center justify-center">
           <MouseDiagram
             activeTrigger={activeHighlight}
-            driverId={isG502 ? "logitech_g502_x" : "microsoft_sculpt_comfort"}
+            driverId={activeDriver}
             width={220}
             height={290}
           />
@@ -78,6 +83,10 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
               ? (language === "en"
                   ? "Buttons G6, G4, G5, G7, G8, G9 and scroll wheel illuminate when triggered."
                   : "I tasti G6, G4, G5, G7, G8, G9 e la rotellina si illuminano all'attivazione.")
+              : isMxAnywhere
+              ? (language === "en"
+                  ? "Side buttons (Back/Forward) and scroll wheel illuminate when triggered."
+                  : "I tasti laterali (Avanti/Indietro) e la rotellina si illuminano all'attivazione.")
               : (language === "en"
                   ? "The blue touch strip and scroll wheel illuminate when triggered."
                   : "La touch strip blu e la rotellina si illuminano all'attivazione.")}
@@ -179,6 +188,23 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                   >
                     <Sliders className="w-3.5 h-3.5 text-cyan-400" />
                     {language === "en" ? "Profile (G9)" : "Profilo (G9)"}
+                  </button>
+                </>
+              ) : isMxAnywhere ? (
+                <>
+                  <button
+                    onClick={() => handleSimulate("forward")}
+                    className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
+                    {language === "en" ? "Forward" : "Avanti"}
+                  </button>
+                  <button
+                    onClick={() => handleSimulate("back")}
+                    className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
+                    {language === "en" ? "Back" : "Indietro"}
                   </button>
                 </>
               ) : (

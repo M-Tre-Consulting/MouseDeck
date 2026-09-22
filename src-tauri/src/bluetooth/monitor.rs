@@ -6,27 +6,31 @@ pub struct BluetoothManager;
 
 impl BluetoothManager {
     pub async fn get_target_device() -> Option<BluetoothDeviceInfo> {
-        // 1. Check for Logitech G502 X in sysfs power_supply (direct hardware telemetry)
-        if let Some(dev) = Self::detect_g502_from_sysfs() {
+        // 1. Check for Logitech devices in sysfs power_supply (direct hardware telemetry)
+        if let Some(dev) = Self::detect_logitech_from_sysfs() {
             return Some(dev);
         }
 
-        // 2. Check for Logitech G502 X in /proc/bus/input/devices
-        if let Some(dev) = Self::detect_g502_from_proc() {
+        // 2. Check for Logitech devices in /proc/bus/input/devices
+        if let Some(dev) = Self::detect_logitech_from_proc() {
             return Some(dev);
         }
 
-        // 3. Query bluetoothctl devices (for Microsoft Sculpt Comfort and other BT mice)
+        // 3. Query bluetoothctl devices (for BT mice)
         if let Ok(output) = Command::new("bluetoothctl").arg("devices").output() {
             let stdout = String::from_utf8_lossy(&output.stdout);
             
-            // Prefer Sculpt Comfort if present
+            // Prefer known supported mice if present
             for line in stdout.lines() {
                 let parts: Vec<&str> = line.split_whitespace().collect();
                 if parts.len() >= 3 && parts[0] == "Device" {
                     let mac = parts[1];
                     let name = parts[2..].join(" ");
-                    if name.to_lowercase().contains("sculpt comfort") {
+                    let name_lower = name.to_lowercase();
+                    if name_lower.contains("sculpt comfort")
+                        || name_lower.contains("anywhere 2s")
+                        || name_lower.contains("anywhere 3")
+                    {
                         let mut info = BluetoothDeviceInfo::new(mac.to_string(), name);
                         Self::fill_device_details(&mut info, mac);
                         return Some(info);
@@ -66,7 +70,7 @@ impl BluetoothManager {
         None
     }
 
-    fn detect_g502_from_sysfs() -> Option<BluetoothDeviceInfo> {
+    fn detect_logitech_from_sysfs() -> Option<BluetoothDeviceInfo> {
         let base_path = "/sys/class/power_supply";
         if let Ok(entries) = fs::read_dir(base_path) {
             for entry in entries.flatten() {
@@ -74,7 +78,19 @@ impl BluetoothManager {
                 let model_path = p.join("model_name");
                 if let Ok(model_raw) = fs::read_to_string(&model_path) {
                     let model = model_raw.trim();
-                    if model.to_lowercase().contains("g502") {
+                    let model_lower = model.to_lowercase();
+
+                    let (is_match, driver_id, default_pid) = if model_lower.contains("g502") {
+                        (true, "logitech_g502_x", "4099")
+                    } else if model_lower.contains("anywhere 2s") {
+                        (true, "logitech_mx_anywhere_2s", "406a")
+                    } else if model_lower.contains("anywhere 3") {
+                        (true, "logitech_mx_anywhere_3", "4090")
+                    } else {
+                        (false, "", "")
+                    };
+
+                    if is_match {
                         let full_name = if model.starts_with("Logitech") {
                             model.to_string()
                         } else {
@@ -83,19 +99,16 @@ impl BluetoothManager {
 
                         let serial = fs::read_to_string(p.join("serial_number"))
                             .map(|s| s.trim().to_string())
-                            .unwrap_or_else(|_| "LIGHTSPEED-DONGLE".to_string());
+                            .unwrap_or_else(|_| "WIRELESS-DONGLE".to_string());
 
                         let mut info = BluetoothDeviceInfo::new(serial, full_name.clone());
                         info.alias = full_name;
                         info.connected = true;
                         info.paired = true;
                         info.trusted = true;
-                        info.adapter = "LIGHTSPEED Wireless 2.4GHz".to_string();
                         info.vendor_id = Some("046d".to_string());
-                        info.product_id = Some("4099".to_string());
-                        info.is_sculpt_comfort = false;
-                        info.is_g502_x = true;
-                        info.driver_id = "logitech_g502_x".to_string();
+                        info.product_id = Some(default_pid.to_string());
+                        info.driver_id = driver_id.to_string();
 
                         if let Ok(cap_str) = fs::read_to_string(p.join("capacity")) {
                             if let Ok(val) = cap_str.trim().parse::<u8>() {
@@ -108,7 +121,7 @@ impl BluetoothManager {
                                 let status_label = if status.eq_ignore_ascii_case("charging") {
                                     "In carica"
                                 } else {
-                                    "LIGHTSPEED Ricaricabile"
+                                    "Ricaricabile"
                                 };
                                 info.battery_status_text = format!("{}% ({})", val, status_label);
                             }
@@ -122,13 +135,24 @@ impl BluetoothManager {
         None
     }
 
-    fn detect_g502_from_proc() -> Option<BluetoothDeviceInfo> {
+    fn detect_logitech_from_proc() -> Option<BluetoothDeviceInfo> {
         if let Ok(content) = fs::read_to_string("/proc/bus/input/devices") {
             for block in content.split("\n\n") {
                 let lower = block.to_lowercase();
-                if lower.contains("g502") {
-                    let mut name = "Logitech G502 X Lightspeed".to_string();
-                    let mut uniq = "LIGHTSPEED-WIRELESS".to_string();
+
+                let (is_match, driver_id, default_name, default_pid) = if lower.contains("g502") {
+                    (true, "logitech_g502_x", "Logitech G502 X Lightspeed", "4099")
+                } else if lower.contains("anywhere 2s") {
+                    (true, "logitech_mx_anywhere_2s", "Logitech MX Anywhere 2S", "406a")
+                } else if lower.contains("anywhere 3") {
+                    (true, "logitech_mx_anywhere_3", "Logitech MX Anywhere 3", "4090")
+                } else {
+                    (false, "", "", "")
+                };
+
+                if is_match {
+                    let mut name = default_name.to_string();
+                    let mut uniq = "WIRELESS".to_string();
 
                     for line in block.lines() {
                         if line.starts_with("N: Name=") {
@@ -146,12 +170,9 @@ impl BluetoothManager {
                     info.connected = true;
                     info.paired = true;
                     info.trusted = true;
-                    info.adapter = "LIGHTSPEED Wireless 2.4GHz".to_string();
                     info.vendor_id = Some("046d".to_string());
-                    info.product_id = Some("4099".to_string());
-                    info.is_sculpt_comfort = false;
-                    info.is_g502_x = true;
-                    info.driver_id = "logitech_g502_x".to_string();
+                    info.product_id = Some(default_pid.to_string());
+                    info.driver_id = driver_id.to_string();
 
                     // Check upower for battery
                     Self::check_upower_for_mouse(&mut info);
@@ -171,7 +192,12 @@ impl BluetoothManager {
                 if dev_clean.contains("mouse") || dev_clean.contains("hidpp") {
                     if let Ok(info_out) = Command::new("upower").args(["-i", dev_clean]).output() {
                         let info_str = String::from_utf8_lossy(&info_out.stdout);
-                        if info_str.to_lowercase().contains("g502") || info_str.contains(&info.address) {
+                        let info_lower = info_str.to_lowercase();
+                        if info_lower.contains("g502")
+                            || info_lower.contains("anywhere 2s")
+                            || info_lower.contains("anywhere 3")
+                            || info_str.contains(&info.address)
+                        {
                             for l in info_str.lines() {
                                 if l.trim().starts_with("percentage:") {
                                     if let Some(pct_part) = l.split(':').nth(1) {
@@ -179,7 +205,7 @@ impl BluetoothManager {
                                         if let Ok(val) = clean.parse::<f32>() {
                                             let u_val = val.round() as u8;
                                             info.battery_percentage = Some(u_val);
-                                            info.battery_status_text = format!("{}% (LIGHTSPEED Ricaricabile)", u_val);
+                                            info.battery_status_text = format!("{}% (Ricaricabile)", u_val);
                                             return;
                                         }
                                     }
