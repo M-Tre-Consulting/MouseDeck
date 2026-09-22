@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Target release version (e.g. 1.0.1 or v1.0.1, leave blank to use tag or package.json)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -22,6 +27,10 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+
+      - name: Set application version from Git tag
+        run: |
+          bash scripts/set-version.sh "${{ inputs.version || github.ref_name }}"
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -86,6 +95,10 @@ jobs:
           useradd -m -s /bin/bash builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Set application version from Git tag
+        run: |
+          su builder -c "bash scripts/set-version.sh '${{ inputs.version || github.ref_name }}'"
 
       - name: Compile and package with makepkg
         run: |

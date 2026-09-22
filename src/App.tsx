@@ -19,8 +19,13 @@ import { SettingsView } from "./components/views/SettingsView";
 
 import { useI18n } from "./i18n";
 
+declare const __APP_VERSION__: string | undefined;
+
 export function App() {
   const { t } = useI18n();
+  const [appVersion, setAppVersion] = useState<string>(
+    typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "1.0.0"
+  );
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [device, setDevice] = useState<BluetoothDeviceInfo | null>(null);
   const [config, setConfig] = useState<AppConfig>({
@@ -40,6 +45,9 @@ export function App() {
   // Initial fetch
   useEffect(() => {
     refreshAllData();
+    invoke<string>("get_app_version")
+      .then((v) => setAppVersion(v))
+      .catch(() => {});
 
     const interval = setInterval(() => {
       fetchDeviceStatus();
@@ -169,6 +177,7 @@ export function App() {
         isRefreshing={isRefreshingBt}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        appVersion={appVersion}
       />
 
       {/* Right Content View */}
@@ -253,6 +262,7 @@ export function App() {
             <SettingsView
               permissions={permissions}
               onRefreshPermissions={fetchPermissions}
+              appVersion={appVersion}
             />
           )}
         </main>

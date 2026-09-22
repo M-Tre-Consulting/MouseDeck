@@ -23,11 +23,13 @@ import { useI18n } from "../../i18n";
 interface SettingsViewProps {
   permissions: PermissionStatus | null;
   onRefreshPermissions: () => void;
+  appVersion?: string;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   permissions,
   onRefreshPermissions,
+  appVersion = "1.0.0",
 }) => {
   const { t, language, setLanguage } = useI18n();
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
@@ -592,7 +594,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className="desktop-card p-4 flex items-center justify-between text-xs text-slate-400">
         <div className="flex items-center gap-2">
           <Info className="w-3.5 h-3.5 text-slate-500" />
-          <span>MouseDeck 1.0.0 • Universal Linux Mouse Desktop Suite</span>
+          <span>MouseDeck {appVersion} • Universal Linux Mouse Desktop Suite</span>
         </div>
         <span className="text-[11px] text-slate-500 font-mono">Wayland & X11 Native</span>
       </div>

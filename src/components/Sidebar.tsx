@@ -19,6 +19,7 @@ interface SidebarProps {
   isRefreshing: boolean;
   activeTab: string;
   onTabChange: (tab: string) => void;
+  appVersion?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isRefreshing,
   activeTab,
   onTabChange,
+  appVersion = "1.0.0",
 }) => {
   const isConnected = device?.connected ?? false;
   const { t, language, setLanguage, languages } = useI18n();
@@ -58,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] text-slate-500">Hardware Manager</span>
           </div>
           <span className="text-[10px] text-slate-500 font-mono ml-auto px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.05]">
-            v1.0
+            v{appVersion}
           </span>
         </div>
 

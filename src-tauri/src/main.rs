@@ -4,7 +4,10 @@
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {
-        if args[1] == "--setup-permissions" {
+        if args[1] == "--version" || args[1] == "-v" {
+            println!("MouseDeck {}", env!("CARGO_PKG_VERSION"));
+            std::process::exit(0);
+        } else if args[1] == "--setup-permissions" {
             let target_user = args.get(2).cloned().unwrap_or_else(|| {
                 std::env::var("USER").unwrap_or_else(|_| "root".to_string())
             });

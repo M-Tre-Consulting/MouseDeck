@@ -33,11 +33,24 @@ for arg in "$@"; do
     esac
 done
 
-# Read version
-PKG_VER=$(grep '"version"' package.json | head -n1 | cut -d'"' -f4 || echo "1.0.0")
+# Read or detect version
+if [ -n "${VERSION:-}" ]; then
+    PKG_VER="${VERSION#v}"
+elif [ -n "${PKG_VER:-}" ]; then
+    PKG_VER="${PKG_VER#v}"
+elif git describe --tags --exact-match >/dev/null 2>&1; then
+    PKG_VER="$(git describe --tags --exact-match | sed 's/^v//')"
+else
+    PKG_VER=$(grep '"version"' package.json | head -n1 | cut -d'"' -f4 || echo "1.0.0")
+fi
 PKG_REL="1"
 PKG_NAME="mousedeck"
 ARCH="x86_64"
+
+# Synchronize across project files before build
+if [ -f "${SCRIPT_DIR}/set-version.sh" ]; then
+    bash "${SCRIPT_DIR}/set-version.sh" "${PKG_VER}"
+fi
 
 log_info "Creazione pacchetto Arch Linux per ${PKG_NAME} v${PKG_VER}-${PKG_REL} (${ARCH})..."
 

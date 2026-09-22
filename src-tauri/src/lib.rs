@@ -116,6 +116,11 @@ fn simulate_gesture(trigger_id: String, state: State<'_, AppState>) -> Result<()
 }
 
 #[tauri::command]
+fn get_app_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
+
+#[tauri::command]
 fn reconnect_bluetooth(address: String) -> Result<(), String> {
     BluetoothManager::reconnect(&address)
 }
@@ -220,6 +225,7 @@ pub fn run() {
             reconnect_bluetooth,
             get_available_drivers,
             set_active_driver,
+            get_app_version,
         ])
         .run(tauri::generate_context!())
         .expect("Errore durante l'esecuzione di MouseDeck");
