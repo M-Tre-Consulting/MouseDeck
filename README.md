@@ -1,5 +1,5 @@
 # MouseDeck 🖱️⚡
-> **Universal Linux Mouse Dashboard & Gesture Remapper (Specialized Drivers for Logitech G502 X Lightspeed & Microsoft Sculpt Comfort Mouse)**  
+> **Universal Linux Mouse Dashboard & Gesture Remapper (Specialized Drivers for Logitech G502 X, MX Anywhere 2S / 3 & Microsoft Sculpt Comfort Mouse)**  
 > Built with **Rust**, **Tauri 2.0**, **React**, **TailwindCSS**, and **Linux evdev/uinput**. Native support for **Wayland** (Hyprland, Sway, GNOME, KDE) and **X11**.
 
 ---
@@ -8,9 +8,10 @@
 
 **MouseDeck** is a modern Linux desktop utility designed to monitor, configure, and remap advanced pointing devices.
 - **Logitech G502 X Lightspeed / PLUS:** Native low-latency Linux driver for LIGHTSPEED 2.4GHz wireless and USB wired connections. Program the G6 Sniper (DPI Shift) paddle, G4/G5 thumb keys, G7/G8 index wing buttons, G9 profile button, and dual-mode 4-way tilt scroll wheel with live telemetry and battery gauge.
+- **Logitech MX Anywhere 2S & MX Anywhere 3 / 3S:** Native driver for compact mobile mice across Bluetooth Low Energy, Unifying Receiver, and Logi Bolt. Program thumb buttons (Forward / Back), MagSpeed / freewheel scroll wheel, and 4-way horizontal tilt with battery telemetry and profile presets.
 - **Microsoft Sculpt Comfort Mouse:** Low-latency driver for the signature capacitive blue touch strip (Windows button), intercepting and canceling hardcoded OS chords.
 
-Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides a dedicated, low-latency driver for the Sculpt Comfort while laying the groundwork to support any mouse with custom gesture strips, tilt wheels, or extra thumb keys.
+Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides dedicated, low-latency drivers while laying the groundwork to support any mouse with custom gesture strips, tilt wheels, or extra thumb keys.
 
 ### Key Features:
 - **Zero-Latency Rust Engine:** Grabs hardware input events directly via `evdev` (`EVIOCGRAB`), cancels original OS chords, and emulates custom shortcuts, mouse clicks, media controls, or shell commands through `/dev/uinput`.
@@ -32,6 +33,8 @@ Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides a dedic
 | :--- | :--- | :--- | :--- | :--- |
 | **Logitech G502 X Lightspeed / PLUS** | LIGHTSPEED 2.4 GHz & USB-C Cablato | • G6 Sniper (DPI Shift paddle)<br>• G4 / G5 (Tasti laterali pollice)<br>• G7 / G8 (Alette indice regolazione DPI)<br>• G9 (Tasto profilo / dorsale)<br>• Clic rotella centrale & Tilt 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs hidpp) | **Supportato al 100%** (Driver nativo) |
 | **Logitech G502 HERO / Lightspeed** | LIGHTSPEED 2.4 GHz & USB Cablato | • G6 Sniper (DPI Shift)<br>• G4 / G5 Tasti pollice<br>• G7 / G8 Tasti indice DPI<br>• G9 Tasto profilo<br>• Clic rotella & Tilt 4 direzioni | ✅ Batteria / Stato via UPower | **Supportato al 100%** (Compatibile) |
+| **Logitech MX Anywhere 2S** | Bluetooth LE & Ricevitore Unifying (2.4 GHz) | • Tasti laterali pollice (Avanti / Indietro)<br>• Clic rotellina centrale<br>• Tilt orizzontale rotellina 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs / D-Bus) | **Supportato al 100%** (Driver nativo) |
+| **Logitech MX Anywhere 3 / 3S** | Bluetooth LE & Ricevitore Logi Bolt / Unifying | • Tasti laterali pollice (Avanti / Indietro)<br>• Clic rotellina centrale MagSpeed<br>• Tilt orizzontale rotellina 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs / D-Bus) | **Supportato al 100%** (Driver nativo) |
 | **Microsoft Sculpt Comfort Mouse** | Bluetooth 3.0 / Classic BT | • Striscia touch capacitiva blu (Swipe Su / Giù)<br>• Clic tasto Windows (Tocco capacitivo)<br>• Clic rotella centrale & Tilt orizzontale | ✅ Voltaggio / Stato via BlueZ D-Bus | **Supportato al 100%** (Driver nativo) |
 | **Mouse Multitasto Generici** | USB / 2.4 GHz / Bluetooth | • Clic centrale rotella<br>• Tasti laterali standard (`BTN_SIDE`, `BTN_EXTRA`) | ℹ️ UPower generico (se supportato dal kernel) | 🧪 Supporto Base |
 
@@ -196,7 +199,8 @@ mousedeck/
         ├── drivers/            # Modular driver registry (DeviceDriver trait)
         │   ├── trait_def.rs    # Pluggable driver interface
         │   ├── sculpt_comfort.rs # Specialized driver for Microsoft Sculpt (045e:07a2)
-        │   └── g502_x.rs       # Specialized driver for Logitech G502 X (046d:c547/4099)
+        │   ├── g502_x.rs       # Specialized driver for Logitech G502 X (046d:c547/4099)
+        │   └── mx_anywhere.rs  # Specialized driver for Logitech MX Anywhere 2S / 3 (046d:406a/4090)
         └── engine/             # High-speed evdev loop & uinput virtual emitter
 ```
 
