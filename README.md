@@ -29,24 +29,24 @@ Powered by a modular **`DeviceDriver` architecture**, MouseDeck provides dedicat
 
 ## 📋 Device & Feature Support Matrix
 
-| Dispositivo / Modello | Metodo Connessione | Controlli Rimappabili | Telemetria / Batteria | Stato Supporto |
+| Device / Model | Connection Method | Remappable Controls | Telemetry / Battery | Support Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Logitech G502 X Lightspeed / PLUS** | LIGHTSPEED 2.4 GHz & USB-C Cablato | • G6 Sniper (DPI Shift paddle)<br>• G4 / G5 (Tasti laterali pollice)<br>• G7 / G8 (Alette indice regolazione DPI)<br>• G9 (Tasto profilo / dorsale)<br>• Clic rotella centrale & Tilt 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs hidpp) | **Supportato al 100%** (Driver nativo) |
-| **Logitech G502 HERO / Lightspeed** | LIGHTSPEED 2.4 GHz & USB Cablato | • G6 Sniper (DPI Shift)<br>• G4 / G5 Tasti pollice<br>• G7 / G8 Tasti indice DPI<br>• G9 Tasto profilo<br>• Clic rotella & Tilt 4 direzioni | ✅ Batteria / Stato via UPower | **Supportato al 100%** (Compatibile) |
-| **Logitech MX Anywhere 2S** | Bluetooth LE & Ricevitore Unifying (2.4 GHz) | • Tasti laterali pollice (Avanti / Indietro)<br>• Clic rotellina centrale<br>• Tilt orizzontale rotellina 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs / D-Bus) | **Supportato al 100%** (Driver nativo) |
-| **Logitech MX Anywhere 3 / 3S** | Bluetooth LE & Ricevitore Logi Bolt / Unifying | • Tasti laterali pollice (Avanti / Indietro)<br>• Clic rotellina centrale MagSpeed<br>• Tilt orizzontale rotellina 4 direzioni (Sx/Dx) | ✅ Percentuale live (UPower / sysfs / D-Bus) | **Supportato al 100%** (Driver nativo) |
-| **Microsoft Sculpt Comfort Mouse** | Bluetooth 3.0 / Classic BT | • Striscia touch capacitiva blu (Swipe Su / Giù)<br>• Clic tasto Windows (Tocco capacitivo)<br>• Clic rotella centrale & Tilt orizzontale | ✅ Voltaggio / Stato via BlueZ D-Bus | **Supportato al 100%** (Driver nativo) |
-| **Mouse Multitasto Generici** | USB / 2.4 GHz / Bluetooth | • Clic centrale rotella<br>• Tasti laterali standard (`BTN_SIDE`, `BTN_EXTRA`) | ℹ️ UPower generico (se supportato dal kernel) | 🧪 Supporto Base |
+| **Logitech G502 X Lightspeed / PLUS** | LIGHTSPEED 2.4 GHz & USB-C Wired | • G6 Sniper (DPI Shift paddle)<br>• G4 / G5 (Thumb side buttons)<br>• G7 / G8 (Index wing DPI adjustment)<br>• G9 (Profile / top button)<br>• Center wheel click & 4-way tilt (L/R) | ✅ Live percentage (UPower / sysfs hidpp) | **100% Supported** (Native driver) |
+| **Logitech G502 HERO / Lightspeed** | LIGHTSPEED 2.4 GHz & USB Wired | • G6 Sniper (DPI Shift)<br>• G4 / G5 Thumb buttons<br>• G7 / G8 Index DPI buttons<br>• G9 Profile button<br>• Center wheel click & 4-way tilt | ✅ Battery / Status via UPower | **100% Supported** (Compatible) |
+| **Logitech MX Anywhere 2S** | Bluetooth LE & Unifying Receiver (2.4 GHz) | • Thumb side buttons (Forward / Back)<br>• Center wheel click<br>• 4-way horizontal tilt wheel (L/R) | ✅ Live percentage (UPower / sysfs / D-Bus) | **100% Supported** (Native driver) |
+| **Logitech MX Anywhere 3 / 3S** | Bluetooth LE & Logi Bolt / Unifying Receiver | • Thumb side buttons (Forward / Back)<br>• MagSpeed center wheel click<br>• 4-way horizontal tilt wheel (L/R) | ✅ Live percentage (UPower / sysfs / D-Bus) | **100% Supported** (Native driver) |
+| **Microsoft Sculpt Comfort Mouse** | Bluetooth 3.0 / Classic BT | • Blue capacitive touch strip (Swipe Up / Down)<br>• Windows button click (Capacitive tap)<br>• Center wheel click & horizontal tilt | ✅ Voltage / Status via BlueZ D-Bus | **100% Supported** (Native driver) |
+| **Generic Multi-Button Mice** | USB / 2.4 GHz / Bluetooth | • Center wheel click<br>• Standard side buttons (`BTN_SIDE`, `BTN_EXTRA`) | ℹ️ Generic UPower (if supported by kernel) | 🧪 Basic Support |
 
-### 🖥️ Compatibilità Server Grafico & Desktop Environment
+### 🖥️ Display Server & Desktop Environment Compatibility
 
-| Ambiente Desktop / Compositor | Display Server | Stato | Dettagli Funzionalità |
+| Desktop Environment / Compositor | Display Server | Status | Feature Details |
 | :--- | :--- | :--- | :--- |
-| **Hyprland** | Wayland | ✅ Testato & Supportato | Grab hardware evdev + emulazione virtuale uinput a latenza zero |
-| **Sway** | Wayland | ✅ Testato & Supportato | Piena compatibilità con scorciatoie, workspace e comandi |
-| **GNOME (40+)** | Wayland & X11 | ✅ Testato & Supportato | Esecuzione tray di sistema (richiede estensione AppIndicator su GNOME) |
-| **KDE Plasma (5/6)** | Wayland & X11 | ✅ Testato & Supportato | Integrazione completa con barra di sistema e gestione profili |
-| **Altri WM (i3, bspwm, XFCE)** | X11 / Wayland | ✅ Supportato | Richiede modulo kernel `uinput` e permessi `uaccess` |
+| **Hyprland** | Wayland | ✅ Tested & Supported | Zero-latency evdev hardware grab + uinput virtual emulation |
+| **Sway** | Wayland | ✅ Tested & Supported | Full compatibility with shortcuts, workspaces, and shell commands |
+| **GNOME (40+)** | Wayland & X11 | ✅ Tested & Supported | System tray execution (requires AppIndicator extension on GNOME) |
+| **KDE Plasma (5/6)** | Wayland & X11 | ✅ Tested & Supported | Full integration with system tray and profile management |
+| **Other WMs (i3, bspwm, XFCE)** | X11 / Wayland | ✅ Supported | Requires kernel module `uinput` and `uaccess` permissions |
 
 ---
 
@@ -97,28 +97,42 @@ The optimized binary will be placed in `src-tauri/target/release/mousedeck` (or 
 
 ---
 
-## 📦 Arch Linux Packaging (`.pkg.tar.zst`)
+## 📦 Multi-Distro Packaging & CI/CD
 
-MouseDeck provides first-class native packaging for Arch Linux, Manjaro, EndeavourOS, CachyOS, and Omarchy.
+MouseDeck provides native packaging for major Linux distributions as well as a universal AppImage.
 
-### 1. Build and Package with one command:
+### Automated CI/CD Releases (GitHub Actions)
+Every time a version tag is pushed (e.g. `git tag v1.0.0 && git push origin v1.0.0`), the automated GitHub Actions pipeline compiles and publishes release assets:
+- **Arch Linux / Omarchy / Manjaro / EndeavourOS:** `.pkg.tar.zst` (built in native Arch container with `makepkg`)
+- **Ubuntu / Debian / Pop!_OS / Linux Mint:** `.deb`
+- **Fedora / openSUSE / RHEL:** `.rpm`
+- **Universal Linux:** `.AppImage` (runs standalone on any modern Linux distro)
+- **Integrity verification:** `SHA256SUMS.txt` checksum manifest
+
+---
+
+### Local Packaging
+
+#### Arch Linux (`.pkg.tar.zst`)
 ```bash
+# Build package with one command
 npm run package:arch
+
+# Install on Arch / Manjaro / EndeavourOS / Omarchy
+sudo pacman -U dist/mousedeck-*.pkg.tar.zst
 ```
-*(or run `./scripts/build-arch-package.sh` directly)*
 
-This compiles the release binary and automatically generates a standard Arch package in `dist/mousedeck-1.0.0-1-x86_64.pkg.tar.zst` (~2.6 MB).
-
-### 2. Install on your system:
+#### Debian / Ubuntu (`.deb`) & Fedora / openSUSE (`.rpm`)
 ```bash
-sudo pacman -U dist/mousedeck-1.0.0-1-x86_64.pkg.tar.zst
+# Build deb, rpm, and AppImage bundles via Tauri CLI
+npm run tauri build
 ```
-Or build and install immediately in a single pass:
-```bash
-./scripts/build-arch-package.sh --install
-```
+Built packages are located in `src-tauri/target/release/bundle/`:
+- `bundle/deb/mousedeck_*.deb`
+- `bundle/rpm/mousedeck-*.rpm`
+- `bundle/appimage/mousedeck_*.AppImage`
 
-### What is included in the package:
+### What is included in all packages:
 - 🚀 `/usr/bin/mousedeck` (standalone, stripped, LTO-optimized binary)
 - 🖥️ `/usr/share/applications/mousedeck.desktop` (XDG desktop entry)
 - 🎨 `/usr/share/icons/hicolor/` (full icon set: 16px, 24px, 32px, 48px, 64px, 128px, 256px, 512px)
