@@ -235,7 +235,7 @@ const DiagramTooltip: React.FC<{
 
   return (
     <div
-      className="absolute pointer-events-none z-30 transition-all duration-150 animate-in fade-in zoom-in-95 glass-panel p-2.5 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] border border-cyan-500/40 text-left min-w-[190px] max-w-[240px]"
+      className="absolute pointer-events-none z-30 transition-all duration-150 animate-in fade-in zoom-in-95 bg-[#14161f] p-2.5 rounded-xl shadow-xl border border-white/[0.12] text-left min-w-[190px] max-w-[240px]"
       style={{
         left: `${leftPct}%`,
         top: `${topPct}%`,
@@ -243,7 +243,7 @@ const DiagramTooltip: React.FC<{
       }}
     >
       <div className="flex items-center gap-1.5 mb-1">
-        <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] animate-pulse shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
         <span className="font-semibold text-xs text-white leading-tight truncate">
           {displayName}
         </span>
@@ -258,7 +258,7 @@ const DiagramTooltip: React.FC<{
           {action.type === "key_combo" ? (
             <KeyComboBadge combo={action.value} size="sm" />
           ) : (
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.08] text-cyan-300 truncate">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.08] text-indigo-300 truncate">
               {action.name || action.value}
             </span>
           )}
@@ -271,7 +271,7 @@ const DiagramTooltip: React.FC<{
 
       <div className="mt-1.5 pt-1 border-t border-white/[0.05] flex items-center justify-between text-[9px] text-slate-500 font-mono">
         <span>{triggerId}</span>
-        <span className="text-cyan-400 font-sans font-medium">
+        <span className="text-indigo-400 font-sans font-medium">
           {language === "en" ? "Click to remap ↗" : "Clicca per rimappare ↗"}
         </span>
       </div>
@@ -349,8 +349,8 @@ const G502Diagram: React.FC<{
           </linearGradient>
 
           <linearGradient id="gActiveGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00f2fe" />
-            <stop offset="100%" stopColor="#4facfe" />
+            <stop offset="0%" stopColor="#6366f1" />
+            <stop offset="100%" stopColor="#4f46e5" />
           </linearGradient>
 
           <linearGradient id="metalWheel" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -360,7 +360,7 @@ const G502Diagram: React.FC<{
           </linearGradient>
 
           <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
@@ -399,7 +399,7 @@ const G502Diagram: React.FC<{
                C 42 202, 38 190, 38 178
                Z"
             fill={isG6 ? "url(#gActiveGlow)" : "#1c202d"}
-            stroke={isG6 ? "#38bdf8" : "#32394e"}
+            stroke={isG6 ? "#818cf8" : "#32394e"}
             strokeWidth={isG6 ? "2" : "1"}
             filter={isG6 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -410,7 +410,7 @@ const G502Diagram: React.FC<{
             fontSize="8"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG6 ? "#0c0d12" : "#7e8b9f"}
+            fill={isG6 ? "#ffffff" : "#7e8b9f"}
             className="pointer-events-none"
           >
             G6
@@ -451,20 +451,22 @@ const G502Diagram: React.FC<{
 
         {/* Right Primary Clicker */}
         <path
-          d="M 175 33
-             L 136 38
+          d="M 136 38
+             L 175 33
+             C 180 50, 186 75, 192 105
+             L 192 135
+             L 166 135
              L 136 135
-             L 194 135
-             C 194 105, 186 65, 175 33
              Z"
           fill="url(#g502Clicker)"
           stroke="#2d3345"
           strokeWidth="1"
         />
 
-        {/* Center Divider Gap */}
-        <line x1="130" y1="38" x2="130" y2="135" stroke="#0e1017" strokeWidth="2.5" />
+        {/* Center Gap between clickers */}
+        <line x1="130" y1="35" x2="130" y2="130" stroke="#08090d" strokeWidth="2.5" />
 
+        {/* Index Finger Wing: G8 and G7 */}
         {/* G8 Button */}
         <g
           className="cursor-pointer"
@@ -479,7 +481,7 @@ const G502Diagram: React.FC<{
                L 70 86
                Z"
             fill={isG8 ? "url(#gActiveGlow)" : "#222736"}
-            stroke={isG8 ? "#38bdf8" : "#3b435b"}
+            stroke={isG8 ? "#818cf8" : "#3b435b"}
             strokeWidth={isG8 ? "1.8" : "1"}
             filter={isG8 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -490,7 +492,7 @@ const G502Diagram: React.FC<{
             fontSize="7.5"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG8 ? "#0c0d12" : "#8b9ab4"}
+            fill={isG8 ? "#ffffff" : "#8b9ab4"}
             className="pointer-events-none"
           >
             G8
@@ -511,7 +513,7 @@ const G502Diagram: React.FC<{
                L 68 116
                Z"
             fill={isG7 ? "url(#gActiveGlow)" : "#222736"}
-            stroke={isG7 ? "#38bdf8" : "#3b435b"}
+            stroke={isG7 ? "#818cf8" : "#3b435b"}
             strokeWidth={isG7 ? "1.8" : "1"}
             filter={isG7 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -522,7 +524,7 @@ const G502Diagram: React.FC<{
             fontSize="7.5"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG7 ? "#0c0d12" : "#8b9ab4"}
+            fill={isG7 ? "#ffffff" : "#8b9ab4"}
             className="pointer-events-none"
           >
             G7
@@ -543,7 +545,7 @@ const G502Diagram: React.FC<{
                L 56 162
                Z"
             fill={isG5 ? "url(#gActiveGlow)" : "#222736"}
-            stroke={isG5 ? "#38bdf8" : "#3b435b"}
+            stroke={isG5 ? "#818cf8" : "#3b435b"}
             strokeWidth={isG5 ? "1.8" : "1"}
             filter={isG5 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -554,7 +556,7 @@ const G502Diagram: React.FC<{
             fontSize="7"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG5 ? "#0c0d12" : "#8b9ab4"}
+            fill={isG5 ? "#ffffff" : "#8b9ab4"}
             className="pointer-events-none"
           >
             G5
@@ -575,7 +577,7 @@ const G502Diagram: React.FC<{
                L 54 196
                Z"
             fill={isG4 ? "url(#gActiveGlow)" : "#222736"}
-            stroke={isG4 ? "#38bdf8" : "#3b435b"}
+            stroke={isG4 ? "#818cf8" : "#3b435b"}
             strokeWidth={isG4 ? "1.8" : "1"}
             filter={isG4 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -586,7 +588,7 @@ const G502Diagram: React.FC<{
             fontSize="7"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG4 ? "#0c0d12" : "#8b9ab4"}
+            fill={isG4 ? "#ffffff" : "#8b9ab4"}
             className="pointer-events-none"
           >
             G4
@@ -599,7 +601,7 @@ const G502Diagram: React.FC<{
         {/* Tilt Left Indicator Arrow */}
         <path
           d="M 115 76 L 110 81 L 115 86 Z"
-          fill={isTiltLeft ? "#00f2fe" : "#2f3649"}
+          fill={isTiltLeft ? "#818cf8" : "#2f3649"}
           filter={isTiltLeft ? "url(#cyanGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_left")}
@@ -610,7 +612,7 @@ const G502Diagram: React.FC<{
         {/* Tilt Right Indicator Arrow */}
         <path
           d="M 145 76 L 150 81 L 145 86 Z"
-          fill={isTiltRight ? "#00f2fe" : "#2f3649"}
+          fill={isTiltRight ? "#818cf8" : "#2f3649"}
           filter={isTiltRight ? "url(#cyanGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_right")}
@@ -632,7 +634,7 @@ const G502Diagram: React.FC<{
             height="50"
             rx="4"
             fill={isMiddleClick ? "url(#gActiveGlow)" : "url(#metalWheel)"}
-            stroke={isMiddleClick ? "#38bdf8" : "#5a6685"}
+            stroke={isMiddleClick ? "#818cf8" : "#5a6685"}
             strokeWidth={isMiddleClick ? "2" : "1"}
             filter={isMiddleClick ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -646,7 +648,7 @@ const G502Diagram: React.FC<{
               y1={81 + offset}
               x2="136"
               y2={81 + offset}
-              stroke={isMiddleClick ? "#0c0d12" : "#171a24"}
+              stroke={isMiddleClick ? "#ffffff" : "#171a24"}
               strokeWidth="1.5"
             />
           ))}
@@ -670,7 +672,7 @@ const G502Diagram: React.FC<{
                L 124 156
                Z"
             fill={isG9 ? "url(#gActiveGlow)" : "#222736"}
-            stroke={isG9 ? "#38bdf8" : "#3b435b"}
+            stroke={isG9 ? "#818cf8" : "#3b435b"}
             strokeWidth={isG9 ? "1.8" : "1"}
             filter={isG9 ? "url(#cyanGlow)" : undefined}
             className="transition-all duration-150"
@@ -681,7 +683,7 @@ const G502Diagram: React.FC<{
             fontSize="7.5"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isG9 ? "#0c0d12" : "#8b9ab4"}
+            fill={isG9 ? "#ffffff" : "#8b9ab4"}
             className="pointer-events-none"
           >
             G9
@@ -723,7 +725,7 @@ const G502Diagram: React.FC<{
                Z"
             fill="#2c3347"
           />
-          <circle cx="14" cy="14" r="2.5" fill="#00f2fe" opacity="0.6" filter="blur(1px)" />
+          <circle cx="14" cy="14" r="2.5" fill="#818cf8" opacity="0.6" />
         </g>
       </svg>
 
@@ -810,12 +812,12 @@ const SculptDiagram: React.FC<{
           </linearGradient>
 
           <linearGradient id="blueStripActive" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="100%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#6366f1" />
+            <stop offset="100%" stopColor="#4f46e5" />
           </linearGradient>
 
           <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
@@ -850,8 +852,8 @@ const SculptDiagram: React.FC<{
             width="18"
             height="48"
             rx="5"
-            fill={isMiddleClick ? "#0078d4" : "#2f3544"}
-            stroke={isMiddleClick ? "#38bdf8" : "#454d60"}
+            fill={isMiddleClick ? "#6366f1" : "#2f3544"}
+            stroke={isMiddleClick ? "#818cf8" : "#454d60"}
             strokeWidth="1"
             className="transition-colors duration-150"
           />
@@ -871,7 +873,7 @@ const SculptDiagram: React.FC<{
 
         <path
           d="M 104 82 L 98 86 L 104 90 Z"
-          fill={isTiltLeft ? "#38bdf8" : "#2b3040"}
+          fill={isTiltLeft ? "#818cf8" : "#2b3040"}
           filter={isTiltLeft ? "url(#softGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_left")}
@@ -880,7 +882,7 @@ const SculptDiagram: React.FC<{
         />
         <path
           d="M 136 82 L 142 86 L 136 90 Z"
-          fill={isTiltRight ? "#38bdf8" : "#2b3040"}
+          fill={isTiltRight ? "#818cf8" : "#2b3040"}
           filter={isTiltRight ? "url(#softGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_right")}
@@ -896,7 +898,7 @@ const SculptDiagram: React.FC<{
                C 47 195, 38 190, 37 178
                Z"
             fill={isStripActive ? "url(#blueStripActive)" : "url(#blueStrip)"}
-            stroke={isStripActive ? "#7dd3fc" : "#0284c7"}
+            stroke={isStripActive ? "#818cf8" : "#0284c7"}
             strokeWidth={isStripActive ? "1.8" : "1"}
             className="transition-all duration-200"
           />
@@ -1025,8 +1027,8 @@ const MxAnywhereDiagram: React.FC<{
           </linearGradient>
 
           <linearGradient id="mxActiveGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00f2fe" />
-            <stop offset="100%" stopColor="#38bdf8" />
+            <stop offset="0%" stopColor="#6366f1" />
+            <stop offset="100%" stopColor="#4f46e5" />
           </linearGradient>
 
           <linearGradient id="mxMetalWheel" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1037,7 +1039,7 @@ const MxAnywhereDiagram: React.FC<{
           </linearGradient>
 
           <filter id="mxGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
@@ -1059,11 +1061,6 @@ const MxAnywhereDiagram: React.FC<{
           strokeWidth="1"
         />
 
-        {/* Faceted grip lines (left) */}
-        <path d="M 45 140 L 52 145 L 47 155" stroke="#1f2330" strokeWidth="1.2" fill="none" />
-        <path d="M 46 165 L 53 170 L 48 180" stroke="#1f2330" strokeWidth="1.2" fill="none" />
-        <path d="M 49 190 L 55 195 L 52 205" stroke="#1f2330" strokeWidth="1.2" fill="none" />
-
         {/* Right textured grip zone */}
         <path
           d="M 188 110
@@ -1077,19 +1074,26 @@ const MxAnywhereDiagram: React.FC<{
           stroke="#262b3a"
           strokeWidth="1"
         />
-        <path d="M 195 140 L 188 145 L 193 155" stroke="#1f2330" strokeWidth="1.2" fill="none" />
-        <path d="M 194 165 L 187 170 L 192 180" stroke="#1f2330" strokeWidth="1.2" fill="none" />
-        <path d="M 191 190 L 185 195 L 188 205" stroke="#1f2330" strokeWidth="1.2" fill="none" />
 
-        {/* Main Body Chassis (Pebble Symmetrical Form) */}
+        {/* Grip Diamond Facet Details */}
+        <path d="M 46 140 L 52 148 L 46 156" stroke="#1d202b" strokeWidth="1" fill="none" />
+        <path d="M 45 160 L 52 168 L 47 176" stroke="#1d202b" strokeWidth="1" fill="none" />
+        <path d="M 48 180 L 55 188 L 51 196" stroke="#1d202b" strokeWidth="1" fill="none" />
+
+        <path d="M 194 140 L 188 148 L 194 156" stroke="#1d202b" strokeWidth="1" fill="none" />
+        <path d="M 195 160 L 188 168 L 193 176" stroke="#1d202b" strokeWidth="1" fill="none" />
+        <path d="M 192 180 L 185 188 L 189 196" stroke="#1d202b" strokeWidth="1" fill="none" />
+
+        {/* Main Chassis Body */}
         <path
-          d="M 80 40
-             C 105 32, 135 32, 160 40
-             C 182 50, 192 85, 192 135
-             C 192 190, 185 240, 162 268
-             C 145 285, 95 285, 78 268
-             C 55 240, 48 190, 48 135
-             C 48 85, 58 50, 80 40
+          d="M 80 34
+             C 100 28, 140 28, 160 34
+             C 185 45, 196 90, 194 140
+             C 192 185, 190 220, 178 255
+             C 168 282, 148 296, 120 296
+             C 92 296, 72 282, 62 255
+             C 50 220, 48 185, 46 140
+             C 44 90, 55 45, 80 34
              Z"
           fill="url(#mxChassis)"
           stroke="#2d3345"
@@ -1098,32 +1102,32 @@ const MxAnywhereDiagram: React.FC<{
 
         {/* Left Primary Clicker */}
         <path
-          d="M 80 40
-             C 100 33, 115 33, 118 35
-             L 118 122
-             L 52 122
-             C 48 95, 58 60, 80 40
+          d="M 80 34
+             L 116 38
+             L 116 130
+             L 54 130
+             C 50 90, 60 55, 80 34
              Z"
           fill="url(#mxClicker)"
-          stroke="#32384a"
+          stroke="#384156"
           strokeWidth="1"
         />
 
         {/* Right Primary Clicker */}
         <path
-          d="M 160 40
-             C 140 33, 125 33, 122 35
-             L 122 122
-             L 188 122
-             C 192 95, 182 60, 160 40
+          d="M 160 34
+             L 124 38
+             L 124 130
+             L 186 130
+             C 190 90, 180 55, 160 34
              Z"
           fill="url(#mxClicker)"
-          stroke="#32384a"
+          stroke="#384156"
           strokeWidth="1"
         />
 
-        {/* Center Divider Gap */}
-        <line x1="120" y1="35" x2="120" y2="120" stroke="#0e1017" strokeWidth="2" />
+        {/* Center Clicker Gap */}
+        <line x1="120" y1="36" x2="120" y2="125" stroke="#0e1017" strokeWidth="2" />
 
         {/* Thumb Forward Button */}
         <g
@@ -1139,7 +1143,7 @@ const MxAnywhereDiagram: React.FC<{
                C 52 144, 43 142, 43 136
                Z"
             fill={isForward ? "url(#mxActiveGlow)" : "#252b3b"}
-            stroke={isForward ? "#38bdf8" : "#3b445c"}
+            stroke={isForward ? "#818cf8" : "#3b445c"}
             strokeWidth={isForward ? "1.8" : "1"}
             filter={isForward ? "url(#mxGlow)" : undefined}
             className="transition-all duration-150"
@@ -1150,7 +1154,7 @@ const MxAnywhereDiagram: React.FC<{
             fontSize="6"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isForward ? "#0c0d12" : "#94a3b8"}
+            fill={isForward ? "#ffffff" : "#94a3b8"}
             className="pointer-events-none"
           >
             F
@@ -1171,7 +1175,7 @@ const MxAnywhereDiagram: React.FC<{
                C 52 176, 45 174, 45 168
                Z"
             fill={isBack ? "url(#mxActiveGlow)" : "#252b3b"}
-            stroke={isBack ? "#38bdf8" : "#3b445c"}
+            stroke={isBack ? "#818cf8" : "#3b445c"}
             strokeWidth={isBack ? "1.8" : "1"}
             filter={isBack ? "url(#mxGlow)" : undefined}
             className="transition-all duration-150"
@@ -1182,7 +1186,7 @@ const MxAnywhereDiagram: React.FC<{
             fontSize="6"
             fontWeight="bold"
             textAnchor="middle"
-            fill={isBack ? "#0c0d12" : "#94a3b8"}
+            fill={isBack ? "#ffffff" : "#94a3b8"}
             className="pointer-events-none"
           >
             B
@@ -1195,7 +1199,7 @@ const MxAnywhereDiagram: React.FC<{
         {/* Tilt Left Arrow */}
         <path
           d="M 106 74 L 100 78 L 106 82 Z"
-          fill={isTiltLeft ? "#00f2fe" : "#333d52"}
+          fill={isTiltLeft ? "#818cf8" : "#333d52"}
           filter={isTiltLeft ? "url(#mxGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_left")}
@@ -1206,7 +1210,7 @@ const MxAnywhereDiagram: React.FC<{
         {/* Tilt Right Arrow */}
         <path
           d="M 134 74 L 140 78 L 134 82 Z"
-          fill={isTiltRight ? "#00f2fe" : "#333d52"}
+          fill={isTiltRight ? "#818cf8" : "#333d52"}
           filter={isTiltRight ? "url(#mxGlow)" : undefined}
           className="transition-colors duration-150 cursor-pointer"
           onMouseEnter={() => handleHover("tilt_right")}
@@ -1228,7 +1232,7 @@ const MxAnywhereDiagram: React.FC<{
             height="48"
             rx="4"
             fill={isMiddleClick ? "url(#mxActiveGlow)" : "url(#mxMetalWheel)"}
-            stroke={isMiddleClick ? "#38bdf8" : "#64748b"}
+            stroke={isMiddleClick ? "#818cf8" : "#64748b"}
             strokeWidth={isMiddleClick ? "2" : "1"}
             filter={isMiddleClick ? "url(#mxGlow)" : undefined}
             className="transition-all duration-150"
@@ -1242,7 +1246,7 @@ const MxAnywhereDiagram: React.FC<{
               y1={78 + offset}
               x2="126"
               y2={78 + offset}
-              stroke={isMiddleClick ? "#0c0d12" : "#1e2430"}
+              stroke={isMiddleClick ? "#ffffff" : "#1e2430"}
               strokeWidth="1.2"
             />
           ))}

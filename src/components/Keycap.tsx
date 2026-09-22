@@ -86,11 +86,11 @@ export const Keycap: React.FC<KeycapProps> = ({
 
   const variantClasses = {
     default:
-      "bg-gradient-to-b from-[#222736] to-[#161923] text-slate-100 border-white/[0.14] shadow-[0_2px_0_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)]",
+      "bg-[#1c1f2c] text-slate-100 border-white/[0.12] shadow-xs",
     accent:
-      "bg-gradient-to-b from-[#0e3b5e] to-[#092338] text-cyan-300 border-cyan-500/40 shadow-[0_2px_0_rgba(0,0,0,0.6),inset_0_1px_0_rgba(56,189,248,0.25)]",
+      "bg-indigo-950/60 text-indigo-300 border-indigo-500/30 shadow-xs",
     muted:
-      "bg-[#14161f] text-slate-400 border-white/[0.08] shadow-[0_1px_0_rgba(0,0,0,0.4)]",
+      "bg-[#14161f] text-slate-400 border-white/[0.08]",
   }[variant];
 
   return (

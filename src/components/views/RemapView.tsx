@@ -182,7 +182,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
             <h1 className="text-xl font-semibold text-white tracking-tight">
               {t("remap.title", "Rimappatura Tasti & Gesti")}
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
               {getDeviceDisplayName()}
             </span>
           </div>
@@ -196,7 +196,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
             <select
               value={config.active_driver}
               onChange={(e) => onChangeDriver(e.target.value)}
-              className="px-2.5 py-1 rounded-lg bg-[#151821] border border-white/[0.08] text-[11px] text-slate-300 focus:outline-none focus:border-cyan-500"
+              className="px-2.5 py-1 rounded-lg bg-[#151821] border border-white/[0.08] text-[11px] text-slate-300 focus:outline-none focus:border-indigo-500"
             >
               <option value="logitech_g502_x">
                 {language === "en" ? "G502 X Lightspeed Driver" : "Modulo G502 X Lightspeed"}
@@ -214,18 +214,18 @@ export const RemapView: React.FC<RemapViewProps> = ({
           )}
 
           <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             {language === "en" ? "Hardware Synced" : "Hardware Sincronizzato"}
           </div>
         </div>
       </div>
 
       {/* Visual Interactive Mouse Card with Floating Tooltips */}
-      <div className="desktop-card p-5 bg-gradient-to-b from-[#141824] via-[#0f1118] to-[#0c0d12] border border-white/[0.08] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+      <div className="desktop-card p-5 border border-white/[0.08] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2 z-10 max-w-sm">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8] animate-pulse" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan-300 font-mono">
+            <span className="w-2 h-2 rounded-full bg-indigo-400" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-300 font-mono">
               {language === "en" ? "Interactive Hardware Map" : "Mappa Interattiva Hardware"}
             </span>
           </div>
@@ -244,7 +244,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
               : "Passa il mouse sui tasti per visualizzare il tooltip dell'azione attiva in tempo reale, oppure clicca direttamente su un pulsante del mouse per riconfigurarlo."}
           </p>
           <div className="pt-1 flex items-center gap-2 text-[11px] text-slate-400">
-            <span className="px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.06] text-cyan-300 font-mono">
+            <span className="px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.06] text-indigo-300 font-mono">
               {hoveredTrigger
                 ? (language === "en" ? `Active key: ${hoveredTrigger}` : `Tasto attivo: ${hoveredTrigger}`)
                 : isG502
@@ -276,7 +276,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
           <div className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
               <span>{t("remap.g502ThumbGroup", "Cluster Pollice (Sniper & Tasti Laterali)")}</span>
-              <span className="text-[10px] text-cyan-400 font-mono">G6 • G4 • G5</span>
+              <span className="text-[10px] text-indigo-400 font-mono">G6 • G4 • G5</span>
             </h2>
 
             <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
@@ -295,21 +295,21 @@ export const RemapView: React.FC<RemapViewProps> = ({
                     onMouseLeave={() => setHoveredTrigger(null)}
                     className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
                       isHovered
-                        ? "bg-cyan-500/[0.08] border-l-2 border-cyan-400 pl-3.5"
+                        ? "bg-white/[0.04] border-l-2 border-indigo-500 pl-3.5"
                         : "hover:bg-white/[0.02]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors ${
                         isHovered
-                          ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
-                          : "bg-[#161a24] border-white/[0.06] text-cyan-400"
+                          ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300"
+                          : "bg-[#161a24] border-white/[0.06] text-slate-400"
                       }`}>
                         <Icon className="w-3.5 h-3.5" />
                       </div>
                       <div>
                         <h3 className={`text-xs font-medium transition-colors ${
-                          isHovered ? "text-cyan-200" : "text-slate-200 group-hover:text-white"
+                          isHovered ? "text-indigo-200" : "text-slate-200 group-hover:text-white"
                         }`}>
                           {t.name}
                         </h3>
@@ -326,7 +326,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
                         </span>
                       )}
                       <ChevronRight className={`w-4 h-4 transition-colors ${
-                        isHovered ? "text-cyan-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
+                        isHovered ? "text-indigo-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
                       }`} />
                     </div>
                   </div>
@@ -339,7 +339,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
           <div className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
               <span>{t("remap.g502IndexGroup", "Tasti Ala Indice & Switch Profilo")}</span>
-              <span className="text-[10px] text-cyan-400 font-mono">G8 • G7 • G9</span>
+              <span className="text-[10px] text-indigo-400 font-mono">G8 • G7 • G9</span>
             </h2>
 
             <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
@@ -358,21 +358,21 @@ export const RemapView: React.FC<RemapViewProps> = ({
                     onMouseLeave={() => setHoveredTrigger(null)}
                     className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
                       isHovered
-                        ? "bg-cyan-500/[0.08] border-l-2 border-cyan-400 pl-3.5"
+                        ? "bg-white/[0.04] border-l-2 border-indigo-500 pl-3.5"
                         : "hover:bg-white/[0.02]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors ${
                         isHovered
-                          ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
-                          : "bg-[#161a24] border-white/[0.06] text-cyan-400"
+                          ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300"
+                          : "bg-[#161a24] border-white/[0.06] text-slate-400"
                       }`}>
                         <Icon className="w-3.5 h-3.5" />
                       </div>
                       <div>
                         <h3 className={`text-xs font-medium transition-colors ${
-                          isHovered ? "text-cyan-200" : "text-slate-200 group-hover:text-white"
+                          isHovered ? "text-indigo-200" : "text-slate-200 group-hover:text-white"
                         }`}>
                           {t.name}
                         </h3>
@@ -389,7 +389,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
                         </span>
                       )}
                       <ChevronRight className={`w-4 h-4 transition-colors ${
-                        isHovered ? "text-cyan-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
+                        isHovered ? "text-indigo-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
                       }`} />
                     </div>
                   </div>
@@ -403,7 +403,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
         <div className="space-y-2">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
             <span>{t("remap.anywhereThumbGroup", "Pulsanti Laterali Pollice (Avanti / Indietro)")}</span>
-            <span className="text-[10px] text-cyan-400 font-mono">Forward • Back</span>
+            <span className="text-[10px] text-indigo-400 font-mono">Forward • Back</span>
           </h2>
 
           <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
@@ -422,21 +422,21 @@ export const RemapView: React.FC<RemapViewProps> = ({
                   onMouseLeave={() => setHoveredTrigger(null)}
                   className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
                     isHovered
-                      ? "bg-cyan-500/[0.08] border-l-2 border-cyan-400 pl-3.5"
+                      ? "bg-white/[0.04] border-l-2 border-indigo-500 pl-3.5"
                       : "hover:bg-white/[0.02]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors ${
                       isHovered
-                        ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]"
-                        : "bg-[#161a24] border-white/[0.06] text-cyan-400"
+                        ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300"
+                        : "bg-[#161a24] border-white/[0.06] text-slate-400"
                     }`}>
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
                       <h3 className={`text-xs font-medium transition-colors ${
-                        isHovered ? "text-cyan-200" : "text-slate-200 group-hover:text-white"
+                        isHovered ? "text-indigo-200" : "text-slate-200 group-hover:text-white"
                       }`}>
                         {t.name}
                       </h3>
@@ -453,7 +453,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
                       </span>
                     )}
                     <ChevronRight className={`w-4 h-4 transition-colors ${
-                      isHovered ? "text-cyan-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
+                      isHovered ? "text-indigo-400 translate-x-0.5" : "text-slate-600 group-hover:text-slate-400"
                     }`} />
                   </div>
                 </div>
@@ -484,17 +484,17 @@ export const RemapView: React.FC<RemapViewProps> = ({
                   onMouseLeave={() => setHoveredTrigger(null)}
                   className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
                     isHovered
-                      ? "bg-[#0078d4]/[0.1] border-l-2 border-[#0078d4] pl-3.5"
+                      ? "bg-white/[0.04] border-l-2 border-indigo-500 pl-3.5"
                       : "hover:bg-white/[0.02]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-md bg-[#161a24] border border-white/[0.06] flex items-center justify-center text-[#70b4ff]">
+                    <div className="w-7 h-7 rounded-md bg-[#161a24] border border-white/[0.06] flex items-center justify-center text-indigo-400">
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
                       <h3 className={`text-xs font-medium transition-colors ${
-                        isHovered ? "text-[#70b4ff]" : "text-slate-200 group-hover:text-white"
+                        isHovered ? "text-indigo-200" : "text-slate-200 group-hover:text-white"
                       }`}>
                         {t.name}
                       </h3>
@@ -523,7 +523,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
       <div className="space-y-2">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
           <span>{t("remap.wheelGroup", "Rotellina Dual-Mode & Inclinazione a 4 Vie")}</span>
-          <span className="text-[10px] text-slate-500 font-mono">Tilt L • Tilt R • Click</span>
+          <span className="text-[10px] text-indigo-400 font-mono">Tilt L • Tilt R • Click</span>
         </h2>
 
         <div className="desktop-card overflow-hidden divide-y divide-white/[0.04]">
@@ -542,21 +542,21 @@ export const RemapView: React.FC<RemapViewProps> = ({
                 onMouseLeave={() => setHoveredTrigger(null)}
                 className={`px-4 py-3.5 flex items-center justify-between transition-all cursor-pointer group ${
                   isHovered
-                    ? "bg-cyan-500/[0.08] border-l-2 border-cyan-400 pl-3.5"
+                    ? "bg-white/[0.04] border-l-2 border-indigo-500 pl-3.5"
                     : "hover:bg-white/[0.02]"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-md border flex items-center justify-center transition-colors ${
                     isHovered
-                      ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
+                      ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300"
                       : "bg-[#161a24] border-white/[0.06] text-slate-400"
                   }`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   <div>
                     <h3 className={`text-xs font-medium transition-colors ${
-                      isHovered ? "text-cyan-200" : "text-slate-200 group-hover:text-white"
+                      isHovered ? "text-indigo-200" : "text-slate-200 group-hover:text-white"
                     }`}>
                       {t.name}
                     </h3>
@@ -589,7 +589,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
         <div className="desktop-card p-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
@@ -618,7 +618,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
               <select
                 value={selectedPreset}
                 onChange={(e) => setSelectedPreset(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-[#151821] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="px-2.5 py-1.5 rounded-lg bg-[#151821] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
               >
                 {isG502 ? (
                   <>
@@ -658,7 +658,7 @@ export const RemapView: React.FC<RemapViewProps> = ({
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs ${
                   presetSuccess
                     ? "bg-emerald-600 text-white"
-                    : "bg-cyan-600 hover:bg-cyan-500 text-white"
+                    : "bg-indigo-600 hover:bg-indigo-500 text-white"
                 }`}
               >
                 {presetSuccess ? <Check className="w-3.5 h-3.5" /> : null}

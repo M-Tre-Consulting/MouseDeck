@@ -140,7 +140,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <div className="desktop-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
               <Languages className="w-4 h-4" />
             </div>
             <div>
@@ -159,7 +159,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setLanguage("it")}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 language === "it"
-                  ? "bg-cyan-600 text-white font-semibold shadow-xs"
+                  ? "bg-indigo-600 text-white font-medium shadow-xs"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -170,7 +170,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setLanguage("en")}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 language === "en"
-                  ? "bg-cyan-600 text-white font-semibold shadow-xs"
+                  ? "bg-indigo-600 text-white font-medium shadow-xs"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -282,7 +282,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {/* Backup state */}
           <div className="px-4 py-3.5 flex items-center justify-between">
             <div className="flex items-start gap-2.5">
-              <FileArchive className="w-4 h-4 text-[#0078d4] shrink-0 mt-0.5" />
+              <FileArchive className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
               <div>
                 <div className="text-xs font-medium text-slate-200">
                   {language === "en" ? "Rollback Snapshot & Backup" : "Snapshot & Backup di Ripristino"}
@@ -301,7 +301,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <span
               className={`text-xs font-semibold px-2 py-0.5 rounded ${
                 backupExists
-                  ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
                   : "bg-slate-700/40 text-slate-500 border border-white/[0.06]"
               }`}
             >
@@ -327,7 +327,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <button
                 onClick={handleRunInstall}
                 disabled={isProcessing}
-                className="px-3 py-1.5 rounded-lg bg-[#0078d4] hover:bg-[#1084d8] disabled:opacity-40 text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 {isProcessing && actionType === "install" ? (
                   <>
@@ -425,7 +425,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Native Polkit Security Info */}
         <div className="p-3.5 rounded-xl bg-[#090a0e] border border-white/[0.05] flex items-start gap-3 text-xs text-slate-400">
-          <div className="w-7 h-7 rounded-lg bg-[#0078d4]/10 border border-[#0078d4]/20 flex items-center justify-center text-[#70b4ff] shrink-0 mt-0.5">
+          <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
             <KeyRound className="w-3.5 h-3.5" />
           </div>
           <div className="space-y-1">
@@ -488,7 +488,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {/* Autostart row */}
           <div className="px-4 py-3.5 flex items-center justify-between">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#0078d4]/10 border border-[#0078d4]/20 flex items-center justify-center text-[#70b4ff] shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
                 <Power className="w-4 h-4" />
               </div>
               <div>
@@ -505,7 +505,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={handleToggleAutostart}
               disabled={isUpdatingAutostart}
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shrink-0 cursor-pointer ${
-                autostart ? "bg-[#0078d4]" : "bg-slate-700"
+                autostart ? "bg-indigo-600" : "bg-slate-700"
               }`}
               title={autostart ? (language === "en" ? "Disable autostart" : "Disattiva avvio automatico") : (language === "en" ? "Enable autostart" : "Attiva avvio automatico")}
             >

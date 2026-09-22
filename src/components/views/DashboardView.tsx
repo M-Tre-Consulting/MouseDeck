@@ -82,17 +82,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-semibold text-white tracking-tight">
+            <h1 className="text-lg font-semibold text-white tracking-tight">
               {getDeviceName()}
             </h1>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
-              isG502 || isMxAnywhere
-                ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/25"
-                : "bg-[#0078d4]/15 text-[#70b4ff] border-[#0078d4]/25"
-            }`}>
+            <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/[0.06] text-slate-300 border border-white/[0.08]">
               {getDriverBadge()}
             </span>
           </div>
@@ -106,7 +102,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <select
               value={activeDriver}
               onChange={(e) => onSelectDriver(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
+              className="px-2.5 py-1.5 rounded-lg bg-[#141822] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
             >
               <option value="logitech_g502_x">Logitech G502 X Lightspeed</option>
               <option value="logitech_mx_anywhere_2s">Logitech MX Anywhere 2S</option>
@@ -118,18 +114,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <button
             onClick={handleReconnect}
             disabled={isReconnecting || !device}
-            className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] text-slate-300 text-xs font-medium border border-white/[0.08] transition-colors flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 text-xs font-medium border border-white/[0.08] transition-colors flex items-center gap-1.5 disabled:opacity-50"
           >
             <RefreshCw className={`w-3 h-3 ${isReconnecting ? "animate-spin" : ""}`} />
             {t("dashboard.reconnect")}
           </button>
           <button
             onClick={onNavigateToRemap}
-            className={`px-3 py-1.5 rounded-lg text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs ${
-              isG502 || isMxAnywhere
-                ? "bg-cyan-600 hover:bg-cyan-500"
-                : "bg-[#0078d4] hover:bg-[#1084d8]"
-            }`}
+            className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs"
           >
             {t("dashboard.goToRemap")}
             <ExternalLink className="w-3 h-3" />
@@ -138,7 +130,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {reconMsg && (
-        <div className="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300">
+        <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300">
           {reconMsg}
         </div>
       )}
@@ -153,11 +145,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             height={260}
           />
           <div className="mt-3">
-            <span className="text-xs font-semibold text-slate-300 block">
+            <span className="text-xs font-semibold text-slate-200 block">
               {getDeviceName()}
             </span>
             <span className="text-[11px] text-slate-500 block mt-0.5">
-              {isG502 || isMxAnywhere ? "evdev kernel grab • sub-millisecond" : "evdev grab • tastiera virtuale"}
+              {isG502 || isMxAnywhere ? "Kernel evdev grab • Low latency" : "evdev grab • Virtual device"}
             </span>
           </div>
         </div>
@@ -176,7 +168,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    isConnected ? "bg-emerald-400 shadow-[0_0_6px_#34d399]" : "bg-slate-600"
+                    isConnected ? "bg-emerald-400" : "bg-slate-600"
                   }`}
                 />
                 {isConnected ? t("common.active") : t("common.inactive")}
@@ -262,7 +254,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="px-4 py-3 flex items-center justify-between">
                 <span className="text-slate-400">{t("dashboard.activeProfile")}</span>
-                <span className="font-medium text-cyan-400">
+                <span className="font-medium text-indigo-400">
                   {activeProfile}
                 </span>
               </div>
@@ -270,15 +262,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           {/* Feature highlights */}
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05] space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-200 font-medium">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-4 rounded-xl bg-[#141822] border border-white/[0.06] space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 text-slate-200 font-medium">
                 {isG502 ? (
-                  <Target className="w-3.5 h-3.5 text-cyan-400" />
+                  <Target className="w-4 h-4 text-indigo-400" />
                 ) : isMxAnywhere ? (
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <Sparkles className="w-4 h-4 text-indigo-400" />
                 ) : (
-                  <Zap className="w-3.5 h-3.5 text-[#0078d4]" />
+                  <Zap className="w-4 h-4 text-indigo-400" />
                 )}
                 {isG502
                   ? language === "it"
@@ -292,7 +284,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   ? "Windows Touch Strip"
                   : "Windows Touch Strip"}
               </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 {isG502
                   ? language === "it"
                     ? "Tasto DPI Shift G6 (pollice), tasti laterali G4/G5, tasti indice G7/G8 e tasto profilo G9 programmabili."
@@ -307,13 +299,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05] space-y-1">
-              <div className="flex items-center gap-1.5 text-slate-200 font-medium">
-                {isG502 || isMxAnywhere ? (
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                ) : (
-                  <Layers className="w-3.5 h-3.5 text-[#0078d4]" />
-                )}
+            <div className="p-4 rounded-xl bg-[#141822] border border-white/[0.06] space-y-1.5 shadow-xs">
+              <div className="flex items-center gap-2 text-slate-200 font-medium">
+                <Layers className="w-4 h-4 text-indigo-400" />
                 {isMxAnywhere
                   ? language === "it"
                     ? "Rotellina MagSpeed a 4 Vie"
@@ -322,15 +310,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   ? "Rotellina a 4 Vie (Dual-Mode)"
                   : "4-Way Scroll Wheel (Dual-Mode)"}
               </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 {isG502
                   ? language === "it"
-                    ? "Rotellina metallica iper-veloce con scatto o corsa libera, doppio tilt orizzontale L/R e click centrale."
+                    ? "Rotellina metallica con scatto o corsa libera, tilt orizzontale L/R e click centrale."
                     : "Hyper-fast dual-mode scroll wheel with ratchet/free spin, horizontal tilt L/R, and middle click."
                   : isMxAnywhere
                   ? language === "it"
-                    ? "Rotellina elettromagnetica MagSpeed con scorrimento ultra-rapido, tilt orizzontale e click centrale."
-                    : "MagSpeed electromagnetic scroll wheel with hyper-fast scrolling, horizontal tilt, and middle click."
+                    ? "Rotellina elettromagnetica MagSpeed con scorrimento rapido, tilt orizzontale e click centrale."
+                    : "MagSpeed electromagnetic scroll wheel with precision scrolling, horizontal tilt, and middle click."
                   : language === "it"
                   ? "Supporta inclinazione orizzontale (tilt a sinistra e destra) più click centrale standard."
                   : "Supports horizontal tilt (left and right) plus standard center middle click."}

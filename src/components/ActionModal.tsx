@@ -317,13 +317,13 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
       <div className="w-full max-w-xl bg-[#10121a] border border-white/[0.1] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col animate-pop-in">
-        {/* Accent top gradient line */}
-        <div className="h-1 w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 shrink-0" />
+        {/* Subtle top border line */}
+        <div className="h-0.5 w-full bg-indigo-500/40 shrink-0" />
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.01]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0 shadow-inner">
+            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
               <TriggerIcon className="w-4 h-4" />
             </div>
             <div>
@@ -377,11 +377,11 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   }}
                   className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? "bg-gradient-to-b from-[#202534] to-[#161a25] text-white shadow-md border border-white/[0.12] text-cyan-300"
+                      ? "bg-[#1c202d] text-white shadow-xs border border-white/[0.12] text-indigo-300"
                       : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-cyan-400" : "text-slate-400"}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-indigo-400" : "text-slate-400"}`} />
                   <span className="truncate">{cat.label}</span>
                 </button>
               );
@@ -401,8 +401,8 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                 onClick={() => setIsRecording(true)}
                 className={`relative rounded-xl p-4 transition-all duration-200 cursor-pointer border flex flex-col items-center justify-center text-center ${
                   isRecording
-                    ? "bg-[#0c1424] recording-pulse"
-                    : "bg-[#0a0b10] border-white/[0.08] hover:border-cyan-500/40 hover:bg-[#0e1017]"
+                    ? "bg-[#121520] recording-pulse border-indigo-500/50"
+                    : "bg-[#0c0e14] border-white/[0.08] hover:border-indigo-500/30 hover:bg-[#10121a]"
                 }`}
               >
                 {/* Status Header */}
@@ -410,9 +410,9 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   <span
                     className={`w-2 h-2 rounded-full ${
                       isRecording
-                        ? "bg-cyan-400 animate-ping"
+                        ? "bg-indigo-400"
                         : value
-                        ? "bg-emerald-400 shadow-[0_0_6px_#34d399]"
+                        ? "bg-emerald-400"
                         : "bg-slate-500"
                     }`}
                   />
@@ -429,12 +429,12 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                     liveModifiers ? (
                       <div className="flex items-center gap-1.5">
                         <KeyComboBadge combo={liveModifiers} size="lg" />
-                        <span className="text-cyan-400 text-xs font-mono animate-pulse">
+                        <span className="text-indigo-400 text-xs font-mono">
                           {language === "en" ? "+ press key..." : "+ premi tasto..."}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-xs text-cyan-300 font-medium">
+                      <span className="text-xs text-indigo-300 font-medium">
                         {language === "en"
                           ? "Press desired key combination (e.g. Ctrl+Shift+T, Super+Page_Up)..."
                           : "Premi la combinazione desiderata (es. Ctrl+Shift+T, Super+Page_Up)..."}
@@ -461,7 +461,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                     }}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer border ${
                       isRecording
-                        ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/30 hover:bg-cyan-500/30"
+                        ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/30"
                         : "bg-white/[0.05] text-slate-300 border-white/[0.08] hover:bg-white/[0.09]"
                     }`}
                   >
@@ -497,7 +497,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowManualInput(!showManualInput)}
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
+                    className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
                   >
                     {showManualInput
                       ? (language === "en" ? "Hide manual editor" : "Nascondi editor manuale")
@@ -510,15 +510,15 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   <div className="p-2.5 rounded-xl bg-[#090a0f] border border-white/[0.06] space-y-1">
                     <label className="block text-[11px] text-slate-400">
                       {language === "en"
-                        ? <>Combination string (format: <code className="text-cyan-400 font-mono">Super+Page_Up</code>)</>
-                        : <>Stringa combinazione (formato: <code className="text-cyan-400 font-mono">Super+Page_Up</code>)</>}
+                        ? <>Combination string (format: <code className="text-indigo-400 font-mono">Super+Page_Up</code>)</>
+                        : <>Stringa combinazione (formato: <code className="text-indigo-400 font-mono">Super+Page_Up</code>)</>}
                     </label>
                     <input
                       type="text"
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
                       placeholder="es. Super+Page_Up, Ctrl+Shift+T"
-                      className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white font-mono text-xs focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 )}
@@ -537,13 +537,13 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                         }}
                         className={`px-2.5 py-1.5 rounded-lg text-left transition-all border flex flex-col justify-between cursor-pointer ${
                           isCurrent
-                            ? "bg-cyan-500/10 border-cyan-500/40 text-white shadow-xs"
+                            ? "bg-indigo-500/10 border-indigo-500/30 text-white shadow-xs"
                             : "bg-[#14161f] border-white/[0.05] text-slate-300 hover:border-white/[0.12] hover:bg-[#181b26]"
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
                           <span className="text-[11px] font-medium truncate">{p.label}</span>
-                          {isCurrent && <Check className="w-3 h-3 text-cyan-400 shrink-0" />}
+                          {isCurrent && <Check className="w-3 h-3 text-indigo-400 shrink-0" />}
                         </div>
                         <div className="mt-1">
                           <KeyComboBadge combo={p.combo} size="sm" />
@@ -578,14 +578,14 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                       }}
                       className={`p-3 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
                         isSelected
-                          ? "bg-gradient-to-br from-cyan-500/15 to-blue-500/10 border-cyan-500/50 shadow-md"
+                          ? "bg-indigo-500/10 border-indigo-500/40 shadow-xs"
                           : "bg-[#14161f] border-white/[0.05] hover:border-white/[0.12] hover:bg-[#181b26]"
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? "bg-cyan-500 text-slate-950 font-bold shadow-sm"
+                            ? "bg-indigo-600 text-white font-bold shadow-xs"
                             : "bg-white/[0.05] text-slate-400"
                         }`}
                       >
@@ -601,7 +601,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                           >
                             {opt.title}
                           </span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
                         </div>
                         <p className="text-[11px] text-slate-500 mt-0.5 truncate">{opt.desc}</p>
                       </div>
@@ -633,14 +633,14 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                       }}
                       className={`p-3 rounded-xl border text-left transition-all flex items-start gap-3 cursor-pointer ${
                         isSelected
-                          ? "bg-gradient-to-br from-cyan-500/15 to-blue-500/10 border-cyan-500/50 shadow-md"
+                          ? "bg-indigo-500/10 border-indigo-500/40 shadow-xs"
                           : "bg-[#14161f] border-white/[0.05] hover:border-white/[0.12] hover:bg-[#181b26]"
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                           isSelected
-                            ? "bg-cyan-500 text-slate-950 font-bold shadow-sm"
+                            ? "bg-indigo-600 text-white font-bold shadow-xs"
                             : "bg-white/[0.05] text-slate-400"
                         }`}
                       >
@@ -656,7 +656,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                           >
                             {opt.title}
                           </span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5">{opt.desc}</p>
                         <span className="text-[10px] text-slate-500 block">{opt.sub}</span>
@@ -676,7 +676,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   {t("modal.shellCommand", "Comando Shell Linux da Eseguire")}
                 </label>
                 <div className="relative rounded-xl overflow-hidden border border-white/[0.08] bg-[#090a0e] p-3 flex items-center gap-2">
-                  <span className="font-mono text-xs text-cyan-400 font-bold select-none">$</span>
+                  <span className="font-mono text-xs text-indigo-400 font-bold select-none">$</span>
                   <input
                     type="text"
                     value={value}
@@ -701,12 +701,12 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                         setValue(sh.cmd);
                         setName(sh.name);
                       }}
-                      className="w-full px-3 py-2 rounded-lg bg-[#14161f] border border-white/[0.04] hover:border-cyan-500/30 text-left flex items-center justify-between text-xs transition-colors cursor-pointer group"
+                      className="w-full px-3 py-2 rounded-lg bg-[#14161f] border border-white/[0.04] hover:border-indigo-500/30 text-left flex items-center justify-between text-xs transition-colors cursor-pointer group"
                     >
                       <span className="text-slate-300 group-hover:text-white font-medium">
                         {sh.name}
                       </span>
-                      <code className="text-[10px] font-mono text-slate-500 group-hover:text-cyan-400">
+                      <code className="text-[10px] font-mono text-slate-500 group-hover:text-indigo-400">
                         {sh.cmd}
                       </code>
                     </button>
@@ -745,7 +745,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={value || (language === "en" ? "Custom name" : "Nome personalizzato")}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -758,7 +758,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={language === "en" ? "e.g. Switch to next workspace" : "es. Scorri al desktop seguente"}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -788,7 +788,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-semibold transition-all shadow-[0_0_12px_rgba(6,182,212,0.35)] flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               {t("modal.saveAction", "Salva Rimappatura")}

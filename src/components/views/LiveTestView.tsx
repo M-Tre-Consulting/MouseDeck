@@ -102,7 +102,7 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                 {language === "en" ? "Last Detected Event" : "Ultimo Evento Rilevato"}
               </span>
               {lastEvent && (
-                <span className="text-[11px] font-mono text-cyan-400">
+                <span className="text-[11px] font-mono text-indigo-400">
                   {lastEvent.timestamp}
                 </span>
               )}
@@ -151,42 +151,42 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                     onClick={() => handleSimulate("g6_sniper")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <Crosshair className="w-3.5 h-3.5 text-cyan-400" />
+                    <Crosshair className="w-3.5 h-3.5 text-indigo-400" />
                     Sniper (G6)
                   </button>
                   <button
                     onClick={() => handleSimulate("g4_back")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowLeft className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "Back (G4)" : "Indietro (G4)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g5_forward")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "Forward (G5)" : "Avanti (G5)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g8_dpi_up")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowUp className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowUp className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "DPI Up (G8)" : "DPI Su (G8)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g7_dpi_down")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowDown className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowDown className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "DPI Down (G7)" : "DPI Giù (G7)"}
                   </button>
                   <button
                     onClick={() => handleSimulate("g9_profile")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                    <Sliders className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "Profile (G9)" : "Profilo (G9)"}
                   </button>
                 </>
@@ -196,14 +196,14 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                     onClick={() => handleSimulate("forward")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "Forward" : "Avanti"}
                   </button>
                   <button
                     onClick={() => handleSimulate("back")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
+                    <ArrowLeft className="w-3.5 h-3.5 text-indigo-400" />
                     {language === "en" ? "Back" : "Indietro"}
                   </button>
                 </>
@@ -213,14 +213,14 @@ export const LiveTestView: React.FC<LiveTestViewProps> = ({
                     onClick={() => handleSimulate("swipe_up")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowUp className="w-3.5 h-3.5 text-[#0078d4]" />
+                    <ArrowUp className="w-3.5 h-3.5 text-indigo-400" />
                     Swipe Up
                   </button>
                   <button
                     onClick={() => handleSimulate("swipe_down")}
                     className="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 text-xs font-medium border border-white/[0.06] transition-colors flex items-center gap-1.5"
                   >
-                    <ArrowDown className="w-3.5 h-3.5 text-[#0078d4]" />
+                    <ArrowDown className="w-3.5 h-3.5 text-indigo-400" />
                     Swipe Down
                   </button>
                   <button
